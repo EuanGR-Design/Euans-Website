@@ -6,6 +6,7 @@ import { person } from "@/content";
 
 const links = [
   { href: "#work", label: "Work" },
+  { href: "#brand", label: "Brand" },
   { href: "#about", label: "About" },
   { href: "#cv", label: "CV" },
   { href: "#contact", label: "Contact" },

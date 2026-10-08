@@ -177,3 +177,26 @@ export const screens = [
     caption: "Every core flow designed down to a mobile breakpoint.",
   },
 ];
+
+// Highlights from the Legalesign brand guidelines (public/brand), which Euan
+// created in 2021. Pages are 1600×1131.
+export const brand = {
+  heading: "A brand built to carry everything that came after.",
+  body: "I designed the Legalesign identity and wrote its guidelines: the TriDoc mark, wordmark, colour system, type, the LS Ribbon and an isometric illustration style. Marketing, sales and the product team still build from it today, and its colour scale became the foundation of the Console design tokens.",
+  // Legalesign Brand Blue, steps 10–100 from the guidelines.
+  blues: [
+    "#EFF4FF", "#C7DDFF", "#9DC3FC", "#79ADFC", "#5185FF",
+    "#4456F6", "#2134DC", "#0E20C1", "#000F99", "#0C1457",
+  ],
+  pages: [
+    { src: "/brand/p8.jpg", title: "Primary logo", span: "wide" },
+    { src: "/brand/p7.jpg", title: "TriDoc colour options", span: "half" },
+    { src: "/brand/p17.jpg", title: "The brand in the world", span: "half" },
+    { src: "/brand/p19.jpg", title: "Colour scale, LS Blue", span: "half" },
+    { src: "/brand/p20.jpg", title: "Typography, IBM Plex", span: "half" },
+    { src: "/brand/p21.jpg", title: "Fifth element: the LS Ribbon", span: "wide" },
+    { src: "/brand/p24.jpg", title: "Illustration: shading", span: "half" },
+    { src: "/brand/p25.jpg", title: "Illustration: light & form", span: "half" },
+    { src: "/brand/p29.jpg", title: "Pictogram set", span: "wide" },
+  ],
+} as const;
