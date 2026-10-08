@@ -6,6 +6,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import { caseStudy } from "@/content";
 import { Reveal, WordReveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
+import { Screens } from "./Screens";
 
 export function CaseStudy() {
   return (
@@ -15,6 +16,7 @@ export function CaseStudy() {
       <Comparison />
       <Timeline />
       <Epics />
+      <Screens />
       <Process />
     </section>
   );
