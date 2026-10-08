@@ -1,10 +1,12 @@
 // All site copy lives here so it can be edited without touching layout code.
 
+import { basePath } from "@/lib/basePath";
+
 export const person = {
   name: "Euan Robertson",
   role: "Lead Designer & Product Owner",
   email: "euan.g.robertson@gmail.com",
-  cv: "/cv/Euan-Robertson-CV.pdf",
+  cv: `${basePath}/cv/Euan-Robertson-CV.pdf`,
   // Drop a photo at public/images/euan.jpg and set this to "/images/euan.jpg".
   photo: null as string | null,
   intro:
