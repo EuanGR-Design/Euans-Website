@@ -24,7 +24,16 @@ export const eras: { id: Era; label: string; when: string; blurb: string }[] = [
   },
 ];
 
-type Img = { src: string; w: number; h: number; alt: string; caption?: string };
+// `src: null` shows a labelled slot until the image is added. `ref` notes
+// which file from the old portfolio export it should be.
+export type Img = {
+  src: string | null;
+  w: number;
+  h: number;
+  alt: string;
+  caption?: string;
+  ref?: string;
+};
 
 type JourneyStep = {
   stage: "Research" | "Ideation" | "Iteration" | "Handoff" | "Shipped";
@@ -62,7 +71,9 @@ export type Block =
       height: number;
     }
   | { type: "timeline"; eyebrow?: string; heading: string; items: { when: string; title: string; body: string; tags: string[] }[] }
-  | { type: "brand" };
+  | { type: "brand" }
+  // A video player (Vimeo, Adobe) or another embeddable page, shown 16:9.
+  | { type: "embed"; eyebrow?: string; heading: string; body?: string; items: { url: string; title: string; caption?: string }[] };
 
 export type Project = {
   slug: string;
@@ -97,6 +108,17 @@ const journeySteps = (shipped: string) => [
   step("Handoff", "Ready for build", "How the handoff was structured, and anything developers needed to know."),
   step("Shipped", "In production", shipped),
 ];
+
+// An image from the old portfolio export (images/<ref>), waiting to be added
+// at public/work/old/<ref>. Swap `src` in once the file is there.
+const shot = (ref: string, alt: string, caption?: string, w = 1600, h = 1000): Img => ({
+  src: null,
+  w,
+  h,
+  alt,
+  caption,
+  ref,
+});
 
 const evidenceHint = "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.";
 
@@ -234,7 +256,6 @@ export const projects: Project[] = [
     role: "Design lead, product owner",
     tags: ["Workflow", "Admin tools", "UX"],
     cover: { src: "/work/drafts-v2-cover.png", w: 800, h: 566, alt: "Drafts V2 Figma file cover" },
-    featured: true,
     intro:
       "A send-flow configurer. Admins set up drafts with sections pre-filled and settings locked, so when everyday users send from them there's less to fill in, in a controlled environment.",
     blocks: [
@@ -345,30 +366,256 @@ export const projects: Project[] = [
     ],
   },
   {
-    slug: "university-projects",
+    slug: "spacebuds",
     era: "university",
-    title: "University projects",
-    summary: "Product design work from Glasgow School of Art.",
-    year: "2015 – 2020",
-    role: "Student",
-    tags: ["Product design", "Research"],
-    cover: null,
-    comingSoon: true,
-    intro: "",
-    blocks: [],
+    title: "SPACEBUDS",
+    summary: "A service to re-shape the experience of living with a food allergy.",
+    year: "2019",
+    role: "Service & product designer",
+    tags: ["Service design", "Co-design", "User research"],
+    cover: shot("spacebuds/01.jpeg", "The SPACEBUDS app splash screen on a phone"),
+    featured: true,
+    intro:
+      "SPACEBUDS is a service helping people with eating restrictions tackle the social and emotional challenges they face every day. It encourages adventure with food, expanding options in a controlled and safe way, so people with food allergies can have a more positive relationship with food and social life.",
+    blocks: [
+      {
+        type: "text",
+        eyebrow: "The problem",
+        heading: "Avoidance is the only solution. It shouldn't be.",
+        body: [
+          "People with food allergies often create a 'safe food' barrier around themselves, based on what they think their allergy restricts them to. They end up avoiding everything they hadn't experienced before that barrier formed. On the rare occasions they go somewhere new, the worry and uncertainty can bring on a panic attack, easily confused with an allergic reaction, which makes the panic worse and creates a new trauma.",
+          "From a young age, people with food allergies are taught avoidance: to be vigilant, cautious and to steer clear of anything that might trigger a reaction. Anxiety is instilled as a coping mechanism, the 'just right' amount of it. But it often grows, contributing to stress, OCD, paranoia and social isolation.",
+        ],
+      },
+      {
+        type: "gallery",
+        eyebrow: "Research & co-design",
+        heading: "Designed with the people who live it.",
+        images: [
+          shot("spacebuds/02.jpg", "User-journey wall of sticky notes", "Mapping how a group decides where to eat: price, time, location, and the conversation around it."),
+          shot("spacebuds/03.jpg", "Co-design workshop around a table", "Co-design workshops with people who live with food allergies."),
+          shot("spacebuds/04.jpg", "Participants writing on sticky notes", "Participants mapping their own experiences."),
+          shot("spacebuds/05.jpg", "Affinity-mapping wall", "Affinity mapping the findings into themes."),
+          shot("spacebuds/06.jpg", "Sketching logo shapes", "Early sketches for the rocket mark."),
+          shot("spacebuds/07.jpg", "Studio desk with research board", "Research board and shape tests in the studio."),
+        ],
+      },
+      {
+        type: "gallery",
+        eyebrow: "Synthesis",
+        heading: "Understanding the moment of panic.",
+        images: [
+          shot("spacebuds/08.gif", "Illustration of a panicking girl at a restaurant table", "Something is not right: confusion, fear and panic at the table."),
+          shot("spacebuds/09.gif", "Research synthesis map of the food-allergy experience", "The experience mapped from diagnosis through everyday challenges, trust, anxiety and avoidance."),
+        ],
+      },
+      {
+        type: "text",
+        eyebrow: "The brand",
+        heading: "A rocket you can trust.",
+        body: [
+          "The SPACEBUDS logo is a rocket, a universal symbol of exploration and of pushing the limits of discovery. Food restrictions are a boundary that can be pushed past and explored in a controlled, safe environment. When you see the rocket, you know the establishment cares about you and your food restrictions.",
+        ],
+      },
+      {
+        type: "image",
+        image: shot("spacebuds/10.jpg", "SPACEBUDS brand board", "We're here to make your taste-buds safe-buds."),
+      },
+      {
+        type: "embed",
+        eyebrow: "In their words",
+        heading: "No more missing out.",
+        body: "Too often people with food allergies miss out on social gatherings, feeling it's safer to avoid the restaurant a group has picked, and not wanting to be a burden by asking to go elsewhere. SPACEBUDS is here to change that.",
+        items: [
+          {
+            url: "https://www-ccv.adobe.io/v1/player/ccv/8kDkft7AhQw/embed?bgcolor=%23191919&lazyLoading=true&api_key=BehancePro2View",
+            title: "SPACEBUDS, narrated by Callum",
+            caption: "Narrated by Callum, who has multiple severe food allergies. I worked closely with food allergy sufferers throughout, and this video captures the result of that user-centred approach.",
+          },
+          { url: "https://player.vimeo.com/video/422412624", title: "SPACEBUDS in use" },
+        ],
+      },
+    ],
   },
   {
-    slug: "freelance-branding",
+    slug: "tacc",
+    era: "university",
+    title: "tacc",
+    summary: "Personalised plans for living a more sustainable life.",
+    year: "2021",
+    role: "Service & product designer",
+    tags: ["Speculative design", "Service design", "Sustainability"],
+    cover: shot("tacc/01.gif", "The tacc app and the metal tacctile token"),
+    featured: true,
+    intro:
+      "tacc analyses each user's circumstances and gives them a personalised plan of steps towards a sustainable life. It sets clear goals, shows visually how small sustainable acts add up, and connects people with others doing the same: a global community making change for future generations.",
+    blocks: [
+      {
+        type: "text",
+        eyebrow: "The brief",
+        heading: "Who gets left behind?",
+        body: [
+          "Future Experiences looked at sustainable work practice and the changing relationship between the Global North and Global South. My group's theme was Environment.",
+          "We imagined a future where cities are surrounded by a 'sustainable belt', an area dedicated to living as sustainably as possible, in symbiosis with nature. From that I saw an unintended consequence: the people who can't uproot their lives to live more sustainably are left behind. tacc is there for them.",
+        ],
+      },
+      { type: "image", image: shot("tacc/02.jpeg", "12-panel storyboard following Sarah", "Sarah wants to be sustainable but can't see where to start. tacc takes her from first steps to becoming a champion of sustainability.") },
+      { type: "image", image: shot("tacc/03.jpeg", "Presenting in front of a research wall", "\"Having the option to plan for the future and think outside of your immediate circumstance is a luxury many people don't have.\"") },
+      {
+        type: "gallery",
+        eyebrow: "Research",
+        heading: "Expert-led, then made tangible.",
+        images: [
+          shot("tacc/04.jpg", "Research wall of insight cards", "Insights from visiting experts. No amount of desk research compared to what they shared."),
+          shot("tacc/05.jpg", "Team arranging printed cards on a grid", "Sorting insights as a group."),
+          shot("tacc/06.jpg", "Dense research wall", "Articles, images and notes from the research."),
+          shot("tacc/07.jpg", "Wall of logo and storyboard sketches", "Fingerprint logo explorations and storyboard frames."),
+          shot("tacc/08.jpg", "Red dot stickers next to printed cards", "Dot-voting to prioritise ideas."),
+          shot("tacc/09.jpg", "Pencil storyboard pinned along a wall", "The first full storyboard."),
+        ],
+      },
+      {
+        type: "text",
+        eyebrow: "The tacctile",
+        heading: "A fingerprint of the environment.",
+        body: [
+          "The tacctile and the ever-evolving tacc logo represent a fingerprint of the environment at a moment in time. In 2030 they mirror a grid-iron street pattern and an unbalanced spread of resources, reflecting our dependence on industry. The goal is an evenly distributed balance by 2050.",
+        ],
+      },
+      {
+        type: "gallery",
+        heading: "From 2030 to 2050.",
+        images: [
+          shot("tacc/10.gif", "tacctile timeline from 2030 to 2050", "The logo evolves from a grid-iron city pattern to a balanced, radial one."),
+          shot("tacc/11.gif", "Hand holding the worn metal tacctile", "The worn face of the tacctile shows years of individual contribution to a sustainable future."),
+        ],
+      },
+      {
+        type: "text",
+        eyebrow: "Who it's for",
+        heading: "Small changes, together.",
+        body: [
+          "tacc encourages small behavioural changes in everyday life. It's for people who want to be more sustainable but feel daunted by what it might take, and it shows them they're part of a greater whole whose combined efforts make a big difference.",
+        ],
+      },
+      { type: "image", image: shot("tacc/12.png", "Personas for Sarah and Anton", "Personas: Sarah, 34, working multiple jobs with little time, and Anton, 27, a business owner who doubts small actions matter.", 1200, 2400) },
+    ],
+  },
+  {
+    slug: "kate-and-sam",
     era: "freelance",
-    title: "Brand identities",
-    summary: "Logos, brand systems and marketing materials for a range of clients.",
-    year: "2019 – 2020",
-    role: "Freelance designer",
-    tags: ["Branding", "Identity"],
-    cover: null,
-    comingSoon: true,
-    intro: "",
-    blocks: [],
+    title: "Kate & Sam Lighting Designers",
+    summary: "Branding and publication design for a lighting design studio.",
+    year: "2019",
+    role: "Brand & publication designer",
+    tags: ["Branding", "Web design", "Print"],
+    cover: shot("work/03-kate-sam-cover.jpg", "Kate & Sam logo over a glowing light"),
+    featured: true,
+    intro:
+      "Branding and publication design for Kate & Sam, an award-winning lighting design studio: a monogram identity and colourways, website design, stationery and a printed portfolio book.",
+    blocks: [
+      {
+        type: "gallery",
+        eyebrow: "Identity",
+        heading: "A monogram that holds the light.",
+        images: [
+          shot("kate-sam-lighting/01.gif", "K&S monogram in a circular text ring", "The K&S monogram."),
+          shot("kate-sam-lighting/05.jpg", "Four circular logo colourways", "Colourways: yellow, navy, cobalt and lavender."),
+        ],
+      },
+      {
+        type: "gallery",
+        eyebrow: "Website",
+        heading: "The eye's instinct is to follow light.",
+        images: [
+          shot("kate-sam-lighting/02.jpg", "Website homepage design", "Homepage: services, approach and a call to action.", 1600, 3200),
+          shot("kate-sam-lighting/03.jpg", "Website projects page", "Projects grid.", 1600, 2400),
+          shot("kate-sam-lighting/04.jpg", "Website project detail page", "Project detail: Langham Chuan Body + Soul Spa.", 1600, 2400),
+        ],
+      },
+      {
+        type: "gallery",
+        eyebrow: "Print",
+        heading: "A portfolio book to keep.",
+        images: [
+          shot("kate-sam-lighting/06.jpg", "Stack of navy books with debossed logo", "Navy cloth covers with a debossed monogram."),
+          shot("kate-sam-lighting/07.jpg", "Books showing yellow page edges", "Yellow page edges."),
+          shot("kate-sam-lighting/08.jpg", "Book with tonal pattern cover", "A tonal monogram pattern cover."),
+          shot("kate-sam-lighting/09.jpg", "Debossed book cover", "Debossed cover."),
+          shot("kate-sam-lighting/10.jpg", "Fanned stack of books"),
+          shot("kate-sam-lighting/11.jpg", "The book on a shelf"),
+          shot("kate-sam-lighting/12.png", "Stationery set", "Stationery: folder, business cards, letterhead and envelope."),
+          shot("kate-sam-lighting/23.jpg", "Repeating monogram pattern", "The repeating monogram pattern."),
+        ],
+      },
+      {
+        type: "gallery",
+        eyebrow: "Inside the book",
+        heading: "Spreads.",
+        images: [
+          shot("kate-sam-lighting/14.jpg", "Contents and founders spread", "Contents and founders."),
+          shot("kate-sam-lighting/15.jpg", "Pull-quote spread"),
+          shot("kate-sam-lighting/16.jpg", "Experience spread"),
+          shot("kate-sam-lighting/17.jpg", "Projects index spread", "Projects: Wahaca, Visa Innovation Centre, Harrods Toy Department and Llanelly House."),
+          shot("kate-sam-lighting/18.jpg", "Wahaca spread"),
+          shot("kate-sam-lighting/19.jpg", "Visa Innovation Centre spread"),
+          shot("kate-sam-lighting/20.jpg", "Harrods Toy Department spread"),
+          shot("kate-sam-lighting/21.jpg", "Llanelly House spread"),
+        ],
+      },
+      {
+        type: "text",
+        heading: "See it live.",
+        body: ["The studio's site is at kateandsam.co.uk."],
+      },
+    ],
+  },
+  {
+    slug: "tynings",
+    era: "freelance",
+    title: "TYNINGS",
+    summary: "Logo and brand development for a fish & chip shop.",
+    year: "2019",
+    role: "Brand designer",
+    tags: ["Logo design", "Signage", "Packaging"],
+    cover: shot("work/04-tynings-cover.jpg", "TYNINGS fish logo over a misty beach"),
+    intro:
+      "Logo and brand development for Tynings Fish & Chips, a takeaway: a fish mark and wordmark, carried through signage and packaging.",
+    blocks: [
+      {
+        type: "gallery",
+        eyebrow: "The brand",
+        heading: "From shopfront to takeaway box.",
+        images: [
+          shot("tynings/01.png", "Shopfront with the TYNINGS sign", "The shopfront."),
+          shot("tynings/02.jpg", "3D fascia sign at sunset"),
+          shot("tynings/03.png", "Fish logo on a teal band"),
+          shot("tynings/05.png", "Textured teal badge with fish logo"),
+          shot("tynings/04.jpg", "Open takeaway box", "Packaging."),
+          shot("tynings/06.jpg", "Closed kraft takeaway box"),
+          shot("tynings/07.png", "Man by a lake holding the takeaway box"),
+        ],
+      },
+      {
+        type: "gallery",
+        eyebrow: "Development",
+        heading: "Finding the fish.",
+        images: [
+          shot("tynings/08.png", "Logo development grid", "From geometric forms, through curled fish, to the final low-poly mark.", 1600, 2000),
+          shot("tynings/09.png", "Six logo and wordmark lockups", "Lockup options for the logo and wordmark."),
+        ],
+      },
+      {
+        type: "embed",
+        eyebrow: "Project presentations",
+        heading: "The client presentations.",
+        items: [
+          { url: "https://indd.adobe.com/embed/aaad59e7-40a9-4c1f-8b86-040e6b362a27?startpage=1&allowFullscreen=true", title: "TYNINGS presentation 1" },
+          { url: "https://indd.adobe.com/embed/bc6ba3b8-d1d8-4868-ac7e-34d96e1ed708?startpage=1&allowFullscreen=true", title: "TYNINGS presentation 2" },
+          { url: "https://indd.adobe.com/embed/5a3fb3ab-ab45-4c64-9384-9115c3886ae6?startpage=1&allowFullscreen=true", title: "TYNINGS presentation 3" },
+        ],
+      },
+    ],
   },
 ];
 

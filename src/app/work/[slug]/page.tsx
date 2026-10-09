@@ -68,7 +68,7 @@ export default async function ProjectPage({ params }: Props) {
             </dl>
           </div>
         </div>
-        {p.cover && (
+        {p.cover?.src && (
           <div className="container-x mt-14 md:mt-20">
             <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
               <Cover p={p} priority />

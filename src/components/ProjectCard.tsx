@@ -45,7 +45,7 @@ export function ProjectCard({ p, priority = false }: { p: Project; priority?: bo
 
 /** The project's cover image, or a branded placeholder with its title. */
 export function Cover({ p, priority = false }: { p: Project; priority?: boolean }) {
-  if (p.cover) {
+  if (p.cover?.src) {
     return (
       <Image
         src={p.cover.src}

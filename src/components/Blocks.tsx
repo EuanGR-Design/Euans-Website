@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import type { Block, Project } from "@/projects";
+import type { Block, Img, Project } from "@/projects";
 import { Reveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
@@ -85,9 +85,19 @@ function BlockView({
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
-          <div className="mt-12 space-y-16 md:space-y-24">
-            {b.images.map((img) => (
-              <Figure key={img.src} img={img} />
+          <div
+            className={
+              b.images.length > 2
+                ? "mt-12 grid gap-x-6 gap-y-10 md:grid-cols-2"
+                : "mt-12 space-y-16 md:space-y-24"
+            }
+          >
+            {b.images.map((img, i) => (
+              <Figure
+                key={img.ref ?? img.src ?? i}
+                img={img}
+                sizes={b.images.length > 2 ? "(min-width: 768px) 600px, 100vw" : undefined}
+              />
             ))}
           </div>
         </Section>
@@ -127,6 +137,40 @@ function BlockView({
       );
     case "timeline":
       return <Timeline b={b} />;
+    case "embed":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <div className="mt-12 space-y-12">
+            {b.items.map((e) => (
+              <Reveal key={e.url}>
+                <figure>
+                  <div className="aspect-video overflow-hidden rounded-2xl border border-line bg-black md:rounded-3xl">
+                    <iframe
+                      src={e.url}
+                      title={e.title}
+                      loading="lazy"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowFullScreen
+                      className="h-full w-full border-0"
+                    />
+                  </div>
+                  {e.caption && (
+                    <figcaption className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
+                      {e.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+      );
   }
 }
 
@@ -149,23 +193,30 @@ function Heading({ eyebrow, heading }: { eyebrow?: string; heading: string }) {
   );
 }
 
-function Figure({
-  img,
-}: {
-  img: { src: string; w: number; h: number; alt: string; caption?: string };
-}) {
+function Figure({ img, sizes = "(min-width: 1280px) 1200px, 100vw" }: { img: Img; sizes?: string }) {
   return (
     <Reveal>
       <figure>
-        <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-2xl shadow-accent/10 md:rounded-3xl">
-          <Image
-            src={img.src}
-            alt={img.alt}
-            width={img.w}
-            height={img.h}
-            sizes="(min-width: 1280px) 1200px, 100vw"
-            className="h-auto w-full"
-          />
+        <div className="overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl">
+          {img.src ? (
+            <Image
+              src={img.src}
+              alt={img.alt}
+              width={img.w}
+              height={img.h}
+              sizes={sizes}
+              className="h-auto w-full"
+            />
+          ) : (
+            <div
+              className="flex items-center justify-center bg-[radial-gradient(var(--line)_1px,transparent_1px)] p-6 text-center [background-size:16px_16px]"
+              style={{ aspectRatio: `${img.w} / ${img.h}` }}
+            >
+              <span className="eyebrow rounded-full border border-line bg-bg px-3 py-1.5">
+                Image coming soon
+              </span>
+            </div>
+          )}
         </div>
         {img.caption && (
           <figcaption className="mt-4 max-w-2xl text-sm text-muted">{img.caption}</figcaption>
