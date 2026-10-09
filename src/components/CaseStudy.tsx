@@ -7,6 +7,7 @@ import { caseStudy } from "@/content";
 import { Reveal, WordReveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
 import { Screens } from "./Screens";
+import { Prototype } from "./Prototype";
 
 export function CaseStudy() {
   return (
@@ -17,6 +18,7 @@ export function CaseStudy() {
       <Timeline />
       <Epics />
       <Screens />
+      <Prototype />
       <Process />
     </section>
   );

@@ -202,3 +202,15 @@ export const brand = {
     { src: "/brand/p29.jpg", title: "Pictogram set", span: "wide" },
   ],
 } as const;
+
+// Interactive prototype for the redesigned document editor, published with
+// Figma Sites. `width`/`height` are the size it was designed at.
+export const prototype = {
+  url: "https://love-model-19724475.figma.site/",
+  eyebrow: "Interactive prototype",
+  title: "Try the new document editor.",
+  body: "The redesigned document editing page, built as a clickable prototype in Figma. This is the kind of prototype I put in front of users before a line of production code was written. Have a click around.",
+  hint: "Best on a laptop or desktop. It's a working prototype, so not every path is wired up.",
+  width: 1440,
+  height: 900,
+};
