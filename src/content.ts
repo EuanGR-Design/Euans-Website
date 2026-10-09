@@ -337,3 +337,35 @@ export const prototype = {
   width: 1440,
   height: 900,
 };
+
+// Before/after tabs in the case study. Screenshots go in public/work at
+// 1440×900 (the slider crops from the top). Leave a side as null until the
+// screenshot exists: it shows a "coming soon" panel instead.
+export const comparisons = [
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    // No real legacy screenshot yet, so the dashboard uses an illustrative
+    // reconstruction. Set this to the file once there is one.
+    before: null as string | null,
+    after: "/work/dashboard.png" as string | null,
+    caption:
+      "From a table of links to a hub: quick actions, a live document overview, ready-to-send templates and team activity.",
+  },
+  {
+    id: "editor",
+    label: "Editor",
+    before: null as string | null,
+    after: null as string | null,
+    caption:
+      "Placing and assigning fields before sending, rebuilt to be faster and far harder to get wrong.",
+  },
+  {
+    id: "drafts",
+    label: "Sending & Drafts",
+    before: null as string | null,
+    after: null as string | null,
+    caption:
+      "Admins set up drafts with locked, pre-filled settings, so everyday senders have less to fill in.",
+  },
+];
