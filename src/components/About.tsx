@@ -1,12 +1,29 @@
-import { about } from "@/content";
+import Image from "next/image";
+import { about, person, stats } from "@/content";
 import { Reveal } from "./motion";
 
 export function About() {
   return (
-    <section id="about" className="py-24 md:py-40">
+    <section id="about" className="border-t border-line py-24 md:py-32">
       <div className="container-x grid gap-12 lg:grid-cols-12">
         <Reveal className="lg:col-span-4">
           <p className="eyebrow">About</p>
+          <div className="relative mt-6 aspect-[4/5] max-w-xs overflow-hidden rounded-[2rem] border border-line bg-raised">
+            {person.photo ? (
+              <Image
+                src={person.photo}
+                alt={`Portrait of ${person.name}`}
+                fill
+                sizes="320px"
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-accent/40 via-raised to-raised">
+                <span className="font-serif text-8xl italic">ER</span>
+                <span className="eyebrow">Photo coming soon</span>
+              </div>
+            )}
+          </div>
         </Reveal>
         <div className="lg:col-span-8">
           <Reveal>
@@ -21,7 +38,7 @@ export function About() {
               </Reveal>
             ))}
           </div>
-          <ul className="mt-14 grid gap-4 md:grid-cols-3">
+          <div className="mt-14 grid gap-4 md:grid-cols-3">
             {about.approach.map((a, i) => (
               <Reveal
                 key={a.title}
@@ -33,15 +50,36 @@ export function About() {
                 <p className="mt-2 text-sm leading-relaxed text-muted">{a.body}</p>
               </Reveal>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
 
-      <div className="container-x mt-20 md:mt-28">
+      <div className="container-x mt-16 md:mt-24">
+        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line md:grid-cols-4">
+          {stats.map((s, i) => (
+            <Reveal key={s.label} delay={0.08 * i} className="bg-bg p-5 md:p-8">
+              <dt className="sr-only">{s.label}</dt>
+              <dd className="text-4xl font-semibold tracking-tight md:text-5xl">{s.value}</dd>
+              <dd className="mt-2 text-sm text-muted">{s.label}</dd>
+            </Reveal>
+          ))}
+        </dl>
+      </div>
+    </section>
+  );
+}
+
+export function Skills() {
+  return (
+    <section className="border-t border-line py-24 md:py-32">
+      <div className="container-x">
         <Reveal>
           <p className="eyebrow">What I do</p>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
+            Skills, end to end.
+          </h2>
         </Reveal>
-        <div className="mt-6 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {about.skills.map((g, i) => (
             <Reveal key={g.group} delay={0.06 * i} className="bg-bg p-6 md:p-8">
               <h3 className="text-xl font-semibold tracking-tight">{g.group}</h3>

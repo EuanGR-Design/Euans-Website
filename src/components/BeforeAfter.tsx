@@ -3,13 +3,15 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { comparisons } from "@/content";
+import type { Block } from "@/projects";
+
+type Item = Extract<Block, { type: "comparison" }>["items"][number];
 
 /**
  * Tabs across the top pick a screen; drag (or use arrow keys) underneath to
  * compare the legacy product with Console.
  */
-export function BeforeAfter() {
+export function BeforeAfter({ items: comparisons }: { items: Item[] }) {
   const [active, setActive] = useState(0);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const c = comparisons[active];
@@ -22,48 +24,50 @@ export function BeforeAfter() {
 
   return (
     <div>
-      <div
-        role="tablist"
-        aria-label="Screens to compare"
-        className="mb-4 flex gap-1 overflow-x-auto rounded-full border border-line bg-raised p-1 md:inline-flex"
-      >
-        {comparisons.map((t, i) => (
-          <button
-            key={t.id}
-            ref={(el) => {
-              tabs.current[i] = el;
-            }}
-            type="button"
-            role="tab"
-            id={`cmp-tab-${t.id}`}
-            aria-selected={i === active}
-            aria-controls={`cmp-panel-${t.id}`}
-            tabIndex={i === active ? 0 : -1}
-            onClick={() => setActive(i)}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowRight") select(i + 1);
-              if (e.key === "ArrowLeft") select(i - 1);
-            }}
-            className={`relative shrink-0 rounded-full px-4 py-2 text-sm transition-colors ${
-              i === active ? "text-bg" : "text-muted hover:text-fg"
-            }`}
-          >
-            {i === active && (
-              <motion.span
-                layoutId="cmp-tab-pill"
-                className="absolute inset-0 rounded-full bg-fg"
-                transition={{ type: "spring", stiffness: 400, damping: 34 }}
-              />
-            )}
-            <span className="relative">{t.label}</span>
-          </button>
-        ))}
-      </div>
+      {comparisons.length > 1 && (
+        <div
+          role="tablist"
+          aria-label="Screens to compare"
+          className="mb-4 flex gap-1 overflow-x-auto rounded-full border border-line bg-raised p-1 md:inline-flex"
+        >
+          {comparisons.map((t, i) => (
+            <button
+              key={t.id}
+              ref={(el) => {
+                tabs.current[i] = el;
+              }}
+              type="button"
+              role="tab"
+              id={`cmp-tab-${t.id}`}
+              aria-selected={i === active}
+              aria-controls={`cmp-panel-${t.id}`}
+              tabIndex={i === active ? 0 : -1}
+              onClick={() => setActive(i)}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowRight") select(i + 1);
+                if (e.key === "ArrowLeft") select(i - 1);
+              }}
+              className={`relative shrink-0 rounded-full px-4 py-2 text-sm transition-colors ${
+                i === active ? "text-bg" : "text-muted hover:text-fg"
+              }`}
+            >
+              {i === active && (
+                <motion.span
+                  layoutId="cmp-tab-pill"
+                  className="absolute inset-0 rounded-full bg-fg"
+                  transition={{ type: "spring", stiffness: 400, damping: 34 }}
+                />
+              )}
+              <span className="relative">{t.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div
-        role="tabpanel"
+        role={comparisons.length > 1 ? "tabpanel" : undefined}
         id={`cmp-panel-${c.id}`}
-        aria-labelledby={`cmp-tab-${c.id}`}
+        aria-labelledby={comparisons.length > 1 ? `cmp-tab-${c.id}` : undefined}
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -81,7 +85,7 @@ export function BeforeAfter() {
   );
 }
 
-function Slider({ c }: { c: (typeof comparisons)[number] }) {
+function Slider({ c }: { c: Item }) {
   const [pos, setPos] = useState(50);
 
   if (!c.before && !c.after) {
@@ -106,7 +110,11 @@ function Slider({ c }: { c: (typeof comparisons)[number] }) {
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
         >
           {c.before ? (
-            <Side src={c.before} alt={`${c.label} in the legacy app`} label="Before" />
+            <Side
+              src={c.before}
+              alt={`${c.label} in the legacy app`}
+              label="Before"
+            />
           ) : c.id === "dashboard" ? (
             <Before />
           ) : (
@@ -151,7 +159,15 @@ function Slider({ c }: { c: (typeof comparisons)[number] }) {
   );
 }
 
-function Side({ src, alt, label }: { src: string | null; alt: string; label: string }) {
+function Side({
+  src,
+  alt,
+  label,
+}: {
+  src: string | null;
+  alt: string;
+  label: string;
+}) {
   if (!src) return <Pending label={label} />;
   return (
     <Image
@@ -180,17 +196,27 @@ function Before() {
     <div className="absolute inset-0 bg-[#e9e6dc] p-3 font-[Arial,sans-serif] text-[#333] md:p-5">
       <div className="mb-2 flex items-center gap-2 bg-[#5a6b7a] px-2 py-1.5 text-[10px] text-white md:text-xs">
         <b>LEGALESIGN</b>
-        <span className="opacity-70">Home | Documents | Templates | Groups | Account | Help</span>
+        <span className="opacity-70">
+          Home | Documents | Templates | Groups | Account | Help
+        </span>
       </div>
       <div className="grid h-[calc(100%-2.5rem)] grid-cols-[30%_1fr] gap-2">
         <div className="space-y-1 border border-[#bbb] bg-white p-2 text-[9px] md:text-[11px]">
-          {["Send a document", "Bulk send", "Templates", "Drafts", "Signed", "Rejected", "Trash", "Reports", "Settings"].map(
-            (l) => (
-              <div key={l} className="text-[#1a4fa0] underline">
-                {l}
-              </div>
-            ),
-          )}
+          {[
+            "Send a document",
+            "Bulk send",
+            "Templates",
+            "Drafts",
+            "Signed",
+            "Rejected",
+            "Trash",
+            "Reports",
+            "Settings",
+          ].map((l) => (
+            <div key={l} className="text-[#1a4fa0] underline">
+              {l}
+            </div>
+          ))}
         </div>
         <div className="overflow-hidden border border-[#bbb] bg-white text-[9px] md:text-[11px]">
           <div className="grid grid-cols-4 bg-[#d5d5d5] px-1 py-1 font-bold">
@@ -206,7 +232,9 @@ function Before() {
             >
               <span>Contract_{1040 + i}.pdf</span>
               <span>user{i}@org.gov</span>
-              <span className="text-[#a33]">{i % 3 ? "Pending" : "Signed"}</span>
+              <span className="text-[#a33]">
+                {i % 3 ? "Pending" : "Signed"}
+              </span>
               <span>0{(i % 9) + 1}/03/2021</span>
             </div>
           ))}

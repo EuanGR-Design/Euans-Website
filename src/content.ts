@@ -9,15 +9,69 @@ export const person = {
   cv: `${basePath}/cv/Euan-Robertson-CV.pdf`,
   // Drop a photo at public/images/euan.jpg and set this to "/images/euan.jpg".
   photo: null as string | null,
+  // The big statement at the top of the home page.
+  statement: "I turn complex problems into products people find simple.",
   intro:
-    "I lead design at Legalesign, a secure e-signature platform used by governments, councils and large organisations, and over the last couple of years I've taken on product ownership too. I take complex, regulated workflows and make them feel simple, from the brand and the research all the way to the Jira tickets developers build from.",
+    "From product design at Glasgow School of Art, through freelance branding, to leading design and product at Legalesign. Research and design thinking sit at the centre of everything I make.",
 };
 
 export const stats = [
-  { value: "5+", label: "years leading one product" },
+  { value: "5+", label: "years in product design" },
   { value: "100+", label: "features & workflows shipped" },
-  { value: "3+", label: "years leading the design team" },
-  { value: "1:1", label: "Figma ↔ code component library" },
+  { value: "3+", label: "years leading a design team" },
+  { value: "1", label: "brand built from the ground up" },
+];
+
+// Career milestones on the home page. `era` links to that era on /work and
+// `project` to a single case study.
+export const milestones: {
+  when: string;
+  title: string;
+  org: string;
+  body: string;
+  link?: { href: string; label: string };
+}[] = [
+  {
+    when: "2015 – 2020",
+    title: "Learning to design",
+    org: "Glasgow School of Art",
+    body: "A BDes (Hons) in Product Design taught me to start with research and systems thinking, not screens.",
+    link: { href: "/work?era=university", label: "University projects" },
+  },
+  {
+    when: "2019 – 2020",
+    title: "Building brands",
+    org: "Freelance",
+    body: "Logos, brand systems, marketing materials and digital assets for a range of clients.",
+    link: { href: "/work?era=freelance", label: "Freelance work" },
+  },
+  {
+    when: "2020 – 2021",
+    title: "Design in a brand system",
+    org: "The Young Foundation",
+    body: "Reports, illustration, data visualisation, journey mapping and templates, with a strong focus on accessibility.",
+  },
+  {
+    when: "2021",
+    title: "A rebrand, from the workshops up",
+    org: "Legalesign",
+    body: "Joined to refresh a dated brand. Ran the workshops, built the identity and wrote the guidelines.",
+    link: { href: "/work/rebrand", label: "The rebrand" },
+  },
+  {
+    when: "2021 – Present",
+    title: "Rebuilding the product",
+    org: "Legalesign",
+    body: "Created the design system and rebuilt the whole product in it, leading the design team for 3+ years.",
+    link: { href: "/work/console", label: "Console" },
+  },
+  {
+    when: "Last 1–2 years",
+    title: "Owning the product",
+    org: "Legalesign",
+    body: "Took on product owner duties alongside design: sprints, epics and tickets, and the roadmap.",
+    link: { href: "/work?era=legalesign", label: "Legalesign projects" },
+  },
 ];
 
 export const about = {
@@ -88,140 +142,44 @@ export const about = {
   ],
 };
 
-export const caseStudy = {
-  client: "Legalesign",
-  years: "2021 – Present",
-  title: "Rebuilding enterprise e-signature, from the brand up.",
-  summary:
-    "Legalesign is a secure, regulated e-signature platform used by governments, councils and large organisations. Over five years I led its transformation from a dated, hard-to-use tool into Console, a modern product built on a scalable design system.",
-  problem: [
+// The double diamond. Euan leads the first as a designer and the second
+// as product owner.
+export const designProcess = {
+  heading: "Double diamond, end to end.",
+  intro:
+    "I design each product in full first: the complete end goal, shaped by research and as many rounds of user feedback as it takes. Then my role shifts to product owner, breaking it into phases that start with an MVP and seeing each one through development.",
+  diamonds: [
     {
-      title: "Clients couldn't scale it",
-      body: "Large customers wanted to roll Legalesign out across their organisations, but new users couldn't work out how to use it.",
+      label: "Diamond one · the right problem",
+      note: "As design lead",
+      steps: [
+        {
+          step: "Discover",
+          body: "User research, interviews, workshops and Hotjar data to understand the real problem and who has it.",
+        },
+        {
+          step: "Define",
+          body: "Journeys mapped, then the whole product designed and prototyped, iterated through rounds of user testing.",
+        },
+      ],
     },
     {
-      title: "A brand stuck in the past",
-      body: "The visual identity and messaging hadn't kept pace with the product or the market it was competing in.",
-    },
-    {
-      title: "Regulated, niche, high stakes",
-      body: "Government and enterprise users meant strict security and accessibility requirements, and workflows you won't find anywhere else.",
-    },
-  ],
-  timeline: [
-    {
-      phase: "01",
-      when: "2021",
-      title: "Rebrand: message first, then visuals",
-      body: "Ran a series of collaborative workshops with the founders and wider team to define the company's message, tone, market and users. From that I built the brand: logo, type, colour, iconography and guidelines. I worked with illustrators to define an illustration style, animated the logo and icon set, and have kept the brand evolving since.",
-      tags: ["Workshops", "Identity", "Illustration", "Animation"],
-    },
-    {
-      phase: "02",
-      when: "Website",
-      title: "Website: built so marketing could own it",
-      body: "Designed a new customer-facing website from scratch in Figma and delivered it with external developers on Storyblok, so the marketing team could update it without a developer. Looking back, I could now design, build and launch it myself with prompt-coding tools.",
-      tags: ["Figma", "Storyblok", "Web"],
-    },
-    {
-      phase: "03",
-      when: "Foundation",
-      title: "Design system: paired 1:1 with code",
-      body: "Created and maintain the company design system in Figma, matched one-to-one with the frontend component library. Once it was in place, new features were like building with blocks. I also built and expanded a custom icon library, twice, for interactions you won't find in any off-the-shelf set.",
-      tags: ["Figma", "Components", "Tokens", "Icons"],
-    },
-    {
-      phase: "04",
-      when: "Two years",
-      title: "Console: rebuilding the legacy product, feature by feature",
-      body: "Recreated the entire legacy enterprise software in the new system, one epic at a time, while backend engineers rebuilt the platform to modern security standards. Every feature was researched, prototyped and tested with users before handover. I led the design team throughout.",
-      tags: ["Epics", "User testing", "Team lead"],
-    },
-    {
-      phase: "05",
-      when: "Last 1–2 years",
-      title: "Product ownership: design and delivery",
-      body: "Without stepping away from design, I gradually took on product owner duties, filling business needs and taking control of a larger part of the development process. I plan bi-weekly sprints in Jira, write the epics and tickets developers work from, and manage bugs and feature requests. Prototypes are now fully interactive in Figma Make, with test environments for A/B testing with real users.",
-      tags: ["Product ownership", "Jira", "Figma Make", "A/B testing"],
+      label: "Diamond two · the right solution",
+      note: "As product owner",
+      steps: [
+        {
+          step: "Develop",
+          body: "I plan the sprints, write the Jira tickets and meet with developers to talk through the technical requirements.",
+        },
+        {
+          step: "Deliver",
+          body: "Redefining the MVP against what's possible, the time and the budget. Each release is tested internally, then with users.",
+        },
+      ],
     },
   ],
-  epics: [
-    {
-      name: "Quick Send",
-      note: "A streamlined send flow built to cut trial bounce and churn. Trial users explored more of the product, got further, and more of them signed up.",
-    },
-    {
-      name: "Drafts",
-      note: "A send-flow configurer: admins pre-fill and lock settings, so everyday senders have less to fill in, in a controlled environment.",
-    },
-    {
-      name: "Template Editor",
-      note: "A rethought editor that makes placing and assigning fields before sending far easier.",
-    },
-    {
-      name: "Signer Lobby",
-      note: "Controls the signing flow for recipients across multi-document, multi-participant sends.",
-    },
-    {
-      name: "Mobile Signing",
-      note: "A new mobile-first signing experience, designed to AAA accessibility.",
-    },
-    {
-      name: "Bulk Sending",
-      note: "A separate app for sending many documents out for signing at once.",
-    },
-    {
-      name: "Reporting",
-      note: "A site for org admins and team users to review and export product usage data.",
-    },
-    {
-      name: "Support Hub",
-      note: "A customer support and ticketing hub serving both users and the internal support team.",
-    },
-    {
-      name: "Customer Website",
-      note: "Designed from scratch and built on Storyblok with external developers, so marketing can run it.",
-    },
-  ],
-  // The double diamond. Euan leads the first as a designer and the second
-  // as product owner.
-  process: {
-    heading: "Double diamond, end to end.",
-    intro:
-      "I design each product in full first: the complete end goal, shaped by research and as many rounds of user feedback as it takes. Then my role shifts to product owner, breaking it into phases that start with an MVP and seeing each one through development.",
-    diamonds: [
-      {
-        label: "Diamond one · the right problem",
-        note: "As design lead",
-        steps: [
-          {
-            step: "Discover",
-            body: "User research, interviews, workshops and Hotjar data to understand the real problem and who has it.",
-          },
-          {
-            step: "Define",
-            body: "Journeys mapped, then the whole product designed and prototyped, iterated through rounds of user testing.",
-          },
-        ],
-      },
-      {
-        label: "Diamond two · the right solution",
-        note: "As product owner",
-        steps: [
-          {
-            step: "Develop",
-            body: "I plan the sprints, write the Jira tickets and meet with developers to talk through the technical requirements.",
-          },
-          {
-            step: "Deliver",
-            body: "Redefining the MVP against what's possible, the time and the budget. Each release is tested internally, then with users.",
-          },
-        ],
-      },
-    ],
-    pipeline:
-      "While one project is in development, I'm already designing the next, so there's always a finished design queued up when developers are ready.",
-  },
+  pipeline:
+    "While one project is in development, I'm already designing the next, so there's always a finished design queued up when developers are ready.",
 };
 
 export const experience = [
@@ -291,122 +249,15 @@ export const brand = {
   ],
 } as const;
 
-// Interactive prototype for the redesigned document editor, published with
-// Figma Sites. `width`/`height` are the size it was designed at.
-export const prototype = {
-  url: "https://love-model-19724475.figma.site/",
-  eyebrow: "Interactive prototype",
-  title: "Try the new document editor.",
-  body: "The redesigned document editing page, built as a clickable prototype in Figma. This is the kind of prototype I put in front of users before a line of production code was written. Have a click around.",
-  hint: "Best on a laptop or desktop. It's a working prototype, so not every path is wired up.",
-  width: 1440,
-  height: 900,
-};
-
-// Before/after tabs in the case study. Screenshots go in public/work at
-// 1440×900 (the slider crops from the top). Leave a side as null until the
-// screenshot exists: it shows a "coming soon" panel instead.
-export const comparisons = [
-  {
-    id: "dashboard",
-    label: "Dashboard",
-    // No real legacy screenshot yet, so the dashboard uses an illustrative
-    // reconstruction. Set this to the file once there is one.
-    before: null as string | null,
-    after: "/work/dashboard.png" as string | null,
-    caption:
-      "From a table of links to a hub: quick actions, a live document overview, ready-to-send templates and team activity.",
-  },
-  {
-    id: "editor",
-    label: "Editor",
-    before: null as string | null,
-    after: null as string | null,
-    caption:
-      "Placing and assigning fields before sending, rebuilt to be faster and far harder to get wrong.",
-  },
-  {
-    id: "drafts",
-    label: "Sending & Drafts",
-    before: null as string | null,
-    after: null as string | null,
-    caption:
-      "Admins set up drafts with locked, pre-filled settings, so everyday senders have less to fill in.",
-  },
-];
-
-// "From first sketch to shipped": one story per flagship project.
-// For each step, add an image to public/work/<project>/ and set `image`
-// (1440×900 works best), then replace `decision` with what you decided and
-// why. Steps with `image: null` show an empty slot.
-type JourneyStep = {
-  stage: "Research" | "Ideation" | "Iteration" | "Handoff" | "Shipped";
-  title: string;
-  decision: string;
-  image: string | null;
-  // Set to false while `decision` is still placeholder text.
-  written: boolean;
-};
-
-const step = (
-  stage: JourneyStep["stage"],
-  title: string,
-  hint: string,
-): JourneyStep => ({ stage, title, decision: hint, image: null, written: false });
-
-export const journeys: {
-  id: string;
-  name: string;
-  tagline: string;
-  problem: string;
-  evidence: string;
-  prototype?: boolean;
-  steps: JourneyStep[];
-}[] = [
-  {
-    id: "editor",
-    name: "Template Editor",
-    tagline: "Placing and assigning fields",
-    problem:
-      "Adding fields to a document before sending was slow and easy to get wrong, so people sent documents that couldn't be completed.",
-    evidence: "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.",
-    prototype: true,
-    steps: [
-      step("Research", "What we heard", "What the research showed, and what it pointed you towards."),
-      step("Ideation", "Early directions", "The directions you explored, and why you dropped the ones you did."),
-      step("Iteration", "What testing changed", "What testers struggled with, and the change you made because of it."),
-      step("Handoff", "Ready for build", "How the handoff was structured, and anything developers needed to know."),
-      step("Shipped", "In production", "What shipped, and what changed for users."),
-    ],
-  },
-  {
-    id: "drafts",
-    name: "Drafts",
-    tagline: "Controlled, pre-filled sending",
-    problem:
-      "Admins needed control over what their teams sent, while everyday senders needed less to fill in.",
-    evidence: "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.",
-    steps: [
-      step("Research", "What we heard", "What the research showed, and what it pointed you towards."),
-      step("Ideation", "Early directions", "The directions you explored, and why you dropped the ones you did."),
-      step("Iteration", "What testing changed", "What testers struggled with, and the change you made because of it."),
-      step("Handoff", "Ready for build", "How the handoff was structured, and anything developers needed to know."),
-      step("Shipped", "In production", "What shipped, and what changed for users."),
-    ],
-  },
-  {
-    id: "quick-send",
-    name: "Quick Send",
-    tagline: "A faster first send for trial users",
-    problem:
-      "Trial users were bouncing before they'd sent anything, and the send flow was the reason.",
-    evidence: "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.",
-    steps: [
-      step("Research", "What we heard", "What the research showed, and what it pointed you towards."),
-      step("Ideation", "Early directions", "The directions you explored, and why you dropped the ones you did."),
-      step("Iteration", "What testing changed", "What testers struggled with, and the change you made because of it."),
-      step("Handoff", "Ready for build", "How the handoff was structured, and anything developers needed to know."),
-      step("Shipped", "In production", "Trial users explored more of the product and more of them signed up."),
-    ],
-  },
+// Work that slides past under the home page statement. Each tile links to
+// its project.
+export const showreel = [
+  { src: "/work/dashboard.png", w: 1452, h: 1073, alt: "Console dashboard", href: "/work/console" },
+  { src: "/brand/p8.jpg", w: 1600, h: 1131, alt: "Legalesign primary logo", href: "/work/rebrand" },
+  { src: "/work/lobby-batch.png", w: 1516, h: 1100, alt: "Signer Lobby", href: "/work/signer-lobby" },
+  { src: "/brand/p25.jpg", w: 1600, h: 1131, alt: "Legalesign illustration style", href: "/work/rebrand" },
+  { src: "/work/drafts-v2-cover.png", w: 800, h: 566, alt: "Drafts", href: "/work/drafts" },
+  { src: "/brand/p17.jpg", w: 1600, h: 1131, alt: "Legalesign brand on a banner", href: "/work/rebrand" },
+  { src: "/work/lobby-verify.png", w: 1516, h: 1100, alt: "Identity verification", href: "/work/signer-lobby" },
+  { src: "/brand/p29.jpg", w: 1600, h: 1131, alt: "Legalesign pictogram set", href: "/work/rebrand" },
 ];

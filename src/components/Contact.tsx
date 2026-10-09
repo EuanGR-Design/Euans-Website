@@ -27,7 +27,7 @@ export function Contact() {
         </Reveal>
         <div className="mt-24 flex flex-col justify-between gap-4 border-t border-line py-8 text-sm text-muted md:flex-row">
           <span>© {new Date().getFullYear()} {person.name}</span>
-          <a href="#top" className="hover:text-fg">
+          <a href="#main" className="hover:text-fg">
             Back to top ↑
           </a>
         </div>

@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import { Nav } from "@/components/Nav";
+import { Contact } from "@/components/Contact";
+import { MotionProvider } from "@/components/motion";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +42,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} grain antialiased`}
       >
-        {children}
+        <MotionProvider>
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-full focus:bg-fg focus:px-4 focus:py-2 focus:text-bg"
+          >
+            Skip to content
+          </a>
+          <Nav />
+          <main id="main">{children}</main>
+          <Contact />
+        </MotionProvider>
       </body>
     </html>
   );

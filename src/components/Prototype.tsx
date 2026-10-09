@@ -2,35 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { prototype } from "@/content";
-import { Reveal } from "./motion";
 
-export function Prototype() {
+type P = { url: string; width: number; height: number };
+
+export function Prototype({ p }: { p: P }) {
   return (
-    <div id="prototype" className="border-t border-line py-24 md:py-32">
-      <div className="container-x">
-        <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <p className="eyebrow">{prototype.eyebrow}</p>
-            <h3 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
-              {prototype.title}
-            </h3>
-          </div>
-          <p className="max-w-sm text-muted">{prototype.body}</p>
-        </Reveal>
-
-        <Reveal className="mt-12">
-          <BrowserFrame />
-          <p className="mt-4 text-sm text-muted">{prototype.hint}</p>
-        </Reveal>
-      </div>
-    </div>
+    <>
+      <BrowserFrame p={p} />
+      <p className="mt-4 text-sm text-muted">
+        Best on a laptop or desktop. It&apos;s a working prototype, so not every
+        path is wired up.
+      </p>
+    </>
   );
 }
 
-function BrowserFrame() {
+function BrowserFrame({ p }: { p: P }) {
   const [launched, setLaunched] = useState(false);
-  const host = new URL(prototype.url).host;
+  const host = new URL(p.url).host;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl">
@@ -44,7 +33,7 @@ function BrowserFrame() {
           {host}
         </span>
         <a
-          href={prototype.url}
+          href={p.url}
           target="_blank"
           rel="noopener noreferrer"
           className="shrink-0 text-xs text-muted transition-colors hover:text-fg"
@@ -55,7 +44,7 @@ function BrowserFrame() {
 
       <div
         className="relative w-full"
-        style={{ aspectRatio: `${prototype.width} / ${prototype.height}` }}
+        style={{ aspectRatio: `${p.width} / ${p.height}` }}
       >
         <AnimatePresence initial={false}>
           {launched ? (
@@ -65,11 +54,11 @@ function BrowserFrame() {
               animate={{ opacity: 1 }}
               className="absolute inset-0"
             >
-              <ScaledFrame />
+              <ScaledFrame p={p} />
             </motion.div>
           ) : (
             <motion.div key="poster" exit={{ opacity: 0 }} className="absolute inset-0">
-              <Poster onLaunch={() => setLaunched(true)} />
+              <Poster p={p} onLaunch={() => setLaunched(true)} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -82,7 +71,7 @@ function BrowserFrame() {
  * Renders the prototype at the size it was designed for, then scales it down
  * to fit, so the layout matches what was designed instead of reflowing.
  */
-function ScaledFrame() {
+function ScaledFrame({ p }: { p: P }) {
   const ref = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
@@ -90,19 +79,19 @@ function ScaledFrame() {
     const el = ref.current;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) =>
-      setScale(entry.contentRect.width / prototype.width),
+      setScale(entry.contentRect.width / p.width),
     );
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [p.width]);
 
   return (
     <div ref={ref} className="h-full w-full overflow-hidden bg-white">
       <iframe
-        src={prototype.url}
-        title="Interactive prototype of the Legalesign document editor"
-        width={prototype.width}
-        height={prototype.height}
+        src={p.url}
+        title="Interactive prototype"
+        width={p.width}
+        height={p.height}
         allow="fullscreen; clipboard-write"
         style={{ transform: `scale(${scale})`, transformOrigin: "0 0" }}
         className="border-0"
@@ -111,7 +100,7 @@ function ScaledFrame() {
   );
 }
 
-function Poster({ onLaunch }: { onLaunch: () => void }) {
+function Poster({ p, onLaunch }: { p: P; onLaunch: () => void }) {
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#0c1457]">
       {/* A sketch of the editor: toolbar, page and field sidebar. */}
@@ -145,7 +134,7 @@ function Poster({ onLaunch }: { onLaunch: () => void }) {
         </button>
         {/* Phone: too small to use inline, so open it full screen. */}
         <a
-          href={prototype.url}
+          href={p.url}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-medium text-[#0c1457] shadow-xl md:hidden"

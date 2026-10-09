@@ -2,19 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { person } from "@/content";
 
 const links = [
-  { href: "#work", label: "Work" },
-  { href: "#brand", label: "Brand" },
-  { href: "#about", label: "About" },
-  { href: "#cv", label: "CV" },
+  { href: "/work", label: "Work" },
+  { href: "/#approach", label: "Approach" },
+  { href: "/#about", label: "About" },
+  { href: "/#cv", label: "CV" },
   { href: "#contact", label: "Contact" },
 ];
 
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const active = (href: string) => href === "/work" && pathname.startsWith("/work");
+
+  // Close the mobile menu when moving to another page.
+  useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -39,16 +46,20 @@ export function Nav() {
             : "border border-transparent"
         }`}
       >
-        <a href="#top" className="font-medium tracking-tight">
+        <Link href="/" className="font-medium tracking-tight">
           {person.name}
-        </a>
+        </Link>
 
         <ul className="hidden items-center gap-8 text-sm text-muted md:flex">
           {links.map((l) => (
             <li key={l.href}>
-              <a href={l.href} className="transition-colors hover:text-fg">
+              <Link
+                href={l.href}
+                aria-current={active(l.href) ? "page" : undefined}
+                className={`transition-colors hover:text-fg ${active(l.href) ? "text-fg" : ""}`}
+              >
                 {l.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -92,13 +103,13 @@ export function Nav() {
             <ul className="flex flex-col gap-1">
               {links.map((l) => (
                 <li key={l.href}>
-                  <a
+                  <Link
                     href={l.href}
                     onClick={() => setOpen(false)}
                     className="block py-2 font-serif text-4xl"
                   >
                     {l.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
