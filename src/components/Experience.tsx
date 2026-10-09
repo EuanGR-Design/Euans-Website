@@ -59,9 +59,19 @@ export function Experience() {
                       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="max-w-2xl pb-6 leading-relaxed text-fg/75">
-                        {e.body}
-                      </p>
+                      <div className="max-w-2xl pb-6">
+                        <p className="leading-relaxed text-fg/75">{e.body}</p>
+                        {e.points.length > 0 && (
+                          <ul className="mt-4 space-y-2">
+                            {e.points.map((pt) => (
+                              <li key={pt} className="flex gap-3 text-fg/75">
+                                <span aria-hidden className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-accent" />
+                                {pt}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

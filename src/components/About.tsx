@@ -21,18 +21,40 @@ export function About() {
               </Reveal>
             ))}
           </div>
-          <Reveal delay={0.2}>
-            <ul className="mt-12 flex flex-wrap gap-2" aria-label="Strengths">
-              {about.strengths.map((s) => (
-                <li
-                  key={s}
-                  className="rounded-full border border-line px-4 py-2 text-sm text-fg/80 transition-colors hover:border-accent hover:text-fg"
-                >
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
+          <ul className="mt-14 grid gap-4 md:grid-cols-3">
+            {about.approach.map((a, i) => (
+              <Reveal
+                key={a.title}
+                delay={0.08 * i}
+                className="rounded-3xl border border-line bg-raised p-6"
+              >
+                <span className="font-mono text-xs text-accent">0{i + 1}</span>
+                <p className="mt-5 font-semibold">{a.title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{a.body}</p>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="container-x mt-20 md:mt-28">
+        <Reveal>
+          <p className="eyebrow">What I do</p>
+        </Reveal>
+        <div className="mt-6 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+          {about.skills.map((g, i) => (
+            <Reveal key={g.group} delay={0.06 * i} className="bg-bg p-6 md:p-8">
+              <h3 className="text-xl font-semibold tracking-tight">{g.group}</h3>
+              <ul className="mt-5 space-y-2.5" aria-label={`${g.group} skills`}>
+                {g.items.map((s) => (
+                  <li key={s} className="flex gap-3 text-sm text-fg/80">
+                    <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>

@@ -20,9 +20,9 @@ const serif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Euan Robertson — Lead Designer & Product Owner",
+  title: "Euan Robertson — Design Lead",
   description:
-    "Portfolio of Euan Robertson: five years leading design and product for Legalesign, an enterprise e-signature platform.",
+    "Portfolio of Euan Robertson: five years leading design at Legalesign, an enterprise e-signature platform, and more recently product ownership too.",
 };
 
 export const viewport: Viewport = {

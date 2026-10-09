@@ -192,17 +192,17 @@ function Epics() {
       <div className="container-x">
         <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="eyebrow">Shipped as epics</p>
+            <p className="eyebrow">Products & projects</p>
             <h3 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
-              100+ features. Ten big ones.
+              100+ features. A few of the big ones.
             </h3>
           </div>
           <p className="max-w-sm text-muted">
-            Each epic ran two to six months, from discovery to release, built
-            from the same design system.
+            Alongside the core product, I designed a run of separate products
+            and workflows, each two to six months from discovery to release.
           </p>
         </Reveal>
-        <ul className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
           {caseStudy.epics.map((e, i) => (
             <motion.li
               key={e.name}
@@ -210,13 +210,13 @@ function Epics() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="group relative bg-bg p-6 transition-colors hover:bg-raised"
+              className="group relative bg-bg p-6 transition-colors hover:bg-raised sm:last:col-span-2 lg:last:col-span-1"
             >
               <span className="font-mono text-xs text-muted">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <p className="mt-8 font-semibold">{e.name}</p>
-              <p className="mt-1 text-sm text-muted">{e.note}</p>
+              <p className="mt-8 text-lg font-semibold">{e.name}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{e.note}</p>
               <span
                 aria-hidden
                 className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-accent transition-transform duration-500 group-hover:scale-x-100"

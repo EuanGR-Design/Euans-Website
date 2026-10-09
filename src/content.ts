@@ -4,13 +4,13 @@ import { basePath } from "@/lib/basePath";
 
 export const person = {
   name: "Euan Robertson",
-  role: "Lead Designer & Product Owner",
+  role: "Design Lead, with product ownership",
   email: "euan.g.robertson@gmail.com",
   cv: `${basePath}/cv/Euan-Robertson-CV.pdf`,
   // Drop a photo at public/images/euan.jpg and set this to "/images/euan.jpg".
   photo: null as string | null,
   intro:
-    "I take complex, regulated enterprise software and make it feel simple. For the past five years I've led design and product at Legalesign, rebuilding an e-signature platform used by governments, councils and large organisations from the brand up.",
+    "I lead design at Legalesign, a secure e-signature platform used by governments, councils and large organisations, and over the last couple of years I've taken on product ownership too. I take complex, regulated workflows and make them feel simple, from the brand and the research all the way to the Jira tickets developers build from.",
 };
 
 export const stats = [
@@ -23,20 +23,68 @@ export const stats = [
 export const about = {
   heading: "Designer by training. Product owner by necessity.",
   body: [
-    "I studied Product Design at Glasgow School of Art, where I learned to start with research and systems thinking, not screens. After working as a graphic designer at The Young Foundation and running freelance branding projects, I joined Legalesign in 2021 to refresh a dated brand.",
-    "That brief kept growing. I rebuilt the brand, then the product's UX and UI, then the design system that underpins it. Along the way I picked up product ownership: planning, feature definition, sprint management and delivery, working closely with developers, stakeholders and users.",
+    "I studied Product Design at Glasgow School of Art, where I learned to start with research and systems thinking, not screens. I went on to freelance on brand projects, then joined The Young Foundation as a graphic designer, working across reports, illustration, data visualisation and templates within an established brand.",
+    "I joined Legalesign in 2021 to refresh a dated brand. That brief kept growing: the brand, then the website, then the whole product's UX and UI and the design system under it. I'm Design Lead, and over the past one to two years I've taken on more and more product owner duties alongside it: filling business needs, planning sprints, writing epics, and owning a larger share of how the product gets built.",
   ],
-  strengths: [
-    "Product strategy",
-    "UX/UI design",
-    "User research",
-    "Workshop facilitation",
-    "Interactive prototyping",
-    "Design systems",
-    "Stakeholder collaboration",
-    "Cross-functional delivery",
-    "Branding",
-    "Accessibility & inclusive design",
+  approach: [
+    {
+      title: "Design-led, research first",
+      body: "Workshops, interviews and user testing come before pixels. A clear design-thinking process is where I add the most value.",
+    },
+    {
+      title: "Inclusive by default",
+      body: "Accessibility isn't a final check. It shapes the work from the start, up to AAA on the mobile signing experience.",
+    },
+    {
+      title: "Close to the build",
+      body: "Detailed handover files, a component library matched 1:1 with code, and Jira epics developers can pick up and run with.",
+    },
+  ],
+  skills: [
+    {
+      group: "Product",
+      items: [
+        "Product ownership",
+        "Sprint planning",
+        "Project planning",
+        "Jira epics & tickets",
+        "Product research",
+        "Bug & feature triage",
+      ],
+    },
+    {
+      group: "Research",
+      items: [
+        "User research",
+        "User interviews",
+        "User journey mapping",
+        "User testing & A/B tests",
+        "Hotjar analytics",
+        "Workshop facilitation",
+      ],
+    },
+    {
+      group: "Design",
+      items: [
+        "UI design",
+        "Interactive prototyping",
+        "Design systems (Figma)",
+        "Developer handoff",
+        "Accessibility",
+        "Prompt coding (Figma Make)",
+      ],
+    },
+    {
+      group: "Brand",
+      items: [
+        "Brand strategy & identity",
+        "Brand guidelines",
+        "Illustration direction",
+        "Icon & logo animation",
+        "Data visualisation",
+        "Marketing websites",
+      ],
+    },
   ],
 };
 
@@ -64,84 +112,127 @@ export const caseStudy = {
     {
       phase: "01",
       when: "2021",
-      title: "Rebrand",
-      body: "Ran consultancy-style workshops to define the company's message and core pillars, then built the brand from the ground up: logo, identity, messaging, illustration direction and guidelines. Built the marketing site with an external developer and created templates so marketing could run the brand on their own.",
-      tags: ["Workshops", "Identity", "Guidelines", "Website"],
+      title: "Rebrand: message first, then visuals",
+      body: "Ran a series of collaborative workshops with the founders and wider team to define the company's message, tone, market and users. From that I built the brand: logo, type, colour, iconography and guidelines. I worked with illustrators to define an illustration style, animated the logo and icon set, and have kept the brand evolving since.",
+      tags: ["Workshops", "Identity", "Illustration", "Animation"],
     },
     {
       phase: "02",
-      when: "First product",
-      title: "Agent: offline signing",
-      body: "My first UI and UX work for the product: an offline signing app for teams working in warehouses with no connection. A focused brief that set the pattern for everything after.",
-      tags: ["Mobile", "Offline-first", "MVP"],
+      when: "Website",
+      title: "Website: built so marketing could own it",
+      body: "Designed a new customer-facing website from scratch in Figma and delivered it with external developers on Storyblok, so the marketing team could update it without a developer. Looking back, I could now design, build and launch it myself with prompt-coding tools.",
+      tags: ["Figma", "Storyblok", "Web"],
     },
     {
       phase: "03",
       when: "Foundation",
-      title: "A design system, paired 1:1 with code",
-      body: "Built a scalable design system in Figma, matched one-to-one with the frontend component library. Once it was in place, new features were like building with blocks. I also built and expanded a custom icon library, twice, for interactions you won't see in any off-the-shelf set.",
+      title: "Design system: paired 1:1 with code",
+      body: "Created and maintain the company design system in Figma, matched one-to-one with the frontend component library. Once it was in place, new features were like building with blocks. I also built and expanded a custom icon library, twice, for interactions you won't find in any off-the-shelf set.",
       tags: ["Figma", "Components", "Tokens", "Icons"],
     },
     {
       phase: "04",
-      when: "Epics",
-      title: "Console: rebuilding the product, feature by feature",
-      body: "We moved the whole product to the new Console one epic at a time, each two to six months, while backend engineers rebuilt the platform to modern security standards. Every feature was researched, prototyped and tested with users before handover. I led the design team for 3+ years and grew into product ownership.",
-      tags: ["Product ownership", "Sprints", "User testing", "Team lead"],
+      when: "Two years",
+      title: "Console: rebuilding the legacy product, feature by feature",
+      body: "Recreated the entire legacy enterprise software in the new system, one epic at a time, while backend engineers rebuilt the platform to modern security standards. Every feature was researched, prototyped and tested with users before handover. I led the design team throughout.",
+      tags: ["Epics", "User testing", "Team lead"],
     },
     {
       phase: "05",
-      when: "Latest",
-      title: "Drafts & automated sending",
-      body: "A rethought drafts and automated sending flow, plus a redesigned document editing page. Some of the best UX work I've done: complex, multi-step tasks made calm and obvious.",
-      tags: ["Automation", "Editor", "UX"],
+      when: "Last 1–2 years",
+      title: "Product ownership: design and delivery",
+      body: "Without stepping away from design, I gradually took on product owner duties, filling business needs and taking control of a larger part of the development process. I plan bi-weekly sprints in Jira, write the epics and tickets developers work from, and manage bugs and feature requests. Prototypes are now fully interactive in Figma Make, with test environments for A/B testing with real users.",
+      tags: ["Product ownership", "Jira", "Figma Make", "A/B testing"],
     },
   ],
   epics: [
-    { name: "Signer Lobby", note: "Multi-participant signing workflows" },
-    { name: "Dashboard", note: "The central hub of the product" },
-    { name: "Mobile Signing App", note: "Mobile-first, AAA accessibility" },
-    { name: "Quick Send", note: "Onboarding, trial conversion, churn" },
-    { name: "Reporting Platform", note: "Usage insights & exports" },
-    { name: "Bulk Sending", note: "Mass send via CSV upload" },
-    { name: "Template Editing", note: "Reusable workflows across teams" },
-    { name: "Support Hub", note: "Tickets & organisation oversight" },
-    { name: "Workflow Configuration", note: "Admin control over sending" },
-    { name: "Drafts & Auto-send", note: "Automated sending flow" },
+    {
+      name: "Quick Send",
+      note: "A streamlined send flow built to cut trial bounce and churn. Trial users explored more of the product, got further, and more of them signed up.",
+    },
+    {
+      name: "Drafts",
+      note: "A send-flow configurer: admins pre-fill and lock settings, so everyday senders have less to fill in, in a controlled environment.",
+    },
+    {
+      name: "Template Editor",
+      note: "A rethought editor that makes placing and assigning fields before sending far easier.",
+    },
+    {
+      name: "Signer Lobby",
+      note: "Controls the signing flow for recipients across multi-document, multi-participant sends.",
+    },
+    {
+      name: "Mobile Signing",
+      note: "A new mobile-first signing experience, designed to AAA accessibility.",
+    },
+    {
+      name: "Bulk Sending",
+      note: "A separate app for sending many documents out for signing at once.",
+    },
+    {
+      name: "Reporting",
+      note: "A site for org admins and team users to review and export product usage data.",
+    },
+    {
+      name: "Support Hub",
+      note: "A customer support and ticketing hub serving both users and the internal support team.",
+    },
+    {
+      name: "Customer Website",
+      note: "Designed from scratch and built on Storyblok with external developers, so marketing can run it.",
+    },
   ],
   process: [
-    { step: "Discover", body: "Interviews, support tickets and feedback distilled in FigJam." },
-    { step: "Define", body: "Epics scoped with stakeholders; clear acceptance criteria." },
-    { step: "Design", body: "Prototypes built from the design system, not from scratch." },
-    { step: "Test", body: "Usability tests with real customers before a line of code." },
-    { step: "Ship", body: "1:1 handover to developers; sprint-by-sprint delivery." },
+    { step: "Discover", body: "Workshops, interviews, product research and Hotjar data, distilled in FigJam." },
+    { step: "Define", body: "User journeys mapped, then epics and tickets written in Jira." },
+    { step: "Design", body: "Interactive prototypes in Figma and Figma Make, built from the design system." },
+    { step: "Test", body: "User testing and A/B tests with real customers before a line of code." },
+    { step: "Ship", body: "Detailed handover files, bi-weekly sprints, then bugs and requests fed back in." },
   ],
 };
 
 export const experience = [
   {
-    role: "Lead Designer / Product Owner",
+    role: "Design Lead",
     org: "Legalesign",
     when: "Jul 2021 – Present",
-    body: "Lead design across enterprise agreements and e-signature software, from research to developer handover. Expanded into product ownership: planning, feature definition, sprint management and delivery. Led a complete company rebrand.",
+    body: "Lead design for an enterprise e-signature and agreements platform, from research to release. Over the last one to two years I've also taken on product owner duties, alongside design rather than instead of it.",
+    points: [
+      "Led a complete company rebrand through collaborative workshops, from message and tone to logo, illustration and animated iconography.",
+      "Designed a new customer-facing website, delivered with external developers on Storyblok.",
+      "Recreated the entire legacy product in a new system over two years, feature by feature.",
+      "Took on product owner duties over the last 1–2 years: Jira epics and tickets, bi-weekly sprints, bugs and feature requests.",
+      "Created and maintain the company design system in Figma, matched 1:1 with code.",
+      "Led the design team for 3+ years.",
+    ],
   },
   {
     role: "Graphic Designer",
     org: "The Young Foundation",
     when: "Jul 2020 – Jul 2021",
-    body: "Reports, digital content, templates, illustration, data visualisation and web updates within an established brand system, with a strong focus on accessibility.",
+    body: "Graphic design across every part of the brand, producing visual materials for many platforms and formats while working closely to brand guidelines.",
+    points: [
+      "Reports, templates and digital content.",
+      "Typography, illustration and icon design.",
+      "Charts, graphs and data visualisation.",
+      "User journey mapping and storyboarding.",
+      "Video editing and website updates.",
+    ],
   },
   {
     role: "Freelance Graphic Designer",
     org: "Self-employed",
     when: "2019 – 2020",
     body: "Branding and visual identity for a range of clients: logos, brand systems, marketing materials and digital assets.",
+    points: [] as string[],
   },
   {
     role: "BDes (Hons) Product Design",
     org: "Glasgow School of Art",
     when: "2015 – 2020",
     body: "Design thinking, research, prototyping, systems thinking and user-centred problem solving.",
+    points: [] as string[],
   },
 ];
 
