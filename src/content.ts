@@ -268,41 +268,6 @@ export const experience = [
   },
 ];
 
-// Screens exported from the Figma source files (public/work).
-export const screens = [
-  {
-    src: "/work/dashboard.png",
-    w: 1452,
-    h: 1073,
-    title: "Dashboard",
-    caption:
-      "The redesigned hub: quick actions, a live document overview, ready-to-send templates and team activity.",
-  },
-  {
-    src: "/work/lobby-batch.png",
-    w: 1516,
-    h: 1100,
-    title: "Signer Lobby",
-    caption:
-      "Multi-document, multi-recipient signing sessions with sequential ordering, approvals and clear progress.",
-  },
-  {
-    src: "/work/lobby-verify.png",
-    w: 1516,
-    h: 1100,
-    title: "Identity verification",
-    caption:
-      "2FA and access checks before signing, designed for government-grade security without the friction.",
-  },
-  {
-    src: "/work/dashboard-mobile.png",
-    w: 442,
-    h: 914,
-    title: "Dashboard, mobile",
-    caption: "Every core flow designed down to a mobile breakpoint.",
-  },
-];
-
 // Highlights from the Legalesign brand guidelines (public/brand), which Euan
 // created in 2021. Pages are 1600×1131.
 export const brand = {

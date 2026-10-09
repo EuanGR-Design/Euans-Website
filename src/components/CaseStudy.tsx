@@ -6,7 +6,6 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import { caseStudy } from "@/content";
 import { Reveal, WordReveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
-import { Screens } from "./Screens";
 import { Prototype } from "./Prototype";
 import { Journeys } from "./Journeys";
 
@@ -21,7 +20,6 @@ export function CaseStudy() {
       <Journeys />
       <Prototype />
       <Epics />
-      <Screens />
     </section>
   );
 }
