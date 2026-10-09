@@ -369,3 +369,79 @@ export const comparisons = [
       "Admins set up drafts with locked, pre-filled settings, so everyday senders have less to fill in.",
   },
 ];
+
+// "From first sketch to shipped": one story per flagship project.
+// For each step, add an image to public/work/<project>/ and set `image`
+// (1440×900 works best), then replace `decision` with what you decided and
+// why. Steps with `image: null` show an empty slot.
+type JourneyStep = {
+  stage: "Research" | "Ideation" | "Iteration" | "Handoff" | "Shipped";
+  title: string;
+  decision: string;
+  image: string | null;
+  // Set to false while `decision` is still placeholder text.
+  written: boolean;
+};
+
+const step = (
+  stage: JourneyStep["stage"],
+  title: string,
+  hint: string,
+): JourneyStep => ({ stage, title, decision: hint, image: null, written: false });
+
+export const journeys: {
+  id: string;
+  name: string;
+  tagline: string;
+  problem: string;
+  evidence: string;
+  prototype?: boolean;
+  steps: JourneyStep[];
+}[] = [
+  {
+    id: "editor",
+    name: "Template Editor",
+    tagline: "Placing and assigning fields",
+    problem:
+      "Adding fields to a document before sending was slow and easy to get wrong, so people sent documents that couldn't be completed.",
+    evidence: "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.",
+    prototype: true,
+    steps: [
+      step("Research", "What we heard", "What the research showed, and what it pointed you towards."),
+      step("Ideation", "Early directions", "The directions you explored, and why you dropped the ones you did."),
+      step("Iteration", "What testing changed", "What testers struggled with, and the change you made because of it."),
+      step("Handoff", "Ready for build", "How the handoff was structured, and anything developers needed to know."),
+      step("Shipped", "In production", "What shipped, and what changed for users."),
+    ],
+  },
+  {
+    id: "drafts",
+    name: "Drafts",
+    tagline: "Controlled, pre-filled sending",
+    problem:
+      "Admins needed control over what their teams sent, while everyday senders needed less to fill in.",
+    evidence: "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.",
+    steps: [
+      step("Research", "What we heard", "What the research showed, and what it pointed you towards."),
+      step("Ideation", "Early directions", "The directions you explored, and why you dropped the ones you did."),
+      step("Iteration", "What testing changed", "What testers struggled with, and the change you made because of it."),
+      step("Handoff", "Ready for build", "How the handoff was structured, and anything developers needed to know."),
+      step("Shipped", "In production", "What shipped, and what changed for users."),
+    ],
+  },
+  {
+    id: "quick-send",
+    name: "Quick Send",
+    tagline: "A faster first send for trial users",
+    problem:
+      "Trial users were bouncing before they'd sent anything, and the send flow was the reason.",
+    evidence: "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.",
+    steps: [
+      step("Research", "What we heard", "What the research showed, and what it pointed you towards."),
+      step("Ideation", "Early directions", "The directions you explored, and why you dropped the ones you did."),
+      step("Iteration", "What testing changed", "What testers struggled with, and the change you made because of it."),
+      step("Handoff", "Ready for build", "How the handoff was structured, and anything developers needed to know."),
+      step("Shipped", "In production", "Trial users explored more of the product and more of them signed up."),
+    ],
+  },
+];

@@ -14,7 +14,7 @@ export function Screens() {
           <div>
             <p className="eyebrow">Selected screens</p>
             <h3 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
-              From the Figma source.
+              More from the Figma source.
             </h3>
           </div>
           <p className="max-w-sm text-muted">

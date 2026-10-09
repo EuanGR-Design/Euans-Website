@@ -8,6 +8,7 @@ import { Reveal, WordReveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
 import { Screens } from "./Screens";
 import { Prototype } from "./Prototype";
+import { Journeys } from "./Journeys";
 
 export function CaseStudy() {
   return (
@@ -16,10 +17,11 @@ export function CaseStudy() {
       <Problem />
       <Comparison />
       <Timeline />
+      <Process />
+      <Journeys />
+      <Prototype />
       <Epics />
       <Screens />
-      <Prototype />
-      <Process />
     </section>
   );
 }
