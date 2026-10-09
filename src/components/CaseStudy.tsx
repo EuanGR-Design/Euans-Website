@@ -199,7 +199,7 @@ function Epics() {
           </div>
           <p className="max-w-sm text-muted">
             Alongside the core product, I designed a run of separate products
-            and workflows, each two to six months from discovery to release.
+            and workflows, each taken from research through to release.
           </p>
         </Reveal>
         <ul className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
@@ -230,31 +230,67 @@ function Epics() {
 }
 
 function Process() {
+  const { process } = caseStudy;
+  let n = 0;
+
   return (
     <div className="border-t border-line py-24 md:py-32">
       <div className="container-x">
-        <Reveal>
-          <p className="eyebrow">How I worked</p>
-          <h3 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight md:text-5xl">
-            Leading designers, partnering with developers, owning the roadmap.
-          </h3>
+        <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <p className="eyebrow">How I work</p>
+            <h3 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight md:text-5xl">
+              {process.heading}
+            </h3>
+          </div>
+          <p className="max-w-sm text-muted">{process.intro}</p>
         </Reveal>
-        <ol className="mt-14 grid gap-4 md:grid-cols-5">
-          {caseStudy.process.map((p, i) => (
+
+        <div className="mt-14 grid gap-4 lg:grid-cols-2">
+          {process.diamonds.map((d, i) => (
             <Reveal
-              key={p.step}
-              delay={0.08 * i}
-              className="rounded-3xl border border-line p-6"
+              key={d.label}
+              delay={0.1 * i}
+              className="rounded-3xl border border-accent/40 bg-accent-soft p-5 md:p-6"
             >
-              <span className="font-mono text-xs text-accent">
-                Step {i + 1}
-              </span>
-              <p className="mt-6 text-xl font-semibold">{p.step}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
+              <div className="flex items-center justify-between gap-4">
+                <p className="flex items-center gap-3 text-sm font-medium">
+                  <DiamondIcon />
+                  {d.label}
+                </p>
+                <span className="font-mono text-xs text-muted">{d.note}</span>
+              </div>
+              <ol className="mt-5 grid gap-3 sm:grid-cols-2">
+                {d.steps.map((p) => {
+                  n += 1;
+                  return (
+                    <li key={p.step} className="rounded-2xl border border-line bg-bg p-5">
+                      <span className="font-mono text-xs text-accent">0{n}</span>
+                      <p className="mt-5 text-xl font-semibold">{p.step}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
+                    </li>
+                  );
+                })}
+              </ol>
             </Reveal>
           ))}
-        </ol>
+        </div>
+
+        <Reveal delay={0.2}>
+          <p className="mt-6 flex items-center gap-3 text-sm text-muted">
+            <span aria-hidden className="text-accent">↻</span>
+            {process.pipeline}
+          </p>
+        </Reveal>
       </div>
     </div>
+  );
+}
+
+function DiamondIcon() {
+  return (
+    <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" className="text-accent">
+      <path d="M8 1 15 8 8 15 1 8Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
   );
 }

@@ -183,13 +183,45 @@ export const caseStudy = {
       note: "Designed from scratch and built on Storyblok with external developers, so marketing can run it.",
     },
   ],
-  process: [
-    { step: "Discover", body: "Workshops, interviews, product research and Hotjar data, distilled in FigJam." },
-    { step: "Define", body: "User journeys mapped, then epics and tickets written in Jira." },
-    { step: "Design", body: "Interactive prototypes in Figma and Figma Make, built from the design system." },
-    { step: "Test", body: "User testing and A/B tests with real customers before a line of code." },
-    { step: "Ship", body: "Detailed handover files, bi-weekly sprints, then bugs and requests fed back in." },
-  ],
+  // The double diamond. Euan leads the first as a designer and the second
+  // as product owner.
+  process: {
+    heading: "Double diamond, end to end.",
+    intro:
+      "I design each product in full first: the complete end goal, shaped by research and as many rounds of user feedback as it takes. Then my role shifts to product owner, breaking it into phases that start with an MVP and seeing each one through development.",
+    diamonds: [
+      {
+        label: "Diamond one · the right problem",
+        note: "As design lead",
+        steps: [
+          {
+            step: "Discover",
+            body: "User research, interviews, workshops and Hotjar data to understand the real problem and who has it.",
+          },
+          {
+            step: "Define",
+            body: "Journeys mapped, then the whole product designed and prototyped, iterated through rounds of user testing.",
+          },
+        ],
+      },
+      {
+        label: "Diamond two · the right solution",
+        note: "As product owner",
+        steps: [
+          {
+            step: "Develop",
+            body: "I plan the sprints, write the Jira tickets and meet with developers to talk through the technical requirements.",
+          },
+          {
+            step: "Deliver",
+            body: "Redefining the MVP against what's possible, the time and the budget. Each release is tested internally, then with users.",
+          },
+        ],
+      },
+    ],
+    pipeline:
+      "While one project is in development, I'm already designing the next, so there's always a finished design queued up when developers are ready.",
+  },
 };
 
 export const experience = [
