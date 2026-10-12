@@ -1,6 +1,8 @@
 // Every project on the site, and what each case study page shows.
 // Pages are built from `blocks`, top to bottom. Images live in public/.
 
+import { oldDims } from "./oldImageSizes";
+
 export type Era = "university" | "freelance" | "legalesign";
 
 export const eras: { id: Era; label: string; when: string; blurb: string }[] = [
@@ -109,16 +111,12 @@ const journeySteps = (shipped: string) => [
   step("Shipped", "In production", shipped),
 ];
 
-// An image from the old portfolio export (images/<ref>), waiting to be added
-// at public/work/old/<ref>. Swap `src` in once the file is there.
-const shot = (ref: string, alt: string, caption?: string, w = 1600, h = 1000): Img => ({
-  src: null,
-  w,
-  h,
-  alt,
-  caption,
-  ref,
-});
+// An image from the old portfolio export (images/<ref>), served from
+// public/work/old/<ref>.
+const shot = (ref: string, alt: string, caption?: string): Img => {
+  const [w, h] = oldDims[ref];
+  return { src: `/work/old/${ref}`, w, h, alt, caption, ref };
+};
 
 const evidenceHint = "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.";
 
@@ -498,7 +496,7 @@ export const projects: Project[] = [
           "tacc encourages small behavioural changes in everyday life. It's for people who want to be more sustainable but feel daunted by what it might take, and it shows them they're part of a greater whole whose combined efforts make a big difference.",
         ],
       },
-      { type: "image", image: shot("tacc/12.png", "Personas for Sarah and Anton", "Personas: Sarah, 34, working multiple jobs with little time, and Anton, 27, a business owner who doubts small actions matter.", 1200, 2400) },
+      { type: "image", image: shot("tacc/12.png", "Personas for Sarah and Anton", "Personas: Sarah, 34, working multiple jobs with little time, and Anton, 27, a business owner who doubts small actions matter.") },
     ],
   },
   {
@@ -528,9 +526,9 @@ export const projects: Project[] = [
         eyebrow: "Website",
         heading: "The eye's instinct is to follow light.",
         images: [
-          shot("kate-sam-lighting/02.jpg", "Website homepage design", "Homepage: services, approach and a call to action.", 1600, 3200),
-          shot("kate-sam-lighting/03.jpg", "Website projects page", "Projects grid.", 1600, 2400),
-          shot("kate-sam-lighting/04.jpg", "Website project detail page", "Project detail: Langham Chuan Body + Soul Spa.", 1600, 2400),
+          shot("kate-sam-lighting/02.jpg", "Website homepage design", "Homepage: services, approach and a call to action."),
+          shot("kate-sam-lighting/03.jpg", "Website projects page", "Projects grid."),
+          shot("kate-sam-lighting/04.jpg", "Website project detail page", "Project detail: Langham Chuan Body + Soul Spa."),
         ],
       },
       {
@@ -601,7 +599,7 @@ export const projects: Project[] = [
         eyebrow: "Development",
         heading: "Finding the fish.",
         images: [
-          shot("tynings/08.png", "Logo development grid", "From geometric forms, through curled fish, to the final low-poly mark.", 1600, 2000),
+          shot("tynings/08.png", "Logo development grid", "From geometric forms, through curled fish, to the final low-poly mark."),
           shot("tynings/09.png", "Six logo and wordmark lockups", "Lockup options for the logo and wordmark."),
         ],
       },
