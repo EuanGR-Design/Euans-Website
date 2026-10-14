@@ -145,13 +145,13 @@ export const stages: Stage[] = [
     approach:
       "I put prototypes in front of real users early and often, and let what they struggle with decide what changes next.",
     question: "How testing changed the design",
-    project: "template-editor",
-    problem: "Adding fields to a document before sending was slow and easy to get wrong, so people sent documents that couldn't be completed.",
-    why: "The Template Editor went through the most rounds of prototypes and user feedback, so I use it to show how I iterate.",
+    project: "quick-send",
+    problem: "Trial users were bouncing before they'd sent anything, and the send flow was the reason.",
+    why: "Quick Send went through the most rounds of prototypes and user feedback, so I use it to show how I iterate.",
     blocks: [
       {
         type: "image",
-        image: { src: null, w: 1440, h: 900, alt: "The first Template Editor prototype", caption: "Where it started: the first prototype." },
+        image: { src: null, w: 1440, h: 900, alt: "The first Quick Send prototype", caption: "Where it started: the first prototype." },
       },
       {
         type: "rounds",
@@ -163,14 +163,6 @@ export const stages: Stage[] = [
           { heard: "What testers struggled with in this round.", changed: "The change you made because of it.", image: null },
         ],
         draft: true,
-      },
-      {
-        type: "prototype",
-        url: "https://love-model-19724475.figma.site/",
-        heading: "Try the new editor.",
-        body: "The redesigned editing page as a clickable prototype, the kind I put in front of users before a line of production code was written.",
-        width: 1440,
-        height: 900,
       },
       {
         type: "text",
@@ -188,19 +180,19 @@ export const stages: Stage[] = [
     approach:
       "I agree what success looks like before we ship, then measure it, so every release has evidence behind it.",
     question: "How I proved it worked",
-    project: "quick-send",
-    problem: "Trial users were bouncing before they'd sent anything, and the send flow was the reason.",
-    why: "Quick Send has the clearest before and after data, so I use it to show how I measure outcomes.",
-    result: { value: "XX%", label: "Add the headline result, for example more trial users completing their first send.", draft: true },
+    project: "template-editor",
+    problem: "Adding fields to a document before sending was slow and easy to get wrong, so people sent documents that couldn't be completed.",
+    why: "The Template Editor has the clearest before and after data, so I use it to show how I measure outcomes.",
+    result: { value: "XX%", label: "Add the headline result, for example fewer documents sent that couldn't be completed.", draft: true },
     blocks: [
       {
         type: "stats",
         eyebrow: "Results",
         heading: "What changed after release.",
         items: [
-          { value: "XX%", label: "Trial bounce rate" },
-          { value: "XX%", label: "First sends completed" },
-          { value: "XX%", label: "Trial to paid" },
+          { value: "XX%", label: "Documents sent with field errors" },
+          { value: "XX%", label: "Time to prepare a document" },
+          { value: "XX%", label: "Support tickets about fields" },
         ],
         draft: true,
       },
@@ -212,13 +204,12 @@ export const stages: Stage[] = [
         draft: true,
       },
       {
-        type: "gallery",
-        eyebrow: "What shipped",
-        heading: "The new first send.",
-        images: [
-          { src: null, w: 1440, h: 900, alt: "Quick Send, step one" },
-          { src: null, w: 1440, h: 900, alt: "Quick Send, sent" },
-        ],
+        type: "prototype",
+        url: "https://love-model-19724475.figma.site/",
+        heading: "Try the new editor.",
+        body: "The redesigned editing page as a clickable prototype: placing fields and assigning them to recipients before a document goes out.",
+        width: 1440,
+        height: 900,
       },
       {
         type: "text",
