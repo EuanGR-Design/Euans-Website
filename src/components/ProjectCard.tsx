@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { eras, type Project } from "@/projects";
+import { eras, projectHref, type Project } from "@/projects";
 
 export function ProjectCard({ p, priority = false }: { p: Project; priority?: boolean }) {
   const era = eras.find((e) => e.id === p.era);
@@ -37,7 +37,7 @@ export function ProjectCard({ p, priority = false }: { p: Project; priority?: bo
 
   if (p.comingSoon) return <div className="opacity-70">{inner}</div>;
   return (
-    <Link href={`/work/${p.slug}`} className="group block">
+    <Link href={projectHref(p)} className="group block">
       {inner}
     </Link>
   );

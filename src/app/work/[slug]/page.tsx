@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { eras, getProject, liveProjects } from "@/projects";
+import { eras, getProject, pageProjects, projectHref } from "@/projects";
 import { Blocks } from "@/components/Blocks";
 import { Cover } from "@/components/ProjectCard";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return liveProjects.map((p) => ({ slug: p.slug }));
+  return pageProjects.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -22,8 +22,8 @@ export default async function ProjectPage({ params }: Props) {
   if (!p) notFound();
 
   const era = eras.find((e) => e.id === p.era);
-  const i = liveProjects.indexOf(p);
-  const next = liveProjects[(i + 1) % liveProjects.length];
+  const i = pageProjects.indexOf(p);
+  const next = pageProjects[(i + 1) % pageProjects.length];
 
   return (
     <article>
@@ -78,13 +78,13 @@ export default async function ProjectPage({ params }: Props) {
       </header>
 
       <div className="mt-20 md:mt-28">
-        <Blocks project={p} />
+        <Blocks blocks={p.blocks} name={p.title} />
       </div>
 
       <nav aria-label="Next project" className="border-t border-line py-20 md:py-28">
         <div className="container-x">
           <p className="eyebrow">Next project</p>
-          <Link href={`/work/${next.slug}`} className="group mt-4 inline-block">
+          <Link href={projectHref(next)} className="group mt-4 inline-block">
             <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent">
               {next.title} <span aria-hidden>→</span>
             </span>

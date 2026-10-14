@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { designProcess } from "@/content";
 import { Reveal } from "./motion";
 
@@ -54,6 +55,12 @@ export function Process() {
             <span aria-hidden className="text-accent">↻</span>
             {designProcess.pipeline}
           </p>
+          <Link
+            href="/work/legalesign#how-i-work"
+            className="mt-8 inline-flex items-center gap-2 rounded-full border border-line px-5 py-2.5 text-sm transition-colors hover:bg-fg hover:text-bg"
+          >
+            See each stage in practice <span aria-hidden>→</span>
+          </Link>
         </Reveal>
       </div>
     </section>
