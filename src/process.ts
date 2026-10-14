@@ -1,0 +1,322 @@
+// The Legalesign section: an overview page at /work/legalesign, then one
+// page per stage of the design process, each told through one Console
+// project.
+//
+// To show a stage through a different project, change its `project` slug
+// and rewrite its `problem`, `why` and `blocks`. The overview cards, the
+// "Everything I shipped" badges and the "See the final outcome" links all
+// follow the slug.
+
+import type { Block } from "./projects";
+
+export type StageId = "research" | "ideation" | "iteration" | "outcome";
+
+export type Stage = {
+  id: StageId;
+  label: string;
+  // Page headline, about Euan rather than the project.
+  headline: string;
+  // One sentence on how Euan approaches this stage.
+  approach: string;
+  // The question this stage answers, shown on the overview cards.
+  question: string;
+  // Slug of the project in src/projects.ts that shows this stage.
+  project: string;
+  // The project's problem in one line, so the page stands alone.
+  problem: string;
+  // Why this project is the one used for this stage.
+  why: string;
+  // Results lead the page, ahead of the headline.
+  result?: { value: string; label: string; draft?: boolean };
+  blocks: Block[];
+};
+
+export const stages: Stage[] = [
+  {
+    id: "research",
+    label: "Research",
+    headline: "How I research",
+    approach:
+      "I start by finding out who has the problem and what it actually is, from the people living with it and from the data, before anything gets designed.",
+    question: "How I find the real problem",
+    project: "support-hub",
+    problem: "Customers couldn't find answers on their own, so simple questions turned into support tickets.",
+    why: "Support Hub had the deepest research of anything I worked on, so I use it to show how I work at this stage.",
+    blocks: [
+      {
+        type: "text",
+        eyebrow: "Method",
+        heading: "How I ran the research.",
+        body: [
+          "Which methods you used (interviews, support ticket analysis, a workshop with the support team, Hotjar) and why each one.",
+          "Who you spoke to, and how many.",
+        ],
+        draft: true,
+      },
+      {
+        type: "quotes",
+        eyebrow: "In their words",
+        heading: "What people told us.",
+        items: [
+          { quote: "Add a quote from a customer admin.", who: "Org admin" },
+          { quote: "Add a quote from an everyday sender.", who: "Everyday sender" },
+          { quote: "Add a quote from the support team.", who: "Support team" },
+        ],
+        draft: true,
+      },
+      {
+        type: "personas",
+        eyebrow: "Personas",
+        heading: "Who we were designing for.",
+        items: [
+          { name: "Org admin", role: "Runs Legalesign for their organisation", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
+          { name: "Everyday sender", role: "Sends documents for signing", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
+          { name: "Support agent", role: "Answers customer questions", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
+        ],
+        draft: true,
+      },
+      {
+        type: "journey-map",
+        eyebrow: "Journey map",
+        heading: "Getting help, step by step.",
+        stages: ["Hits a problem", "Looks for help", "Raises a ticket", "Gets an answer"],
+        lanes: [
+          { label: "Doing", cells: ["What they do here.", "What they do here.", "What they do here.", "What they do here."] },
+          { label: "Thinking", cells: ["What they're thinking.", "What they're thinking.", "What they're thinking.", "What they're thinking."] },
+          { label: "Pain point", cells: ["What goes wrong.", "What goes wrong.", "What goes wrong.", "What goes wrong."] },
+        ],
+        draft: true,
+      },
+      {
+        type: "insights",
+        eyebrow: "From insight to brief",
+        heading: "What the research changed.",
+        items: [
+          { found: "A finding from the research.", so: "What the design had to do because of it." },
+          { found: "A finding from the research.", so: "What the design had to do because of it." },
+          { found: "A finding from the research.", so: "What the design had to do because of it." },
+        ],
+        draft: true,
+      },
+    ],
+  },
+  {
+    id: "ideation",
+    label: "Ideation",
+    headline: "How I explore ideas",
+    approach:
+      "I open up as many directions as I can before narrowing down, and I keep the ones I drop so the team can see why the chosen one won.",
+    question: "How I explore options",
+    project: "drafts",
+    problem: "Admins needed control over what their teams sent, while everyday senders needed less to fill in.",
+    why: "Drafts had the widest set of directions to choose between, and it's some of my best UX, so I use it to show how I explore.",
+    blocks: [
+      {
+        type: "text",
+        eyebrow: "The question",
+        heading: "How might admins lock down a send without slowing their team down?",
+        body: ["How you framed the problem before sketching, and who was involved."],
+        draft: true,
+      },
+      {
+        type: "options",
+        eyebrow: "Directions",
+        heading: "What I explored.",
+        items: [
+          { title: "Direction A", body: "What it was, and why it was dropped.", image: null },
+          { title: "Direction B", body: "What it was, and why it was dropped.", image: null },
+          { title: "Direction C", body: "What it was, and why it won.", image: null, chosen: true },
+        ],
+        draft: true,
+      },
+      {
+        type: "text",
+        eyebrow: "Deciding",
+        heading: "How I chose.",
+        body: ["The criteria you used, who was in the room, and what tipped it."],
+        draft: true,
+      },
+    ],
+  },
+  {
+    id: "iteration",
+    label: "Iteration",
+    headline: "How I test and refine",
+    approach:
+      "I put prototypes in front of real users early and often, and let what they struggle with decide what changes next.",
+    question: "How testing changed the design",
+    project: "quick-send",
+    problem: "Trial users were bouncing before they'd sent anything, and the send flow was the reason.",
+    why: "Quick Send went through the most rounds of prototypes and user feedback, so I use it to show how I iterate.",
+    blocks: [
+      {
+        type: "image",
+        image: { src: null, w: 1440, h: 900, alt: "The first Quick Send prototype", caption: "Where it started: the first prototype." },
+      },
+      {
+        type: "rounds",
+        eyebrow: "Rounds of feedback",
+        heading: "What testers told us, and what changed.",
+        items: [
+          { heard: "What testers struggled with in this round.", changed: "The change you made because of it.", image: null },
+          { heard: "What testers struggled with in this round.", changed: "The change you made because of it.", image: null },
+          { heard: "What testers struggled with in this round.", changed: "The change you made because of it.", image: null },
+        ],
+        draft: true,
+      },
+      {
+        type: "text",
+        eyebrow: "Testing",
+        heading: "How I ran testing.",
+        body: ["Who tested, how many people per round, and the tools you used."],
+        draft: true,
+      },
+    ],
+  },
+  {
+    id: "outcome",
+    label: "Outcome",
+    headline: "How I prove it worked",
+    approach:
+      "I agree what success looks like before we ship, then measure it, so every release has evidence behind it.",
+    question: "How I proved it worked",
+    project: "template-editor",
+    problem: "Adding fields to a document before sending was slow and easy to get wrong, so people sent documents that couldn't be completed.",
+    why: "The Template Editor has the clearest before and after data, so I use it to show how I measure outcomes.",
+    result: { value: "XX%", label: "Add the headline result, for example fewer documents sent that couldn't be completed.", draft: true },
+    blocks: [
+      {
+        type: "stats",
+        eyebrow: "Results",
+        heading: "What changed after release.",
+        items: [
+          { value: "XX%", label: "Documents sent with field errors" },
+          { value: "XX%", label: "Time to prepare a document" },
+          { value: "XX%", label: "Support tickets about fields" },
+        ],
+        draft: true,
+      },
+      {
+        type: "text",
+        eyebrow: "Measuring",
+        heading: "How we measured it.",
+        body: ["The tools, the time window, and what counted as a success."],
+        draft: true,
+      },
+      {
+        type: "prototype",
+        url: "https://love-model-19724475.figma.site/",
+        heading: "Try the new editor.",
+        body: "The redesigned editing page as a clickable prototype: placing fields and assigning them to recipients before a document goes out.",
+        width: 1440,
+        height: 900,
+      },
+      {
+        type: "text",
+        eyebrow: "Looking back",
+        heading: "What I learned.",
+        body: ["Two or three lines on what you'd keep and what you'd do differently."],
+        draft: true,
+      },
+    ],
+  },
+];
+
+export const getStage = (id: string) => stages.find((s) => s.id === id);
+
+// The overview page.
+export const legalesign = {
+  eyebrow: "Legalesign · 2021 – Present",
+  title: "Console",
+  intro:
+    "Legalesign is a secure, regulated e-signature platform used by governments, councils and large organisations. I rebuilt the whole legacy product as Console, feature by feature, and over five years shipped more than 100 features and workflows. Rather than tell every project the same way, each stage of how I work is shown through the project that shows it best.",
+  facts: [
+    { label: "Role", value: "Design lead, product owner" },
+    { label: "Shipped", value: "100+ features and workflows" },
+    { label: "Team", value: "Led the design team for 3+ years" },
+  ],
+  problem: {
+    type: "points",
+    eyebrow: "The problem",
+    heading: "Customers wanted to roll it out wider, but their people couldn't use it.",
+    items: [
+      {
+        title: "Clients couldn't scale it",
+        body: "Large customers wanted to roll Legalesign out across their organisations, but new users couldn't work out how to use it.",
+      },
+      {
+        title: "Regulated, niche, high stakes",
+        body: "Government and enterprise users meant strict security and accessibility requirements, and workflows you won't find anywhere else.",
+      },
+    ],
+  } satisfies Block,
+  comparison: {
+    type: "comparison",
+    eyebrow: "Before → after",
+    heading: "Same product. Unrecognisable experience.",
+    items: [
+      {
+        id: "dashboard",
+        label: "Dashboard",
+        before: null,
+        after: "/work/dashboard.png",
+        caption:
+          "From a table of links to a hub: quick actions, a live document overview, ready-to-send templates and team activity.",
+      },
+      {
+        id: "editor",
+        label: "Editor",
+        before: null,
+        after: null,
+        caption: "Placing and assigning fields before sending, rebuilt to be faster and far harder to get wrong.",
+      },
+      {
+        id: "drafts",
+        label: "Sending & Drafts",
+        before: null,
+        after: null,
+        caption: "Admins set up drafts with locked, pre-filled settings, so everyday senders have less to fill in.",
+      },
+    ],
+  } satisfies Block,
+  // Every Console feature. `project` links the card to its page.
+  shipped: [
+    { title: "Dashboard", body: "A hub of quick actions, a live document overview and team activity." },
+    { title: "Sending flow", body: "The core flow for sending documents out for signing." },
+    { title: "Documents list", body: "Everything you've sent, and where each document is up to." },
+    { title: "Signer Lobby", body: "Multi-document, multi-recipient signing with approvals and identity checks.", project: "signer-lobby" },
+    { title: "Mobile Signing", body: "A mobile-first signing experience, designed to AAA accessibility." },
+    { title: "Bulk Sending", body: "Sending many documents out for signing at once, from a CSV." },
+    { title: "Reporting", body: "Usage data for org admins and team users to review and export." },
+    { title: "Workflow configuration", body: "Admin controls for how documents move through an organisation." },
+    { title: "Support Hub", body: "Customer support and ticketing for users and the support team.", project: "support-hub" },
+    { title: "Drafts", body: "Pre-filled, locked-down sending that admins set up for their teams.", project: "drafts" },
+    { title: "Template Editor", body: "Placing and assigning fields, faster and harder to get wrong.", project: "template-editor" },
+    { title: "Quick Send", body: "A streamlined first send that cut trial bounce and churn.", project: "quick-send" },
+  ] as { title: string; body: string; project?: string }[],
+  remit: {
+    type: "timeline",
+    eyebrow: "My remit",
+    heading: "From designer to product owner.",
+    items: [
+      {
+        when: "2021",
+        title: "Joining, and the first Console release",
+        body: "Joined Legalesign and started rebuilding the legacy product as Console, beginning with an MVP that matched the old product's core features.",
+        tags: ["MVP", "UX", "UI"],
+      },
+      {
+        when: "Two years",
+        title: "Rebuilding the product, feature by feature",
+        body: "Recreated the entire legacy product one epic at a time, while backend engineers rebuilt the platform to modern security standards. Every feature was researched, prototyped and tested with users before handover. I led the design team throughout.",
+        tags: ["Epics", "User testing", "Team lead"],
+      },
+      {
+        when: "Last 1–2 years",
+        title: "Product ownership: design and delivery",
+        body: "Without stepping away from design, I took on product owner duties, filling business needs and taking control of a larger part of the development process. I plan bi-weekly sprints in Jira, write the epics and tickets developers work from, and manage bugs and feature requests.",
+        tags: ["Product ownership", "Jira", "Figma Make"],
+      },
+    ],
+  } satisfies Block,
+};

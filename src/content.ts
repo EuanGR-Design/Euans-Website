@@ -63,7 +63,7 @@ export const milestones: {
     title: "Rebuilding the product",
     org: "Legalesign",
     body: "Created the design system and rebuilt the whole product in it, leading the design team for 3+ years.",
-    link: { href: "/work/console", label: "Console" },
+    link: { href: "/work/legalesign", label: "Console" },
   },
   {
     when: "Last 1–2 years",
@@ -252,7 +252,7 @@ export const brand = {
 // Work that slides past under the home page statement. Each tile links to
 // its project.
 export const showreel = [
-  { src: "/work/dashboard.png", w: 1452, h: 1073, alt: "Console dashboard", href: "/work/console" },
+  { src: "/work/dashboard.png", w: 1452, h: 1073, alt: "Console dashboard", href: "/work/legalesign" },
   { src: "/brand/p8.jpg", w: 1600, h: 1131, alt: "Legalesign primary logo", href: "/work/rebrand" },
   { src: "/work/lobby-batch.png", w: 1516, h: 1100, alt: "Signer Lobby", href: "/work/signer-lobby" },
   { src: "/brand/p25.jpg", w: 1600, h: 1131, alt: "Legalesign illustration style", href: "/work/rebrand" },

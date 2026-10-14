@@ -46,8 +46,9 @@ type JourneyStep = {
   written: boolean;
 };
 
+// `draft: true` shows the copy as a muted prompt until the real words are in.
 export type Block =
-  | { type: "text"; eyebrow?: string; heading: string; body: string[] }
+  | { type: "text"; eyebrow?: string; heading: string; body: string[]; draft?: boolean }
   | { type: "points"; eyebrow?: string; heading: string; items: { title: string; body: string }[] }
   | { type: "image"; image: Img }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
@@ -75,7 +76,41 @@ export type Block =
   | { type: "timeline"; eyebrow?: string; heading: string; items: { when: string; title: string; body: string; tags: string[] }[] }
   | { type: "brand" }
   // A video player (Vimeo, Adobe) or another embeddable page, shown 16:9.
-  | { type: "embed"; eyebrow?: string; heading: string; body?: string; items: { url: string; title: string; caption?: string }[] };
+  | { type: "embed"; eyebrow?: string; heading: string; body?: string; items: { url: string; title: string; caption?: string }[] }
+  // Blocks used by the Legalesign stage pages (src/process.ts).
+  | { type: "quotes"; eyebrow?: string; heading: string; items: { quote: string; who: string }[]; draft?: boolean }
+  | {
+      type: "personas";
+      eyebrow?: string;
+      heading: string;
+      items: { name: string; role: string; goals: string; frustrations: string }[];
+      draft?: boolean;
+    }
+  | {
+      type: "journey-map";
+      eyebrow?: string;
+      heading: string;
+      stages: string[];
+      // One row per lane, one cell per stage.
+      lanes: { label: string; cells: string[] }[];
+      draft?: boolean;
+    }
+  | { type: "insights"; eyebrow?: string; heading: string; items: { found: string; so: string }[]; draft?: boolean }
+  | {
+      type: "options";
+      eyebrow?: string;
+      heading: string;
+      items: { title: string; body: string; image: Img | null; chosen?: boolean }[];
+      draft?: boolean;
+    }
+  | {
+      type: "rounds";
+      eyebrow?: string;
+      heading: string;
+      items: { heard: string; changed: string; image: Img | null }[];
+      draft?: boolean;
+    }
+  | { type: "stats"; eyebrow?: string; heading: string; items: { value: string; label: string }[]; draft?: boolean };
 
 export type Project = {
   slug: string;
@@ -91,6 +126,8 @@ export type Project = {
   featured?: boolean;
   // Coming-soon projects show as a card but have no page yet.
   comingSoon?: boolean;
+  // Cards link here instead of to a page of their own.
+  href?: string;
   intro: string;
   blocks: Block[];
 };
@@ -129,98 +166,33 @@ const dashboard: Img = {
 
 export const projects: Project[] = [
   {
+    // Console is told across the Legalesign pages (src/process.ts), so its
+    // card leads there instead of to a page of its own.
     slug: "console",
     era: "legalesign",
     title: "Console",
-    summary: "Rebuilding a legacy enterprise e-signature product, feature by feature.",
+    summary: "Five years of features, and how I worked on each stage of them.",
     year: "2021 – Present",
     role: "Design lead, product owner",
-    tags: ["Product design", "Design system", "Research"],
+    tags: ["Product design", "Research", "Product ownership"],
     cover: dashboard,
     featured: true,
+    href: "/work/legalesign",
+    intro: "",
+    blocks: [],
+  },
+  {
+    slug: "support-hub",
+    era: "legalesign",
+    title: "Support Hub",
+    summary: "One place for customers and the support team to find answers and track tickets.",
+    role: "Design lead",
+    tags: ["Research", "Service design", "UX"],
+    cover: null,
     intro:
-      "Legalesign is a secure, regulated e-signature platform used by governments, councils and large organisations. Over two years I recreated the whole legacy product in a new system, Console, built on a design system I created and matched 1:1 with code.",
+      "A customer support and ticketing hub serving both Legalesign users and the internal support team.",
     blocks: [
-      {
-        type: "points",
-        eyebrow: "The problem",
-        heading: "Customers wanted to roll it out wider, but their people couldn't use it.",
-        items: [
-          {
-            title: "Clients couldn't scale it",
-            body: "Large customers wanted to roll Legalesign out across their organisations, but new users couldn't work out how to use it.",
-          },
-          {
-            title: "Regulated, niche, high stakes",
-            body: "Government and enterprise users meant strict security and accessibility requirements, and workflows you won't find anywhere else.",
-          },
-        ],
-      },
-      {
-        type: "comparison",
-        eyebrow: "Before → after",
-        heading: "Same product. Unrecognisable experience.",
-        items: [
-          {
-            id: "dashboard",
-            label: "Dashboard",
-            before: null,
-            after: "/work/dashboard.png",
-            caption:
-              "From a table of links to a hub: quick actions, a live document overview, ready-to-send templates and team activity.",
-          },
-          {
-            id: "editor",
-            label: "Editor",
-            before: null,
-            after: null,
-            caption: "Placing and assigning fields before sending, rebuilt to be faster and far harder to get wrong.",
-          },
-          {
-            id: "drafts",
-            label: "Sending & Drafts",
-            before: null,
-            after: null,
-            caption: "Admins set up drafts with locked, pre-filled settings, so everyday senders have less to fill in.",
-          },
-        ],
-      },
-      {
-        type: "timeline",
-        eyebrow: "How it came together",
-        heading: "From one brief to a whole product.",
-        items: [
-          {
-            when: "Foundation",
-            title: "Design system: paired 1:1 with code",
-            body: "Created and maintain the company design system in Figma, matched one-to-one with the frontend component library. Once it was in place, new features were like building with blocks. I also built and expanded a custom icon library, twice, for interactions you won't find in any off-the-shelf set.",
-            tags: ["Figma", "Components", "Tokens", "Icons"],
-          },
-          {
-            when: "Two years",
-            title: "Rebuilding the legacy product, feature by feature",
-            body: "Recreated the entire legacy enterprise software in the new system, one epic at a time, while backend engineers rebuilt the platform to modern security standards. Every feature was researched, prototyped and tested with users before handover. I led the design team throughout.",
-            tags: ["Epics", "User testing", "Team lead"],
-          },
-          {
-            when: "Last 1–2 years",
-            title: "Product ownership: design and delivery",
-            body: "Without stepping away from design, I gradually took on product owner duties, filling business needs and taking control of a larger part of the development process. I plan bi-weekly sprints in Jira, write the epics and tickets developers work from, and manage bugs and feature requests.",
-            tags: ["Product ownership", "Jira", "Figma Make"],
-          },
-        ],
-      },
-      {
-        type: "points",
-        eyebrow: "Also shipped",
-        heading: "More products and workflows inside Console.",
-        items: [
-          { title: "Mobile Signing", body: "A new mobile-first signing experience, designed to AAA accessibility." },
-          { title: "Bulk Sending", body: "A separate app for sending many documents out for signing at once." },
-          { title: "Reporting", body: "A site for org admins and team users to review and export product usage data." },
-          { title: "Support Hub", body: "A customer support and ticketing hub serving both users and the internal support team." },
-        ],
-      },
+      { type: "journey", problem: "Customers couldn't find answers on their own, so simple questions turned into support tickets.", evidence: evidenceHint, steps: journeySteps("What shipped, and what changed for customers and the support team.") },
     ],
   },
   {
@@ -618,4 +590,7 @@ export const projects: Project[] = [
 ];
 
 export const liveProjects = projects.filter((p) => !p.comingSoon);
-export const getProject = (slug: string) => liveProjects.find((p) => p.slug === slug);
+// Projects with a /work/<slug> page of their own.
+export const pageProjects = liveProjects.filter((p) => !p.href);
+export const getProject = (slug: string) => pageProjects.find((p) => p.slug === slug);
+export const projectHref = (p: Project) => p.href ?? `/work/${p.slug}`;
