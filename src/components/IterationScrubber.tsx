@@ -17,11 +17,16 @@ const prompts = {
 export function IterationScrubber({ items }: { items: Iteration[] }) {
   const last = items.length - 1;
   const [index, setIndex] = useState(0);
+  // The screen being left stays fully visible underneath while the next one
+  // fades in over it, so the change never dips to the dark background.
+  const [prev, setPrev] = useState(0);
   // Only load screens that have been shown, plus their neighbours.
   const [seen, setSeen] = useState(() => new Set([0, 1]));
 
   const go = (i: number) => {
     const next = Math.max(0, Math.min(last, i));
+    if (next === index) return;
+    setPrev(index);
     setIndex(next);
     setSeen((s) => (s.has(next - 1) && s.has(next) && s.has(next + 1) ? s : new Set([...s, next - 1, next, next + 1])));
   };
@@ -63,7 +68,9 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
               fill
               sizes="(min-width: 1280px) 1200px, 100vw"
               priority={i === 0}
-              className={`object-cover object-top transition-opacity duration-300 ${i === index ? "opacity-100" : "opacity-0"}`}
+              className={`object-cover object-top ${
+                i === index ? "z-10 opacity-100 transition-opacity duration-300" : i === prev ? "opacity-100" : "opacity-0"
+              }`}
             />
           ) : null,
         )}
