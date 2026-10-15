@@ -340,7 +340,7 @@ function BlockView({
             </Reveal>
           )}
           <div className="mt-12">
-            <IterationScrubber items={b.items} />
+            <IterationScrubber items={b.items} prototypeUrl={b.prototypeUrl} />
           </div>
         </Section>
       );

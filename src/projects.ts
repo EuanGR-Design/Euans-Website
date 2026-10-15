@@ -120,6 +120,8 @@ export type Block =
       body?: string;
       // `pins` mark where on the screen things changed, in percent of the frame.
       items: { image: Img; stage?: string; change?: string; feedback?: string; pins?: { x: number; y: number; note: string }[] }[];
+      // Offered as "Try the prototype" on the final version. Null shows it as coming soon.
+      prototypeUrl?: string | null;
     };
 
 export type Project = {

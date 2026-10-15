@@ -391,6 +391,7 @@ export const stages: Stage[] = [
         heading: "From first prototype to the final design.",
         body: "Drag the bar to step through every version of Quick Send, oldest first, and see what each round of feedback changed.",
         items: quickSendIterations,
+        prototypeUrl: null,
       },
       {
         type: "rounds",

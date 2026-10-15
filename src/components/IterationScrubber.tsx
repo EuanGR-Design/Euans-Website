@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Img } from "@/projects";
 
 // A comment pin on the screen, at x and y percent of the frame.
@@ -16,7 +17,14 @@ const prompts = {
 };
 
 /** Screens stacked in one frame, with a blue scrubber that steps through them. */
-export function IterationScrubber({ items }: { items: Iteration[] }) {
+export function IterationScrubber({
+  items,
+  prototypeUrl,
+}: {
+  items: Iteration[];
+  // Offered on the final version. Null shows the card with the link still to come.
+  prototypeUrl?: string | null;
+}) {
   const last = items.length - 1;
   const [index, setIndex] = useState(0);
   // The screen being left stays fully visible underneath while the next one
@@ -31,6 +39,14 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
   const showPopup = hover || dragging || focused;
   // Which comment pin is open on the current screen, if any.
   const [openPin, setOpenPin] = useState<number | null>(null);
+  // Full-screen view, shown as a modal over a faded page.
+  const [full, setFull] = useState(false);
+  const [inlineHeight, setInlineHeight] = useState<number>();
+  const inlineRef = useRef<HTMLDivElement>(null);
+  const openButton = useRef<HTMLButtonElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+  // The "Try the prototype" card on the final version, until it's dismissed.
+  const [promptClosed, setPromptClosed] = useState(false);
 
   useEffect(() => {
     if (!dragging) return;
@@ -43,12 +59,39 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
     };
   }, [dragging]);
 
+  // Escape closes an open pin first, then full screen.
   useEffect(() => {
-    if (openPin === null) return;
-    const close = (e: KeyboardEvent) => e.key === "Escape" && setOpenPin(null);
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [openPin]);
+    if (openPin === null && !full) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (openPin !== null) setOpenPin(null);
+      else closeFull();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  useEffect(() => {
+    if (!full) return;
+    const root = document.documentElement;
+    const before = root.style.overflow;
+    root.style.overflow = "hidden";
+    closeButton.current?.focus();
+    return () => {
+      root.style.overflow = before;
+    };
+  }, [full]);
+
+  const openFull = () => {
+    // Hold the page's place so nothing jumps while the scrubber is in the modal.
+    setInlineHeight(inlineRef.current?.offsetHeight);
+    setFull(true);
+  };
+  const closeFull = () => {
+    setFull(false);
+    setInlineHeight(undefined);
+    requestAnimationFrame(() => openButton.current?.focus());
+  };
 
   const go = (i: number) => {
     const next = Math.max(0, Math.min(last, i));
@@ -79,9 +122,15 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
 
   const ratio = items[0].image.w / items[0].image.h;
 
-  return (
+  const atEnd = index === last && prototypeUrl !== undefined && !promptClosed;
+
+  const scrubber = (
     // Sized so the screen and the bar fit on screen together.
-    <div className="mx-auto" style={{ maxWidth: `calc(68vh * ${ratio})` }}>
+    <div
+      className="mx-auto w-full"
+      style={full ? { width: `min(100%, calc((100dvh - 19rem) * ${ratio}))` } : { maxWidth: `calc(68vh * ${ratio})` }}
+    >
+      <div className="relative">
       <div
         className="relative isolate overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl"
         style={{ aspectRatio: `${ratio}` }}
@@ -143,6 +192,54 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
             );
           })}
         </div>
+      </div>
+
+      {!full && (
+        <button
+          ref={openButton}
+          type="button"
+          onClick={openFull}
+          className="absolute top-3 right-3 z-30 flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-xs font-medium text-white shadow-lg backdrop-blur transition-colors hover:bg-black/85"
+        >
+          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+            <path d="M6 2H2v4M10 2h4v4M6 14H2v-4M10 14h4v-4" />
+          </svg>
+          Full screen
+        </button>
+      )}
+
+      {/* At the final version, invite people to try the real thing. */}
+      {atEnd && (
+        <div className="prompt-in mt-4 rounded-2xl border border-line bg-bg p-5 shadow-2xl md:absolute md:right-4 md:bottom-4 md:z-30 md:mt-0 md:w-72">
+          <div className="flex items-start justify-between gap-3">
+            <p className="eyebrow">The final design</p>
+            <button
+              type="button"
+              onClick={() => setPromptClosed(true)}
+              aria-label="Dismiss"
+              className="-mt-1 -mr-1 rounded-full px-2 text-muted hover:text-fg"
+            >
+              ×
+            </button>
+          </div>
+          <p className="mt-2 text-lg font-semibold">Try the prototype</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted">Click through the finished Quick Send yourself.</p>
+          {prototypeUrl ? (
+            <a
+              href={prototypeUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            >
+              Open the prototype ↗
+            </a>
+          ) : (
+            <span className="mt-4 inline-flex cursor-not-allowed rounded-full border border-dashed border-line px-4 py-2 text-sm text-muted italic">
+              Prototype link coming soon
+            </span>
+          )}
+        </div>
+      )}
       </div>
 
       <div className="relative mt-6" onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
@@ -214,6 +311,42 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
         <p className={`mb-4 text-xs ${item.stage ? "text-accent" : "text-muted italic"}`}>{item.stage ?? prompts.stage}</p>
         {details}
       </div>
+    </div>
+  );
+
+  if (!full) return <div ref={inlineRef}>{scrubber}</div>;
+
+  return (
+    <div style={{ height: inlineHeight }}>
+      {createPortal(
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Quick Send iterations, full screen"
+          className="modal-in fixed inset-0 z-[100] flex bg-black/60 p-3 backdrop-blur-sm md:p-6"
+          onClick={closeFull}
+        >
+          <div
+            className="flex flex-1 flex-col overflow-y-auto rounded-3xl border border-line bg-bg p-4 shadow-2xl md:p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <p className="eyebrow">Quick Send · {items.length} versions</p>
+              <button
+                ref={closeButton}
+                type="button"
+                onClick={closeFull}
+                aria-label="Close full screen"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-line text-lg transition-colors hover:border-accent"
+              >
+                ×
+              </button>
+            </div>
+            <div className="flex flex-1 flex-col justify-center">{scrubber}</div>
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }
