@@ -79,7 +79,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
       <div className="relative mt-6">
         {/* The pop-up above the handle. It slides from hanging right to hanging left so it never leaves the bar. */}
         <div
-          className="pointer-events-none absolute bottom-full mb-4 hidden w-80 md:block"
+          className="pointer-events-none absolute bottom-full mb-4 hidden w-96 md:block"
           style={{ left: `calc(${p} * (100% - 24px) + 12px)`, transform: `translateX(-${p * 100}%)` }}
           aria-hidden
         >
