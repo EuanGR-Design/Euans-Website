@@ -9,6 +9,7 @@ import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
 import { Prototype } from "./Prototype";
 import { Brand } from "./Brand";
+import { Video } from "./Video";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -103,6 +104,25 @@ function BlockView({
               />
             ))}
           </div>
+        </Section>
+      );
+    case "video":
+      return (
+        <Section>
+          <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              {b.eyebrow && <p className="eyebrow">{b.eyebrow}</p>}
+              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">
+                {b.heading}
+              </h2>
+            </div>
+            {b.body && <p className="max-w-sm text-muted">{b.body}</p>}
+          </Reveal>
+          <Reveal className="mt-12">
+            <div className="overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl">
+              <Video src={b.src} poster={b.poster} label={b.label} />
+            </div>
+          </Reveal>
         </Section>
       );
     case "comparison":

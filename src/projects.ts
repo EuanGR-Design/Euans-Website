@@ -51,6 +51,8 @@ export type Block =
   | { type: "text"; eyebrow?: string; heading: string; body: string[]; draft?: boolean }
   | { type: "points"; eyebrow?: string; heading: string; items: { title: string; body: string }[] }
   | { type: "image"; image: Img }
+  // A silent screen recording from public/, with a still from it as the poster.
+  | { type: "video"; eyebrow?: string; heading: string; body?: string; src: string; poster: string; label: string }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
   | {
       type: "comparison";
@@ -239,10 +241,24 @@ export const projects: Project[] = [
     summary: "A streamlined first send that cut trial bounce and churn.",
     role: "Design lead",
     tags: ["Onboarding", "Conversion", "UX"],
-    cover: null,
+    cover: {
+      src: "/work/quick-send/send-flow-poster.jpg",
+      w: 1920,
+      h: 1068,
+      alt: "The Quick Send editor: a recipient on the left and a signature field placed on the document",
+    },
     intro:
       "A new send flow built around trial users. It put the user experience first, so people exploring the product during their trial got further, were less confused, and more of them signed up.",
     blocks: [
+      {
+        type: "video",
+        eyebrow: "In production",
+        heading: "Upload, add recipients, place fields, send.",
+        body: "The whole Quick Send flow on the live product: upload a document, add who's signing, place their fields and send it, all without making a template first.",
+        src: "/work/quick-send/send-flow.mp4",
+        poster: "/work/quick-send/send-flow-poster.jpg",
+        label: "Screen recording of sending a document with Quick Send, from upload to sent",
+      },
       { type: "journey", problem: "Trial users were bouncing before they'd sent anything, and the send flow was the reason.", evidence: evidenceHint, steps: journeySteps("Trial users explored more of the product and more of them signed up.") },
     ],
   },
