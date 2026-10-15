@@ -330,8 +330,11 @@ function BlockView({
             {b.items.map((r, i) => (
               <Reveal key={i} delay={0.06 * i}>
                 <li className="grid gap-6 rounded-3xl border border-line bg-raised p-6 md:grid-cols-12 md:p-8">
-                  <span className="font-mono text-sm text-accent md:col-span-2">Round {i + 1}</span>
-                  <div className={`space-y-5 md:col-span-4 ${draftText(b.draft)}`}>
+                  <div className="md:col-span-2">
+                    <span className="font-mono text-sm text-accent">Round {i + 1}</span>
+                    {r.title && <p className="mt-2 text-sm leading-snug text-muted">{r.title}</p>}
+                  </div>
+                  <div className={`space-y-5 md:col-span-5 ${draftText(b.draft)}`}>
                     <div>
                       <p className="eyebrow not-italic">Testers struggled with</p>
                       <p className="mt-2 leading-relaxed">{r.heard}</p>
@@ -341,7 +344,7 @@ function BlockView({
                       <p className="mt-2 leading-relaxed">{r.changed}</p>
                     </div>
                   </div>
-                  <div className="overflow-hidden rounded-2xl border border-line md:col-span-6">
+                  <div className="self-start overflow-hidden rounded-2xl border border-line md:col-span-5">
                     <Shot img={r.image} label={`Round ${i + 1}, before and after`} />
                   </div>
                 </li>
@@ -352,17 +355,20 @@ function BlockView({
       );
     case "iterations":
       return (
-        <Section>
-          <Heading eyebrow={b.eyebrow} heading={b.heading} />
-          {b.body && (
-            <Reveal>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
-            </Reveal>
-          )}
-          <div className="mt-12">
-            <IterationScrubber items={b.items} prototypeUrl={b.prototypeUrl} />
+        <section className="border-t border-line py-20 md:py-28">
+          <div className="container-x">
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
           </div>
-        </Section>
+          {/* Wider than the page column, so the screens get all the room they can. */}
+          <div className="mx-auto mt-12 max-w-[1720px] px-3 md:px-6">
+            <IterationScrubber items={b.items} />
+          </div>
+        </section>
       );
     case "stats":
       return (

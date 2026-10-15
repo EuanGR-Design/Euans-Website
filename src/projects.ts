@@ -109,7 +109,8 @@ export type Block =
       type: "rounds";
       eyebrow?: string;
       heading: string;
-      items: { heard: string; changed: string; image: Img | null }[];
+      // `title` names the round, for example which versions it covers.
+      items: { title?: string; heard: string; changed: string; image: Img | null }[];
       draft?: boolean;
     }
   | { type: "stats"; eyebrow?: string; heading: string; items: { value: string; label: string }[]; draft?: boolean }
@@ -121,9 +122,15 @@ export type Block =
       heading: string;
       body?: string;
       // `pins` mark where on the screen things changed, in percent of the frame.
-      items: { image: Img; stage?: string; change?: string; feedback?: string; pins?: { x: number; y: number; note: string }[] }[];
-      // Offered as "Try the prototype" on the final version. Null shows it as coming soon.
-      prototypeUrl?: string | null;
+      // `prototype` offers a clickable prototype of that version in a card.
+      items: {
+        image: Img;
+        stage?: string;
+        change?: string;
+        feedback?: string;
+        pins?: { x: number; y: number; note: string }[];
+        prototype?: { url: string; body: string };
+      }[];
     };
 
 export type Project = {
