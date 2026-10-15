@@ -32,7 +32,7 @@ export type Stage = {
 };
 
 // What each Quick Send version changed, keyed by version number (1 is the
-// oldest, 24 the final design). Versions left out show prompts in the pop-up.
+// oldest, 23 the final design). Versions left out show prompts in the pop-up.
 const declutter = "Decluttering";
 const signatureOnly = "Signature only";
 const recipientsFirst = "Recipients first";
@@ -137,25 +137,20 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
   },
   20: {
     stage: refining,
-    change: "The sidebar was simplified further.",
-    feedback: "The UI could still be simpler.",
-  },
-  21: {
-    stage: refining,
     change: "The icon rail went, leaving the sidebar as a list of your recipients. An edit button appears when you hover a card.",
     feedback: "Keep simplifying the sidebar.",
   },
-  22: {
+  21: {
     stage: refining,
     change: "Every recipient shows in the sidebar at all times with their signature field. Other field types sit under More Field Types.",
     feedback: "With several recipients, it wasn't clear that each one needed fields placing.",
   },
-  23: {
+  22: {
     stage: refining,
     change: "Requires Fields moved into the sidebar, and selecting a recipient expands their card to show all their fields.",
     feedback: "Requires Fields scrolled away with the document, and most people send more than a signature, so More Field Types was an extra click.",
   },
-  24: {
+  23: {
     stage: "Final design",
     change: "Red alerts, three default fields (more in team settings), recipients and document settings in modals, plus undo and redo.",
     feedback: "Yellow alerts didn't read as a must-do, and users asked for undo and redo.",
@@ -243,19 +238,16 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
     { x: 90, y: 8, note: "Send stands alone as the final action." },
   ],
   20: [
-    { x: 20, y: 80, note: "The sidebar, simplified further." },
-  ],
-  21: [
     { x: 11, y: 10, note: "The icon rail is gone. The sidebar is just your recipients." },
   ],
-  22: [
+  21: [
     { x: 19, y: 14, note: "Every recipient shown at all times, with More Field Types for the rest." },
   ],
-  23: [
+  22: [
     { x: 19, y: 8, note: "Requires Fields now lives in the sidebar." },
     { x: 12, y: 30, note: "Selecting a recipient expands their card to show all their fields." },
   ],
-  24: [
+  23: [
     { x: 17, y: 26, note: "Alerts turned red, so they read as a must-do." },
     { x: 12, y: 37, note: "Three default fields. More can be switched on in team settings." },
     { x: 20, y: 92, note: "Recipients and document settings open in modals." },
@@ -264,12 +256,12 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
 };
 
 // Every Quick Send screen, oldest first, in public/work/quick-send/iterations/.
-const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 24 }, (_, i) => ({
+const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 23 }, (_, i) => ({
   image: {
     src: `/work/quick-send/iterations/${String(i + 1).padStart(2, "0")}.webp`,
     w: 2000,
     h: 1430,
-    alt: i === 23 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 24`,
+    alt: i === 22 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 23`,
   },
   ...quickSendDetails[i + 1],
   pins: quickSendPins[i + 1],
@@ -395,7 +387,7 @@ export const stages: Stage[] = [
     blocks: [
       {
         type: "iterations",
-        eyebrow: "24 versions",
+        eyebrow: "23 versions",
         heading: "From first prototype to the final design.",
         body: "Drag the bar to step through every version of Quick Send, oldest first, and see what each round of feedback changed.",
         items: quickSendIterations,
