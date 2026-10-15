@@ -55,7 +55,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
     // Sized so the screen and the bar fit on screen together.
     <div className="mx-auto" style={{ maxWidth: `calc(68vh * ${ratio})` }}>
       <div
-        className="relative overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl"
+        className="relative isolate overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl"
         style={{ aspectRatio: `${ratio}` }}
       >
         {items.map((it, i) =>
