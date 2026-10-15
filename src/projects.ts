@@ -110,7 +110,16 @@ export type Block =
       items: { heard: string; changed: string; image: Img | null }[];
       draft?: boolean;
     }
-  | { type: "stats"; eyebrow?: string; heading: string; items: { value: string; label: string }[]; draft?: boolean };
+  | { type: "stats"; eyebrow?: string; heading: string; items: { value: string; label: string }[]; draft?: boolean }
+  // Screens oldest to newest, stepped through with a scrubber. Leave out
+  // `stage`, `change` or `feedback` until they're written.
+  | {
+      type: "iterations";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      items: { image: Img; stage?: string; change?: string; feedback?: string }[];
+    };
 
 export type Project = {
   slug: string;

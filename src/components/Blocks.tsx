@@ -9,6 +9,7 @@ import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
 import { Prototype } from "./Prototype";
 import { Brand } from "./Brand";
+import { IterationScrubber } from "./IterationScrubber";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -327,6 +328,20 @@ function BlockView({
               </Reveal>
             ))}
           </ol>
+        </Section>
+      );
+    case "iterations":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <div className="mt-12">
+            <IterationScrubber items={b.items} />
+          </div>
         </Section>
       );
     case "stats":

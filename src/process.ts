@@ -31,6 +31,23 @@ export type Stage = {
   blocks: Block[];
 };
 
+// What each Quick Send version changed, keyed by version number (1 is the
+// oldest, 27 the final design). Versions left out show prompts in the pop-up.
+const quickSendDetails: Record<number, { stage?: string; change?: string; feedback?: string }> = {
+  // 1: { stage: "First prototype", change: "…", feedback: "…" },
+};
+
+// Every Quick Send screen, oldest first, in public/work/quick-send/iterations/.
+const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 27 }, (_, i) => ({
+  image: {
+    src: `/work/quick-send/iterations/${String(i + 1).padStart(2, "0")}.webp`,
+    w: 2000,
+    h: 1430,
+    alt: i === 26 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 27`,
+  },
+  ...quickSendDetails[i + 1],
+}));
+
 export const stages: Stage[] = [
   {
     id: "research",
@@ -150,8 +167,11 @@ export const stages: Stage[] = [
     why: "Quick Send went through the most rounds of prototypes and user feedback, so I use it to show how I iterate.",
     blocks: [
       {
-        type: "image",
-        image: { src: null, w: 1440, h: 900, alt: "The first Quick Send prototype", caption: "Where it started: the first prototype." },
+        type: "iterations",
+        eyebrow: "27 versions",
+        heading: "From first prototype to the final design.",
+        body: "Drag the bar to step through every version of Quick Send, oldest first, and see what each round of feedback changed.",
+        items: quickSendIterations,
       },
       {
         type: "rounds",
