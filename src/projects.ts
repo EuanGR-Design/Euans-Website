@@ -118,7 +118,8 @@ export type Block =
       eyebrow?: string;
       heading: string;
       body?: string;
-      items: { image: Img; stage?: string; change?: string; feedback?: string }[];
+      // `pins` mark where on the screen things changed, in percent of the frame.
+      items: { image: Img; stage?: string; change?: string; feedback?: string; pins?: { x: number; y: number; note: string }[] }[];
     };
 
 export type Project = {

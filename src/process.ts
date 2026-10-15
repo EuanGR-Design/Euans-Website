@@ -32,7 +32,7 @@ export type Stage = {
 };
 
 // What each Quick Send version changed, keyed by version number (1 is the
-// oldest, 26 the final design). Versions left out show prompts in the pop-up.
+// oldest, 24 the final design). Versions left out show prompts in the pop-up.
 const declutter = "Decluttering";
 const signatureOnly = "Signature only";
 const recipientsFirst = "Recipients first";
@@ -67,120 +67,212 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
   },
   6: {
     stage: signatureOnly,
-    change: "Shrank the thumbnails to focus on placing the one signature field.",
+    change: "Smaller thumbnails put the focus on placing the one signature field, and Go Straight to Send lights up once it's on the page.",
     feedback: "Refining the same one-field shortcut as version 5.",
   },
   7: {
     stage: signatureOnly,
-    change: "Another pass at the one-field shortcut.",
-    feedback: "Refining the same one-field shortcut as version 5.",
-  },
-  8: {
-    stage: signatureOnly,
-    change: "Another pass at the one-field shortcut.",
-    feedback: "Refining the same one-field shortcut as version 5.",
-  },
-  9: {
-    stage: signatureOnly,
     change: "Committed to one signature field: place it, then send. No branch off to full preparation.",
     feedback: "Most users place more than one field, so the shortcut added a step for them, and splitting the flow broke people's idea of preparing a document.",
   },
-  10: {
+  8: {
     stage: signatureOnly,
     change: "Removed the page count and \"created by\". Pages already show below, and the creator is always you.",
     feedback: "Keep cutting anything that doesn't help someone send.",
   },
-  11: {
+  9: {
     stage: recipientsFirst,
     change: "Add recipients first, then choose who you're placing a signature for. Next is gone, so Send is truly the last click.",
     feedback: "Users wanted to send to several people, not just one. With nothing saved as a template, there was no need for placeholder recipients.",
   },
-  12: {
+  10: {
     stage: recipientsFirst,
     change: "The recipient picker moved into a floating \"Placing signature for\" bar, and your saved signature sits in the sidebar, ready to drag on.",
     feedback: "Users didn't realise they had to click a recipient before placing fields, and missed the \"Sign upon sending\" toggle.",
   },
-  13: {
+  11: {
     stage: recipientsFirst,
     change: "Added a toggle between placing signatures and editing fields you've already placed.",
     feedback: "Well received, but still too busy and cluttered.",
   },
-  14: {
+  12: {
     stage: recipientsFirst,
     change: "Removed the Upload and Prepare header. Send Document sits at the top right, with the mode toggle above the recipients.",
     feedback: "The header took up space with information nobody needed.",
   },
-  15: {
+  13: {
     stage: recipientsFirst,
     change: "Removed sender signatures to cut the UI, and added an Edit button for recipients at the top of the sidebar.",
     feedback: "Users couldn't tell how to edit recipients once added. Few signed their own documents, and that need became a separate inbox feature.",
   },
-  16: {
+  14: {
     stage: recipientsFirst,
     change: "Panels stopped floating, the mode toggle went (where you click sets the mode), a Requires Fields label joined the header and Send moved up there too.",
     feedback: "Floating panels wasted space around the document, and users couldn't tell why Send was still disabled.",
   },
-  17: {
+  15: {
     stage: compose,
     change: "The mode toggle came back with a bigger Send Document button. Quick Send joined up with Compose, the embeddable editor.",
     feedback: "Choosing the mode by where you click was too fiddly, and users couldn't find Send.",
   },
-  18: {
+  16: {
     stage: compose,
     change: "Every control from the right sidebar moved into the left one, Compose's pattern. Sender fields were tried again.",
     feedback: "A customer embedding Compose had very little screen width, so everything had to fit one sidebar.",
   },
-  19: {
+  17: {
     stage: compose,
     change: "Requires Fields became a dropdown of who still needs fields, picking someone readies their signature field. Zoom and page controls were added.",
     feedback: "Sender fields cluttered it again, and the label didn't say which fields were needed or for whom.",
   },
-  20: {
+  18: {
     stage: compose,
     change: "Added alerts in the sidebar: a red dot on recipients who still need fields, and a caution icon on the field to place.",
     feedback: "Our main customer contact loved the dropdown, but wanted more alerts on screen.",
   },
-  21: {
+  19: {
     stage: refining,
     change: "Simplified the sidebar and moved Requires Fields to the left, leaving Send alone on the right as the final action.",
     feedback: "Requires Fields sat so close to Send that you could send by mistake.",
   },
-  22: {
+  20: {
     stage: refining,
-    change: "The sidebar became a simple list of your recipients, with an edit button that appears when you hover a card.",
+    change: "The sidebar was simplified further.",
+    feedback: "The UI could still be simpler.",
+  },
+  21: {
+    stage: refining,
+    change: "The icon rail went, leaving the sidebar as a list of your recipients. An edit button appears when you hover a card.",
     feedback: "Keep simplifying the sidebar.",
   },
-  23: {
+  22: {
     stage: refining,
     change: "Every recipient shows in the sidebar at all times with their signature field. Other field types sit under More Field Types.",
     feedback: "With several recipients, it wasn't clear that each one needed fields placing.",
   },
+  23: {
+    stage: refining,
+    change: "Requires Fields moved into the sidebar, and selecting a recipient expands their card to show all their fields.",
+    feedback: "Requires Fields scrolled away with the document, and most people send more than a signature, so More Field Types was an extra click.",
+  },
   24: {
-    stage: refining,
-    change: "Moved the Requires Fields dropdown into the sidebar with everything else.",
-    feedback: "It scrolled away with the document, and users wanted to see it at all times.",
-  },
-  25: {
-    stage: refining,
-    change: "Dropped the More Field Types click. Selecting a recipient expands their card to show all their fields.",
-    feedback: "Most people send more than a signature, so the extra click wasn't needed.",
-  },
-  26: {
     stage: "Final design",
     change: "Red alerts, three default fields (more in team settings), recipients and document settings in modals, plus undo and redo.",
     feedback: "Yellow alerts didn't read as a must-do, and users asked for undo and redo.",
   },
 };
 
+// Comment pins on each screen, at x and y percent of the frame, marking
+// where that version changed. Click one on the page to read its note.
+const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = {
+  1: [
+    { x: 6, y: 58, note: "Extra field types now sit behind More Field Types." },
+    { x: 90, y: 13, note: "This sidebar now switches to the selected field's details." },
+  ],
+  2: [
+    { x: 12, y: 13, note: "Minimised and Advanced toggles: choose a stripped-back screen or every feature." },
+  ],
+  3: [
+    { x: 8, y: 33, note: "Just one signature field." },
+    { x: 8, y: 55, note: "Page previews shown by default, to keep the focus on the document." },
+    { x: 88, y: 18, note: "Advanced moved to the right, so what you need first is on the left." },
+  ],
+  4: [
+    { x: 12, y: 30, note: "Large page thumbnails take over the left panel." },
+    { x: 62, y: 94, note: "Skip placing fields: recipients could sign anywhere. Testing proved this wrong." },
+  ],
+  5: [
+    { x: 50, y: 82, note: "One signature field, then straight to Send." },
+    { x: 95, y: 6, note: "Or press Next for full preparation with more fields." },
+  ],
+  6: [
+    { x: 10, y: 30, note: "Go Straight to Send lights up once the field is placed." },
+    { x: 45, y: 51, note: "The placed signature field." },
+    { x: 93, y: 70, note: "Thumbnails shrunk and moved aside." },
+  ],
+  7: [
+    { x: 8, y: 19, note: "Place the one signature field." },
+    { x: 94, y: 7, note: "Then send. No branch off to full preparation." },
+  ],
+  8: [
+    { x: 90, y: 15, note: "Page count and \"created by\" removed." },
+  ],
+  9: [
+    { x: 7, y: 32, note: "Add recipients first, then choose who you're placing a signature for." },
+    { x: 92, y: 36, note: "A \"Sign upon sending\" toggle for the sender. Users missed it." },
+    { x: 94, y: 7, note: "Next is gone, so Send is the last click." },
+  ],
+  10: [
+    { x: 60, y: 14, note: "The recipient picker moved into a floating \"Placing signature for\" bar." },
+    { x: 93, y: 42, note: "Your saved signature, ready to drag onto the page." },
+  ],
+  11: [
+    { x: 40, y: 14, note: "A toggle between placing signatures and editing placed fields." },
+  ],
+  12: [
+    { x: 10, y: 7, note: "The mode toggle now sits above the recipients." },
+    { x: 93, y: 7, note: "Upload and Prepare header gone. Send Document sits inline here." },
+  ],
+  13: [
+    { x: 16, y: 13, note: "An Edit button for recipients." },
+    { x: 90, y: 29, note: "Sender signatures removed. Just your details remain." },
+  ],
+  14: [
+    { x: 10, y: 15, note: "Panels no longer float, and the mode toggle is gone." },
+    { x: 57, y: 4, note: "A Requires Fields label in the header." },
+    { x: 96, y: 4, note: "Send moved up into the header." },
+  ],
+  15: [
+    { x: 21, y: 7, note: "The mode toggle is back." },
+    { x: 88, y: 7, note: "A bigger Send Document button, so nobody loses it." },
+  ],
+  16: [
+    { x: 15, y: 8, note: "Sender fields, tried again." },
+    { x: 15, y: 45, note: "Every control now lives in the left sidebar, so it fits a narrow embed." },
+  ],
+  17: [
+    { x: 91, y: 4, note: "Requires Fields is now a dropdown of who still needs fields." },
+    { x: 80, y: 95, note: "Zoom, fit and page controls." },
+  ],
+  18: [
+    { x: 21, y: 16, note: "A red dot on recipients who still need fields." },
+    { x: 18, y: 33, note: "A caution icon on the field to place." },
+  ],
+  19: [
+    { x: 37, y: 10, note: "Requires Fields moved left, away from Send." },
+    { x: 90, y: 8, note: "Send stands alone as the final action." },
+  ],
+  20: [
+    { x: 20, y: 80, note: "The sidebar, simplified further." },
+  ],
+  21: [
+    { x: 11, y: 10, note: "The icon rail is gone. The sidebar is just your recipients." },
+  ],
+  22: [
+    { x: 19, y: 14, note: "Every recipient shown at all times, with More Field Types for the rest." },
+  ],
+  23: [
+    { x: 19, y: 8, note: "Requires Fields now lives in the sidebar." },
+    { x: 12, y: 30, note: "Selecting a recipient expands their card to show all their fields." },
+  ],
+  24: [
+    { x: 17, y: 26, note: "Alerts turned red, so they read as a must-do." },
+    { x: 12, y: 37, note: "Three default fields. More can be switched on in team settings." },
+    { x: 20, y: 92, note: "Recipients and document settings open in modals." },
+    { x: 27, y: 96, note: "Undo and redo." },
+  ],
+};
+
 // Every Quick Send screen, oldest first, in public/work/quick-send/iterations/.
-const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 26 }, (_, i) => ({
+const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 24 }, (_, i) => ({
   image: {
     src: `/work/quick-send/iterations/${String(i + 1).padStart(2, "0")}.webp`,
     w: 2000,
     h: 1430,
-    alt: i === 25 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 26`,
+    alt: i === 23 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 24`,
   },
   ...quickSendDetails[i + 1],
+  pins: quickSendPins[i + 1],
 }));
 
 export const stages: Stage[] = [
@@ -303,7 +395,7 @@ export const stages: Stage[] = [
     blocks: [
       {
         type: "iterations",
-        eyebrow: "26 versions",
+        eyebrow: "24 versions",
         heading: "From first prototype to the final design.",
         body: "Drag the bar to step through every version of Quick Send, oldest first, and see what each round of feedback changed.",
         items: quickSendIterations,

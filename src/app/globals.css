@@ -142,3 +142,13 @@ body {
 .scrubber:focus-visible::-moz-range-thumb {
   box-shadow: 0 0 0 1px var(--color-accent), 0 0 0 6px rgb(61 91 255 / 0.3);
 }
+
+/* Comment pins on the scrubber screens fade in with each version. */
+.pin-layer {
+  animation: pin-in 0.3s ease-out 0.15s both;
+}
+@keyframes pin-in {
+  from {
+    opacity: 0;
+  }
+}
