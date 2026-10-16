@@ -52,7 +52,8 @@ export type Block =
   | { type: "points"; eyebrow?: string; heading: string; items: { title: string; body: string }[] }
   | { type: "image"; image: Img }
   // A silent screen recording from public/, with a still from it as the poster.
-  | { type: "video"; eyebrow?: string; heading: string; body?: string; src: string; poster: string; label: string }
+  // `id` lets other parts of the page link to it, as #id.
+  | { type: "video"; id?: string; eyebrow?: string; heading: string; body?: string; src: string; poster: string; label: string }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
   | {
       type: "comparison";
@@ -130,7 +131,7 @@ export type Block =
         change?: string;
         feedback?: string;
         pins?: { x: number; y: number; note: string }[];
-        prototype?: { body: string; links: { label: string; url: string }[] };
+        prototype?: { title?: string; body: string; links: { label: string; url: string }[] };
       }[];
     };
 

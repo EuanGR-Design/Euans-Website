@@ -8,7 +8,8 @@ import type { Img } from "@/projects";
 // A comment pin on the screen, at x and y percent of the frame.
 export type Pin = { x: number; y: number; note: string };
 // Clickable prototypes of a version, offered in a card while it's showing.
-export type Prototype = { body: string; links: { label: string; url: string }[] };
+// A link starting with # scrolls to that part of the page instead.
+export type Prototype = { title?: string; body: string; links: { label: string; url: string }[] };
 export type Iteration = {
   image: Img;
   stage?: string;
@@ -160,20 +161,29 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
             ×
           </button>
         </div>
-        <p className="mt-2 text-lg font-semibold">Try the prototype</p>
+        <p className="mt-2 text-lg font-semibold">{prototype.title ?? "Try the prototype"}</p>
         <p className="mt-1 text-sm leading-relaxed text-muted">{prototype.body}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           {prototype.links.map((link, i) => (
             <a
               key={link.url}
               href={link.url}
-              target="_blank"
-              rel="noreferrer"
+              {...(link.url.startsWith("#")
+                ? {
+                    onClick: (e: React.MouseEvent) => {
+                      e.preventDefault();
+                      if (full) closeFull();
+                      requestAnimationFrame(() =>
+                        document.querySelector(link.url)?.scrollIntoView({ behavior: "smooth" }),
+                      );
+                    },
+                  }
+                : { target: "_blank", rel: "noreferrer" })}
               className={`inline-flex rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 i === 0 ? "bg-accent text-white hover:opacity-90" : "border border-line hover:border-accent"
               }`}
             >
-              {link.label} ↗
+              {link.label} {link.url.startsWith("#") ? "↓" : "↗"}
             </a>
           ))}
         </div>

@@ -109,7 +109,7 @@ function BlockView({
       );
     case "video":
       return (
-        <Section>
+        <Section id={b.id}>
           <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               {b.eyebrow && <p className="eyebrow">{b.eyebrow}</p>}

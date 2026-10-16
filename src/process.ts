@@ -276,7 +276,7 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
 
 // Clickable prototypes of Quick Send, keyed by the version they show. A
 // version can have more than one, such as the screen alone and the full flow.
-const quickSendPrototypes: Record<number, { body: string; links: { label: string; url: string }[] }> = {
+const quickSendPrototypes: Record<number, { title?: string; body: string; links: { label: string; url: string }[] }> = {
   15: {
     body: "Click through Quick Send as it was when it first joined up with Compose.",
     links: [{ label: "Open the prototype", url: "https://lace-bonus-64273429.figma.site" }],
@@ -292,9 +292,14 @@ const quickSendPrototypes: Record<number, { body: string; links: { label: string
       { label: "The full flow", url: "https://sleet-cloth-69056845.figma.site" },
     ],
   },
-  25: {
-    body: "Click through the finished Quick Send yourself.",
+  24: {
+    body: "Click through the final prototype yourself.",
     links: [{ label: "Open the prototype", url: "https://peach-comma-28912996.figma.site" }],
+  },
+  25: {
+    title: "See it in use",
+    body: "Watch the live version of Quick Send, from upload to send.",
+    links: [{ label: "Watch the video", url: "#in-production" }],
   },
 };
 
@@ -515,6 +520,7 @@ export const stages: Stage[] = [
       },
       {
         type: "video",
+        id: "in-production",
         eyebrow: "In production",
         heading: "What it became.",
         body: "Quick Send on the live product: upload a document, add who's signing, place their fields and send it, without making a template first.",
