@@ -162,8 +162,8 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
   },
   25: {
     stage: "Final design",
-    change: "Document settings moved into a modal too, undo and redo were added, and Send counts down for 5 seconds so you can cancel. This is the design that went live.",
-    feedback: "Users asked for undo and redo, and said Send was too easy to click by mistake.",
+    change: "Send counts down for 5 seconds so you can cancel it, undo and redo buttons sit under the sidebar, and a Document Settings modal lets you change settings for this one send. This is the version live today.",
+    feedback: "Send was too easy to click, and once a document is sent it's sent. New users didn't know the undo shortcuts. And some quick sends did need their own document settings, not the team defaults.",
   },
 };
 
@@ -268,9 +268,9 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
   ],
   25: [
     { x: 19, y: 7, note: "Ready to Send shows once every required field is placed." },
-    { x: 17, y: 90, note: "Document settings open in a modal too." },
-    { x: 27, y: 96, note: "Undo and redo." },
-    { x: 82, y: 6, note: "Send counts down for 5 seconds, so you can cancel." },
+    { x: 17, y: 90, note: "Document settings for this send, instead of always using the team defaults." },
+    { x: 27, y: 96, note: "Undo and redo buttons, for new users who don't know the keyboard shortcuts." },
+    { x: 82, y: 6, note: "Send counts down for 5 seconds, so a mistaken click can be cancelled." },
   ],
 };
 
@@ -498,7 +498,7 @@ export const stages: Stage[] = [
             heard:
               "Requires Fields sat so close to Send that you could send by mistake. With several recipients, it wasn't clear that each one needed fields. Requires Fields scrolled away with the document, most people send more than a signature so More Field Types was an extra click, and the yellow alerts didn't read as a must-do. People also asked for undo and redo, and near the end said Send was too easy to click by accident. Once a document is sent, it's sent.",
             changed:
-              "Requires Fields moved into the sidebar, leaving Send alone on the right as the final action. The sidebar became a list of recipient cards that expand to show their fields. Alerts turned red, the default fields became signature, text and date (with more in team settings), and editing recipients and document settings moved into modals. I added undo and redo, and Send now explains on hover what's still needed and counts down for 5 seconds, so you can cancel.",
+              "Requires Fields moved into the sidebar, leaving Send alone on the right as the final action. The sidebar became a list of recipient cards that expand to show their fields. Alerts turned red, the default fields became signature, text and date (with more in team settings), and editing recipients and document settings moved into modals. In the version that went live, Send counts down for 5 seconds so a mistaken click can be cancelled, undo and redo buttons help new users who don't know the shortcuts, and a Document Settings modal lets people change settings for a single send instead of always using the team defaults.",
             image: quickSendShot(25, "Quick Send, the final design"),
           },
         ],
