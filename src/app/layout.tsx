@@ -5,6 +5,7 @@ import { Nav } from "@/components/Nav";
 import { Contact } from "@/components/Contact";
 import { MotionProvider } from "@/components/motion";
 import { Cursor } from "@/components/Cursor";
+import { ProjectTransitionProvider } from "@/components/ProjectTransition";
 import { ThemeSwitcher, themeScript } from "@/components/ThemeSwitcher";
 
 const sans = Inter_Tight({
@@ -42,9 +43,11 @@ export default function RootLayout({
           >
             Skip to content
           </a>
-          <Nav />
-          <main id="main">{children}</main>
-          <Contact />
+          <ProjectTransitionProvider>
+            <Nav />
+            <main id="main">{children}</main>
+            <Contact />
+          </ProjectTransitionProvider>
           <ThemeSwitcher />
           <Cursor />
         </MotionProvider>

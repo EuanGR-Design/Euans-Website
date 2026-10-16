@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
-import { eras, projectHref, type Project } from "@/projects";
+import { cardInfo, eras, projectHref, type Project } from "@/projects";
+import { ProjectLink } from "./ProjectTransition";
 
 export function ProjectCard({ p, priority = false }: { p: Project; priority?: boolean }) {
   const era = eras.find((e) => e.id === p.era);
@@ -8,7 +8,7 @@ export function ProjectCard({ p, priority = false }: { p: Project; priority?: bo
   // its tags, with a "View project" pill over the image on hover.
   const inner = (
     <>
-      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-raised">
+      <div data-cover className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-raised">
         <Cover p={p} priority={priority} />
         {p.comingSoon ? (
           <span className="eyebrow absolute top-3 left-3 rounded-full bg-bg px-3 py-1 !text-fg">Coming soon</span>
@@ -41,9 +41,9 @@ export function ProjectCard({ p, priority = false }: { p: Project; priority?: bo
 
   if (p.comingSoon) return <div className="opacity-70">{inner}</div>;
   return (
-    <Link href={projectHref(p)} className="group block">
+    <ProjectLink card={cardInfo(p)} href={projectHref(p)} className="group block">
       {inner}
-    </Link>
+    </ProjectLink>
   );
 }
 

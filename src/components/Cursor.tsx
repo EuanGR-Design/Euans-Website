@@ -15,7 +15,7 @@ const INTERACTIVE = [
   "label[for]",
 ].join(",");
 
-const SIZE = 24; // the resting circle's diameter
+const SIZE = 20; // the resting circle's diameter
 const GAP = 6; // space between a hovered element and its outline
 
 type Box = { x: number; y: number; w: number; h: number; r: number };

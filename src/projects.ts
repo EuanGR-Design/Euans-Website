@@ -1,3 +1,4 @@
+import type { CardInfo } from "./components/ProjectTransition";
 // Every project on the site, and what each case study page shows.
 // Pages are built from `blocks`, top to bottom. Images live in public/.
 
@@ -196,6 +197,9 @@ export type Project = {
   role: string;
   tags: string[];
   cover: Img | null;
+  // The big image at the top of the project page, which the full-screen
+  // title card shrinks into on the way in. Falls back to the cover.
+  hero?: Img;
   featured?: boolean;
   // Coming-soon projects show as a card but have no page yet.
   comingSoon?: boolean;
@@ -237,6 +241,20 @@ const dashboard: Img = {
   alt: "The Console dashboard: quick actions, document overview, ready-to-send templates and team activity",
 };
 
+const editorHero: Img = {
+  src: "/work/heroes/editor.webp",
+  w: 2400,
+  h: 1688,
+  alt: "The Template Editor in a browser: participant fields on the left and a signature field being placed on a tenancy agreement",
+};
+
+const quickSendHero: Img = {
+  src: "/work/heroes/quick-send.webp",
+  w: 2400,
+  h: 1688,
+  alt: "Quick Send in a browser: colour-coded recipients on the left, their signature fields on the document and a countdown to cancel the send",
+};
+
 export const projects: Project[] = [
   {
     // Console is told across the Legalesign pages (src/process.ts), so its
@@ -275,7 +293,8 @@ export const projects: Project[] = [
     summary: "Placing and assigning fields, made faster and harder to get wrong.",
     role: "Design lead, product owner",
     tags: ["UX", "Prototyping", "User testing"],
-    cover: null,
+    cover: editorHero,
+    hero: editorHero,
     featured: true,
     intro:
       "A redesigned document editing page: the step where senders place fields on a document and assign them to recipients before it goes out for signing.",
@@ -312,12 +331,8 @@ export const projects: Project[] = [
     summary: "A streamlined first send that cut trial bounce and churn.",
     role: "Sole designer, product owner",
     tags: ["Onboarding", "Conversion", "UX"],
-    cover: {
-      src: "/work/quick-send/send-flow-cover.jpg",
-      w: 1920,
-      h: 1200,
-      alt: "The Quick Send editor: recipient cards on the left and signature fields placed on the document",
-    },
+    cover: quickSendHero,
+    hero: quickSendHero,
     intro:
       "A send flow built around trial users, with an editor customers can embed in their own products at its centre. New users had to build a template before they could send anything, so many trials ended before a first send. Quick Send lets anyone upload a document, add who's signing, place their fields and send it, in one place.",
     blocks: [
@@ -803,3 +818,15 @@ export const liveProjects = projects.filter((p) => !p.comingSoon);
 export const pageProjects = liveProjects.filter((p) => !p.href);
 export const getProject = (slug: string) => pageProjects.find((p) => p.slug === slug);
 export const projectHref = (p: Project) => p.href ?? `/work/${p.slug}`;
+export const projectImage = (p: Project) => (p.hero?.src ? p.hero : p.cover?.src ? p.cover : null);
+// What the full-screen title card shows when a project opens.
+export const cardInfo = (p: Project): CardInfo => {
+  const img = projectImage(p);
+  const era = eras.find((e) => e.id === p.era);
+  return {
+    slug: p.slug,
+    title: p.title,
+    label: [era?.label, p.year].filter(Boolean).join(" · "),
+    img: img?.src ? { src: img.src, alt: img.alt } : null,
+  };
+};

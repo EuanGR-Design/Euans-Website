@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { person } from "@/content";
-import { liveProjects, projectHref } from "@/projects";
+import { cardInfo, liveProjects, projectHref } from "@/projects";
+import { ProjectLink } from "./ProjectTransition";
 import { Reveal } from "./motion";
 
 const site = [
@@ -39,9 +40,11 @@ export function Contact() {
         <div className="mt-20 grid gap-10 border-t border-line pt-10 text-sm sm:grid-cols-3 md:mt-28">
           <Column title="Selected work">
             {featured.map((p) => (
-              <FooterLink key={p.slug} href={projectHref(p)}>
-                {p.title}
-              </FooterLink>
+              <li key={p.slug}>
+                <ProjectLink card={cardInfo(p)} href={projectHref(p)} className="transition-colors hover:text-accent">
+                  {p.title}
+                </ProjectLink>
+              </li>
             ))}
           </Column>
           <Column title="Site">

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { eras, getProject, pageProjects, projectHref } from "@/projects";
+import Image from "next/image";
+import { cardInfo, eras, getProject, pageProjects, projectHref, projectImage } from "@/projects";
 import { Blocks } from "@/components/Blocks";
-import { Cover } from "@/components/ProjectCard";
+import { ProjectLink } from "@/components/ProjectTransition";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -24,6 +25,7 @@ export default async function ProjectPage({ params }: Props) {
   const era = eras.find((e) => e.id === p.era);
   const i = pageProjects.indexOf(p);
   const next = pageProjects[(i + 1) % pageProjects.length];
+  const hero = projectImage(p);
 
   return (
     <article>
@@ -59,7 +61,7 @@ export default async function ProjectPage({ params }: Props) {
                 <dt className="eyebrow">Focus</dt>
                 <dd className="mt-2 flex flex-wrap gap-2">
                   {p.tags.map((t) => (
-                    <span key={t} className="rounded-full bg-accent-soft px-3 py-1 text-xs text-fg/85">
+                    <span key={t} className="rounded-full bg-fg/[0.06] px-3 py-1 text-xs font-medium text-fg/80">
                       {t}
                     </span>
                   ))}
@@ -68,10 +70,15 @@ export default async function ProjectPage({ params }: Props) {
             </dl>
           </div>
         </div>
-        {p.cover?.src && (
+        {hero?.src && (
           <div className="container-x mt-14 md:mt-20">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
-              <Cover p={p} priority />
+            {/* The title card shrinks into this when the project opens. */}
+            <div
+              data-hero={p.slug}
+              className="relative overflow-hidden rounded-3xl bg-raised"
+              style={{ aspectRatio: `${hero.w} / ${hero.h}` }}
+            >
+              <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
             </div>
           </div>
         )}
@@ -84,12 +91,12 @@ export default async function ProjectPage({ params }: Props) {
       <nav aria-label="Next project" className="border-t border-line py-20 md:py-28">
         <div className="container-x">
           <p className="eyebrow">Next project</p>
-          <Link href={projectHref(next)} className="group mt-4 inline-block">
+          <ProjectLink card={cardInfo(next)} href={projectHref(next)} className="group mt-4 inline-block">
             <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent-ink">
               {next.title} <span aria-hidden>→</span>
             </span>
             <span className="mt-3 block text-muted">{next.summary}</span>
-          </Link>
+          </ProjectLink>
         </div>
       </nav>
     </article>
