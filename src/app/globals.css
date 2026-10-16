@@ -69,12 +69,12 @@
   --color-secondary: var(--secondary);
   --color-tertiary: var(--tertiary);
   --color-on-tertiary: var(--on-tertiary);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-serif);
+  /* One typeface throughout, Awwwards-style; "mono" text keeps even figures. */
+  --font-sans: var(--font-inter-tight);
+  --font-mono: var(--font-inter-tight);
   /* Tighter corners than Tailwind's defaults: calmer, more product-like. */
-  --radius-2xl: 0.875rem;
-  --radius-3xl: 1.125rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.75rem;
 }
 
 html {
@@ -85,7 +85,8 @@ html {
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
   overflow-x: hidden;
 }
 
@@ -113,11 +114,23 @@ body {
 }
 
 .eyebrow {
-  font-family: var(--font-geist-mono), monospace;
   font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bold, tightly set headings, as on Awwwards. Unlayered, so it wins over
+   the font-semibold utilities the components already carry. */
+h1,
+h2 {
+  font-weight: 700;
+  letter-spacing: -0.035em;
 }
 
 @media (prefers-reduced-motion: reduce) {

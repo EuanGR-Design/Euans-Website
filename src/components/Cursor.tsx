@@ -15,8 +15,8 @@ const INTERACTIVE = [
   "label[for]",
 ].join(",");
 
-const SIZE = 12; // the resting circle's diameter
-const GAP = 10; // space between a hovered element and its outline
+const SIZE = 24; // the resting circle's diameter
+const GAP = 6; // space between a hovered element and its outline
 
 type Box = { x: number; y: number; w: number; h: number; r: number };
 
@@ -53,7 +53,7 @@ export function Cursor() {
       if (target?.isConnected) {
         const b = target.getBoundingClientRect();
         if (b.width && b.height) {
-          const gap = down ? GAP - 4 : GAP;
+          const gap = down ? GAP - 3 : GAP;
           const raw = getComputedStyle(target).borderTopLeftRadius;
           const radius = raw.endsWith("%") ? (parseFloat(raw) / 100) * b.width : parseFloat(raw) || 0;
           return {

@@ -68,7 +68,7 @@ function Showreel() {
               <Link
                 href={t.href}
                 tabIndex={copy ? -1 : undefined}
-                className="block h-44 overflow-hidden rounded-2xl border border-line bg-raised md:h-72"
+                className="block h-44 overflow-hidden rounded-2xl bg-raised md:h-72"
                 style={{ aspectRatio: `${t.w} / ${t.h}` }}
               >
                 <Image

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Inter_Tight } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
 import { Contact } from "@/components/Contact";
@@ -7,21 +7,9 @@ import { MotionProvider } from "@/components/motion";
 import { Cursor } from "@/components/Cursor";
 import { ThemeSwitcher, themeScript } from "@/components/ThemeSwitcher";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sans = Inter_Tight({
+  variable: "--font-inter-tight",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const serif = Instrument_Serif({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -45,7 +33,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} antialiased`}
+        className={`${sans.variable} antialiased`}
       >
         <MotionProvider>
           <a

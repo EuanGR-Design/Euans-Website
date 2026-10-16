@@ -19,7 +19,7 @@ export function About() {
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-accent/40 via-raised to-raised">
-                <span className="font-serif text-8xl italic">ER</span>
+                <span className="text-8xl font-bold tracking-[-0.05em]">ER</span>
                 <span className="eyebrow">Photo coming soon</span>
               </div>
             )}
