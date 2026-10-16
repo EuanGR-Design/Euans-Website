@@ -403,15 +403,16 @@ export const stages: Stage[] = [
       "I put prototypes in front of real users early and often, and let what they struggle with decide what changes next.",
     question: "How testing changed the design",
     project: "quick-send",
-    problem: "Trial users were bouncing before they'd sent anything, and the send flow was the reason.",
+    problem: "Trial users were bouncing before their first send, because sending meant building a template first.",
     why: "Quick Send went through the most rounds of prototypes and user feedback, so I use it to show how I iterate.",
     blocks: [
       {
         type: "text",
-        eyebrow: "Where it started",
-        heading: "Real users set the scope.",
+        eyebrow: "The brief",
+        heading: "Several signals, one problem.",
         body: [
-          "Quick Send didn't start as a feature idea. In-app feedback and Hotjar recordings showed trial users failing to reach their goal: they wanted to upload a document and send it, and the product made them build a template first. I used those insights to make the case for Quick Send, and that feedback set its initial scope and requirements.",
+          "Trial users had a high bounce rate, and few of them ever reached a first send. In-app feedback and Hotjar recordings showed why. The head of sales and I grouped the feedback into shared pain points, and the recordings showed dead ends, U-turns and rage clicks, nearly all in the send flow. People wanted to upload a document and send it, but we made them upload, build a template and then send, in three different places. And they weren't occasional users: many were lawyers and other professionals sending one-off documents, high-value customers whose needs didn't fit our workflow.",
+          "At the same time, customers were asking for Compose, an editor they could embed in their own products. Working as product owner as well as designer, I saw that one piece of work could answer both, so Quick Send was built around Compose. Together, that feedback set the project's scope and requirements.",
         ],
       },
       {
