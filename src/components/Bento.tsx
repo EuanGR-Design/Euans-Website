@@ -3,7 +3,6 @@
 import type { BentoTile } from "@/projects";
 import { Reveal } from "./motion";
 import { LoopVideo } from "./LoopVideo";
-import { SuccessAnimation } from "./SuccessAnimation";
 import { Video } from "./Video";
 import { showIteration } from "./IterationScrubber";
 
@@ -12,6 +11,7 @@ type Feature = { src: string; poster: string; label: string; w: number; h: numbe
 const spans: Record<BentoTile["span"], string> = {
   wide: "md:col-span-2",
   tall: "md:row-span-2",
+  full: "md:col-span-2 lg:col-span-3",
   one: "",
 };
 
@@ -45,18 +45,16 @@ export function Bento({ feature, tiles }: { feature?: Feature; tiles: BentoTile[
 
 function Media({ tile }: { tile: BentoTile }) {
   if (tile.kind === "note") return null;
-  const stretch = tile.span === "tall" || tile.fill;
   // Stretching tiles keep their aspect ratio on phones, where there's no row
-  // to fill.
-  const frame = `relative w-full ${stretch ? "md:min-h-0 md:flex-1 md:!aspect-auto" : ""}`;
-
-  if (tile.kind === "success") {
-    return (
-      <div className={`${frame} flex items-center justify-center bg-white`} style={{ aspectRatio: tile.aspect }}>
-        <SuccessAnimation className="aspect-square h-4/5 max-h-72" />
-      </div>
-    );
-  }
+  // to fill. `fill` waits for three columns, where the rows are planned; in
+  // two, two filling tiles could share a row and leave it no height.
+  const stretch =
+    tile.span === "tall"
+      ? "md:min-h-0 md:flex-1 md:!aspect-auto"
+      : tile.fill
+        ? "lg:min-h-0 lg:flex-1 lg:!aspect-auto"
+        : "";
+  const frame = `relative w-full ${stretch}`;
 
   const fit = tile.fit ?? "cover";
   return (
@@ -86,7 +84,7 @@ function Caption({
   return (
     <div className={`flex flex-col gap-1.5 p-5 md:p-6 ${grow ? "flex-1 justify-center md:p-8" : ""}`}>
       <h3 className={`font-semibold tracking-tight ${grow ? "text-2xl" : "text-base"}`}>{title}</h3>
-      <p className={`leading-relaxed text-muted ${grow ? "" : "text-sm"}`}>{caption}</p>
+      <p className={`leading-relaxed text-muted ${grow ? "max-w-2xl" : "text-sm"}`}>{caption}</p>
       {compare && (
         <button
           type="button"

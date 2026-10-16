@@ -48,14 +48,15 @@ type JourneyStep = {
 };
 
 // One cell of a bento block. `span` sets its shape from tablet width up:
-// "wide" takes two columns, "tall" two rows, "one" a single cell. A tile with
-// `fill` (and every tall one) stretches to its row instead of keeping its
-// aspect ratio. `compare` is the version on the page's iterations scrubber
-// that the tile can jump to.
+// "wide" takes two columns, "tall" two rows, "full" the whole row, "one" a
+// single cell. A tall tile stretches to its rows instead of keeping its
+// aspect ratio, and so does one with `fill` once there are three columns.
+// `compare` is the version on the page's iterations scrubber that the tile
+// can jump to.
 export type BentoTile = {
   title: string;
   caption: string;
-  span: "wide" | "tall" | "one";
+  span: "wide" | "tall" | "full" | "one";
   fill?: boolean;
   compare?: number;
 } & (
@@ -72,7 +73,6 @@ export type BentoTile = {
       position?: string;
       bg?: string;
     }
-  | { kind: "success"; aspect: string }
   // Just the words, for a point the clips around it make.
   | { kind: "note" }
 );
