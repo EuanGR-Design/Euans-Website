@@ -409,10 +409,10 @@ export const stages: Stage[] = [
       {
         type: "text",
         eyebrow: "The research behind it",
-        heading: "Several signals, one problem.",
+        heading: "From research to the brief.",
         body: [
           "Trial users had a high bounce rate, and few of them ever reached a first send. In-app feedback and Hotjar recordings showed why. The head of sales and I grouped the feedback into shared pain points, and the recordings showed dead ends, U-turns and rage clicks, nearly all in the send flow. People wanted to upload a document and send it, but we made them upload, build a template and then send, in three different places. And they weren't occasional users: many were lawyers and other professionals sending one-off documents, high-value customers whose needs didn't fit our workflow.",
-          "At the same time, customers were asking for Compose, an editor they could embed in their own products. Working as product owner as well as designer, I saw that one piece of work could answer both, so Quick Send was built around Compose. Together, that feedback set the project's scope and requirements.",
+          "At the same time, customers were asking for Compose, an editor they could embed in their own products. Working as product owner as well as designer, I saw that one piece of work could answer both. Together, those insights showed the opportunity for Quick Send, built around Compose, and that became the brief: its scope and requirements came straight from what users had told and shown us.",
         ],
       },
       {
