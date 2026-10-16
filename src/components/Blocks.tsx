@@ -11,6 +11,7 @@ import { Prototype } from "./Prototype";
 import { Brand } from "./Brand";
 import { IterationScrubber } from "./IterationScrubber";
 import { Video } from "./Video";
+import { Bento } from "./Bento";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -125,6 +126,22 @@ function BlockView({
             </div>
           </Reveal>
         </Section>
+      );
+    case "bento":
+      return (
+        <section id={b.id} className="scroll-mt-16 border-t border-line py-20 md:py-28">
+          <div className="container-x">
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
+          </div>
+          <div className="mx-auto mt-12 max-w-[1440px] px-3 md:px-6">
+            <Bento feature={b.feature} tiles={b.tiles} />
+          </div>
+        </section>
       );
     case "comparison":
       return (

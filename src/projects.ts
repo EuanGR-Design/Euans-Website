@@ -46,6 +46,36 @@ type JourneyStep = {
   written: boolean;
 };
 
+// One cell of a bento block. `span` sets its shape from tablet width up:
+// "wide" takes two columns, "tall" two rows, "one" a single cell. A tile with
+// `fill` (and every tall one) stretches to its row instead of keeping its
+// aspect ratio. `compare` is the version on the page's iterations scrubber
+// that the tile can jump to.
+export type BentoTile = {
+  title: string;
+  caption: string;
+  span: "wide" | "tall" | "one";
+  fill?: boolean;
+  compare?: number;
+} & (
+  | {
+      kind: "video";
+      src: string;
+      poster: string;
+      label: string;
+      // Shape on phones, and on wider screens unless the tile fills its row.
+      aspect: string;
+      // "cover" crops from `position` to fill the frame; "contain" letterboxes
+      // on `bg`, which should match the recording's own background.
+      fit?: "cover" | "contain";
+      position?: string;
+      bg?: string;
+    }
+  | { kind: "success"; aspect: string }
+  // Just the words, for a point the clips around it make.
+  | { kind: "note" }
+);
+
 // `draft: true` shows the copy as a muted prompt until the real words are in.
 export type Block =
   | { type: "text"; eyebrow?: string; heading: string; body: string[]; draft?: boolean }
@@ -54,6 +84,17 @@ export type Block =
   // A silent screen recording from public/, with a still from it as the poster.
   // `id` lets other parts of the page link to it, as #id.
   | { type: "video"; id?: string; eyebrow?: string; heading: string; body?: string; src: string; poster: string; label: string }
+  // Looping clips of the live product in a grid, under one longer recording
+  // with controls. See BentoTile.
+  | {
+      type: "bento";
+      id?: string;
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      feature?: { src: string; poster: string; label: string; w: number; h: number; title: string; caption: string };
+      tiles: BentoTile[];
+    }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
   | {
       type: "comparison";
@@ -265,7 +306,7 @@ export const projects: Project[] = [
     cover: {
       src: "/work/quick-send/send-flow-poster.jpg",
       w: 1920,
-      h: 1068,
+      h: 1080,
       alt: "The Quick Send editor: a recipient on the left and a signature field placed on the document",
     },
     intro:
@@ -275,7 +316,7 @@ export const projects: Project[] = [
         type: "video",
         eyebrow: "In production",
         heading: "Upload, add recipients, place fields, send.",
-        body: "The whole Quick Send flow on the live product: upload a document, add who's signing, place their fields and send it, all without making a template first.",
+        body: "The whole Quick Send flow on the live product: start from the dashboard, upload a document, add who's signing, place their fields and send it, all without making a template first.",
         src: "/work/quick-send/send-flow.mp4",
         poster: "/work/quick-send/send-flow-poster.jpg",
         label: "Screen recording of sending a document with Quick Send, from upload to sent",

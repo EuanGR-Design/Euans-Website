@@ -31,6 +31,16 @@ const prompts = {
  * The screen takes all the room it can: the arrows sit either side of it, and
  * only one row (the version, the bar and the full-screen button) sits below.
  */
+const SCRUBBER_ID = "iterations";
+const SHOW_EVENT = "iterations:show";
+
+/** Scrolls to the iterations scrubber and shows `version`, counted from 1. */
+export function showIteration(version: number) {
+  window.dispatchEvent(new CustomEvent(SHOW_EVENT, { detail: version - 1 }));
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById(SCRUBBER_ID)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+}
+
 export function IterationScrubber({ items }: { items: Iteration[] }) {
   const last = items.length - 1;
   const [index, setIndex] = useState(0);
@@ -88,6 +98,13 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
       root.style.overflow = before;
     };
   }, [full]);
+
+  // Other parts of the page can ask for a version, through showIteration.
+  useEffect(() => {
+    const onShow = (e: Event) => go((e as CustomEvent<number>).detail);
+    window.addEventListener(SHOW_EVENT, onShow);
+    return () => window.removeEventListener(SHOW_EVENT, onShow);
+  });
 
   const openFull = () => {
     // Hold the page's place so nothing jumps while the scrubber is in the modal.
@@ -367,10 +384,15 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
     </div>
   );
 
-  if (!full) return <div ref={inlineRef}>{scrubber}</div>;
+  if (!full)
+    return (
+      <div ref={inlineRef} id={SCRUBBER_ID} className="scroll-mt-24">
+        {scrubber}
+      </div>
+    );
 
   return (
-    <div style={{ height: inlineHeight }}>
+    <div id={SCRUBBER_ID} style={{ height: inlineHeight }}>
       {createPortal(
         <div
           role="dialog"
