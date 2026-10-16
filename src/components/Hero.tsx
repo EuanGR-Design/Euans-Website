@@ -8,17 +8,13 @@ import { Reveal, WordReveal } from "./motion";
 export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden pt-32 pb-12 md:pt-44 md:pb-16">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-accent/25 blur-[140px]"
-      />
 
       <div className="container-x relative">
         <Reveal>
           <p className="eyebrow mb-6 flex items-center gap-3">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
             </span>
             {person.name} · {person.role}
           </p>
@@ -35,7 +31,7 @@ export function Hero() {
           <Reveal delay={0.45} className="flex flex-wrap gap-3 md:col-span-5 md:justify-end">
             <Link
               href="/work"
-              className="rounded-full bg-accent px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.03]"
+              className="rounded-full bg-accent px-6 py-3 text-sm font-medium text-on-accent transition-transform hover:scale-[1.03]"
             >
               See my work
             </Link>

@@ -197,7 +197,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
                   }
                 : { target: "_blank", rel: "noreferrer" })}
               className={`inline-flex rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                i === 0 ? "bg-accent text-white hover:opacity-90" : "border border-line hover:border-accent"
+                i === 0 ? "bg-accent text-on-accent hover:opacity-90" : "border border-line hover:border-accent"
               }`}
             >
               {link.label} {link.url.startsWith("#") ? "↓" : "↗"}
@@ -218,7 +218,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
       <div className="min-w-0 shrink" style={{ width: `calc((100dvh - ${reserved}) * ${ratio})` }}>
         <div className="relative">
           <div
-            className="relative isolate overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl"
+            className="relative isolate overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl"
             style={{ aspectRatio: `${ratio}` }}
             onClick={() => setOpenPin(null)}
           >
@@ -264,7 +264,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
                       }}
                       aria-expanded={open}
                       aria-label={`Change ${i + 1}: ${pin.note}`}
-                      className={`pin-bubble absolute bottom-0 left-0 flex h-7 w-7 items-center justify-center rounded-full rounded-bl-none border-2 border-white text-xs font-semibold text-white shadow-lg transition-transform hover:scale-110 md:h-8 md:w-8 md:text-sm ${
+                      className={`pin-bubble absolute bottom-0 left-0 flex h-7 w-7 items-center justify-center rounded-full rounded-bl-none border-2 border-white text-xs font-semibold text-on-accent shadow-lg transition-transform hover:scale-110 md:h-8 md:w-8 md:text-sm ${
                         open ? "bg-accent ring-4 ring-accent/40" : "bg-accent"
                       }`}
                     >
@@ -309,7 +309,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
               aria-hidden
             >
               <div className="rounded-2xl border border-line bg-bg p-5 shadow-xl">
-                <p className={`text-xs ${item.stage ? "text-accent" : "text-muted italic"}`}>{item.stage ?? prompts.stage}</p>
+                <p className={`text-xs ${item.stage ? "text-accent-ink" : "text-muted italic"}`}>{item.stage ?? prompts.stage}</p>
                 <p className="mt-1 font-semibold">{label}</p>
                 <div className="mt-4">{details}</div>
               </div>
@@ -374,7 +374,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
         <div className="mt-4 rounded-2xl border border-line bg-raised p-5 md:hidden">
           <p className="text-xs">
             <span className="text-muted tabular-nums">{version}</span>
-            <span className={item.stage ? "text-accent" : "text-muted italic"}> · {item.stage ?? prompts.stage}</span>
+            <span className={item.stage ? "text-accent-ink" : "text-muted italic"}> · {item.stage ?? prompts.stage}</span>
           </p>
           <div className="mt-4">{details}</div>
         </div>

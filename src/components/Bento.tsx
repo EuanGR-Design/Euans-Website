@@ -20,7 +20,7 @@ export function Bento({ feature, tiles }: { feature?: Feature; tiles: BentoTile[
   return (
     <div className="space-y-4">
       {feature && (
-        <Reveal className="overflow-hidden rounded-3xl border border-line bg-raised shadow-2xl shadow-accent/10">
+        <Reveal className="overflow-hidden rounded-3xl border border-line bg-raised">
           <div className="bg-black" style={{ aspectRatio: `${feature.w} / ${feature.h}` }}>
             <Video src={feature.src} poster={feature.poster} label={feature.label} />
           </div>
@@ -89,7 +89,7 @@ function Caption({
         <button
           type="button"
           onClick={() => showIteration(compare)}
-          className="mt-2 self-start text-sm font-medium text-accent hover:underline"
+          className="mt-2 self-start text-sm font-medium text-accent-ink hover:underline"
         >
           Compare with version {compare} ↑
         </button>

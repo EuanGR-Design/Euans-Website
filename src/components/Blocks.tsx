@@ -73,7 +73,7 @@ function BlockView({
                 delay={0.08 * (i % 3)}
                 className="rounded-3xl border border-line bg-raised p-7"
               >
-                <span className="font-mono text-sm text-accent">0{i + 1}</span>
+                <span className="font-mono text-sm text-accent-ink">0{i + 1}</span>
                 <h3 className="mt-6 text-xl font-semibold">{p.title}</h3>
                 <p className="mt-3 leading-relaxed text-muted">{p.body}</p>
               </Reveal>
@@ -121,7 +121,7 @@ function BlockView({
             {b.body && <p className="max-w-sm text-muted">{b.body}</p>}
           </Reveal>
           <Reveal className="mt-12">
-            <div className="overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl">
+            <div className="overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
               <Video src={b.src} poster={b.poster} label={b.label} />
             </div>
           </Reveal>
@@ -303,7 +303,7 @@ function BlockView({
                     <span className="eyebrow not-italic">We found</span>
                     <p className="mt-3 text-lg leading-snug">{it.found}</p>
                   </div>
-                  <div className="rounded-3xl border border-accent/40 bg-accent-soft p-6">
+                  <div className="rounded-3xl border border-line bg-fg/[0.04] p-6">
                     <span className="eyebrow not-italic">So the design had to</span>
                     <p className="mt-3 text-lg leading-snug">{it.so}</p>
                   </div>
@@ -329,7 +329,7 @@ function BlockView({
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-lg font-semibold">{o.title}</h3>
                     {o.chosen && (
-                      <span className="rounded-full bg-accent px-3 py-1 text-xs text-white">Chosen</span>
+                      <span className="rounded-full bg-accent px-3 py-1 text-xs text-on-accent">Chosen</span>
                     )}
                   </div>
                   <p className={`mt-3 text-sm leading-relaxed text-fg/75 ${draftText(b.draft)}`}>{o.body}</p>
@@ -348,7 +348,7 @@ function BlockView({
               <Reveal key={i} delay={0.06 * i}>
                 <li className="grid gap-6 rounded-3xl border border-line bg-raised p-6 md:grid-cols-12 md:p-8">
                   <div className="md:col-span-2">
-                    <span className="font-mono text-sm text-accent">Round {i + 1}</span>
+                    <span className="font-mono text-sm text-accent-ink">Round {i + 1}</span>
                     {r.title && <p className="mt-2 text-sm leading-snug text-muted">{r.title}</p>}
                   </div>
                   <div className={`space-y-5 md:col-span-5 ${draftText(b.draft)}`}>
@@ -396,7 +396,7 @@ function BlockView({
               <Reveal key={st.label} delay={0.08 * i} className="rounded-3xl border border-line bg-raised p-7">
                 <dt className="text-sm text-muted">{st.label}</dt>
                 <dd
-                  className={`mt-4 text-5xl font-semibold tracking-tight tabular-nums ${b.draft ? "text-muted" : "text-accent"}`}
+                  className={`mt-4 text-5xl font-semibold tracking-tight tabular-nums ${b.draft ? "text-muted" : "text-accent-ink"}`}
                 >
                   {st.value}
                 </dd>
@@ -452,7 +452,7 @@ function Figure({ img, sizes = "(min-width: 1280px) 1200px, 100vw" }: { img: Img
   return (
     <Reveal>
       <figure>
-        <div className="overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl">
+        <div className="overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
           {img.src ? (
             <Image
               src={img.src}
@@ -507,7 +507,7 @@ function Timeline({ b }: { b: Extract<Block, { type: "timeline" }> }) {
                 className="absolute top-1 left-[9px] h-3.5 w-3.5 rounded-full border-2 border-accent bg-bg"
               />
               <Reveal className="md:col-span-3">
-                <span className="font-mono text-sm text-accent">{t.when}</span>
+                <span className="font-mono text-sm text-accent-ink">{t.when}</span>
               </Reveal>
               <Reveal delay={0.08} className="md:col-span-9">
                 <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{t.title}</h3>

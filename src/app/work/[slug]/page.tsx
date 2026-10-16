@@ -85,7 +85,7 @@ export default async function ProjectPage({ params }: Props) {
         <div className="container-x">
           <p className="eyebrow">Next project</p>
           <Link href={projectHref(next)} className="group mt-4 inline-block">
-            <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent">
+            <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent-ink">
               {next.title} <span aria-hidden>→</span>
             </span>
             <span className="mt-3 block text-muted">{next.summary}</span>

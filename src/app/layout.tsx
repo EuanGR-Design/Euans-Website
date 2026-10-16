@@ -4,6 +4,8 @@ import "./globals.css";
 import { Nav } from "@/components/Nav";
 import { Contact } from "@/components/Contact";
 import { MotionProvider } from "@/components/motion";
+import { Cursor } from "@/components/Cursor";
+import { ThemeSwitcher, themeScript } from "@/components/ThemeSwitcher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0b",
+  themeColor: "#efebe4",
 };
 
 export default function RootLayout({
@@ -38,9 +40,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-GB">
+    <html lang="en-GB" data-theme="orange" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} grain antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} antialiased`}
       >
         <MotionProvider>
           <a
@@ -52,6 +57,8 @@ export default function RootLayout({
           <Nav />
           <main id="main">{children}</main>
           <Contact />
+          <ThemeSwitcher />
+          <Cursor />
         </MotionProvider>
       </body>
     </html>

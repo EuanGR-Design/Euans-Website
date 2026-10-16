@@ -45,7 +45,7 @@ export function About() {
                 delay={0.08 * i}
                 className="rounded-3xl border border-line bg-raised p-6"
               >
-                <span className="font-mono text-xs text-accent">0{i + 1}</span>
+                <span className="font-mono text-xs text-accent-ink">0{i + 1}</span>
                 <p className="mt-5 font-semibold">{a.title}</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted">{a.body}</p>
               </Reveal>
