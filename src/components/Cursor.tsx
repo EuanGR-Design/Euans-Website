@@ -20,6 +20,36 @@ const GAP = 6; // space between a hovered element and its outline
 
 type Box = { x: number; y: number; w: number; h: number; r: number };
 
+const radiusOf = (el: Element, width: number) => {
+  const raw = getComputedStyle(el).borderTopLeftRadius;
+  return raw.endsWith("%") ? (parseFloat(raw) / 100) * width : parseFloat(raw) || 0;
+};
+
+/**
+ * The corner radius an element looks like it has. A link with no radius of
+ * its own takes it from what fills it (a card's image) or from the rounded
+ * box it fills (a slider laid over an image), and a thin slider track is
+ * treated as a pill.
+ */
+function cornerOf(el: Element, b: DOMRect) {
+  const own = radiusOf(el, b.width);
+  if (own) return own;
+  if (el instanceof HTMLInputElement && el.type === "range" && b.height <= 48) return b.height / 2;
+  for (const child of Array.from(el.querySelectorAll("[data-cover], img, video, div")).slice(0, 12)) {
+    const c = child.getBoundingClientRect();
+    const r = radiusOf(child, c.width);
+    if (r && c.width >= b.width * 0.8) return r;
+  }
+  let parent = el.parentElement;
+  for (let i = 0; parent && i < 3; i++, parent = parent.parentElement) {
+    const p = parent.getBoundingClientRect();
+    if (Math.abs(p.width - b.width) > 2 || Math.abs(p.height - b.height) > 2) break;
+    const r = radiusOf(parent, p.width);
+    if (r) return r;
+  }
+  return 0;
+}
+
 /**
  * A thin circle in the theme's primary colour that replaces the pointer.
  * Over anything interactive it grows into an outline around that element,
@@ -49,19 +79,25 @@ export function Cursor() {
       return el.closest(INTERACTIVE);
     };
 
+    // Looked up once per hovered element rather than every frame.
+    const corners = new WeakMap<Element, number>();
+    const corner = (el: Element, b: DOMRect) => {
+      if (!corners.has(el)) corners.set(el, cornerOf(el, b));
+      return corners.get(el)!;
+    };
+
     const goal = (): Box => {
       if (target?.isConnected) {
         const b = target.getBoundingClientRect();
         if (b.width && b.height) {
           const gap = down ? GAP - 3 : GAP;
-          const raw = getComputedStyle(target).borderTopLeftRadius;
-          const radius = raw.endsWith("%") ? (parseFloat(raw) / 100) * b.width : parseFloat(raw) || 0;
+          // Concentric with the element's corners: its radius plus the gap.
           return {
             x: b.left - gap,
             y: b.top - gap,
             w: b.width + gap * 2,
             h: b.height + gap * 2,
-            r: Math.min(radius, b.width / 2, b.height / 2) + gap,
+            r: Math.min(corner(target, b), b.width / 2, b.height / 2) + gap,
           };
         }
       }
