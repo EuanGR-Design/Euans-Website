@@ -404,7 +404,6 @@ export const quickSendInProduction: Extract<Block, { type: "bento" }> = {
       fill: true,
       title: "The countdown on Send",
       caption: "Send counts down for five seconds before anything goes out, so a mistaken click can be cancelled.",
-      compare: 25,
       src: "/work/quick-send/clips/countdown.mp4",
       poster: "/work/quick-send/clips/countdown-poster.jpg",
       label: "Pressing Send Document starts a five-second countdown with a Cancel button",
