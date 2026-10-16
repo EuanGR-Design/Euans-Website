@@ -101,8 +101,16 @@ export type Block =
       type: "comparison";
       eyebrow?: string;
       heading: string;
-      // Leave a side null until its screenshot exists (1440×900 works best).
-      items: { id: string; label: string; before: string | null; after: string | null; caption: string }[];
+      // Leave a side null until its screenshot exists (2400×1337 to match the
+      // others). `missing` explains a before that never existed.
+      items: {
+        id: string;
+        label: string;
+        before: string | null;
+        after: string | null;
+        caption: string;
+        missing?: { title: string; body: string };
+      }[];
     }
   | {
       type: "journey";

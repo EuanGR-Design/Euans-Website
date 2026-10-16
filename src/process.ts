@@ -300,26 +300,44 @@ export const legalesign = {
     heading: "Same product. Unrecognisable experience.",
     items: [
       {
-        id: "dashboard",
-        label: "Dashboard",
-        before: null,
-        after: "/work/dashboard.png",
+        id: "sent",
+        label: "Sent",
+        before: "/work/compare/sent-before.webp",
+        after: "/work/compare/sent-after.webp",
         caption:
-          "From a table of links to a hub: quick actions, a live document overview, ready-to-send templates and team activity.",
+          "From rows of status buttons beside an event log to a card for each document, with every recipient's progress from emailed to signed, plus search and filters.",
+      },
+      {
+        id: "library",
+        label: "Library",
+        before: "/work/compare/library-before.webp",
+        after: "/work/compare/library-after.webp",
+        caption: "A bare list of uploaded files became a template library, with status, tags and quick actions to edit or send.",
       },
       {
         id: "editor",
         label: "Editor",
-        before: null,
-        after: null,
-        caption: "Placing and assigning fields before sending, rebuilt to be faster and far harder to get wrong.",
+        before: "/work/compare/editor-before.webp",
+        after: "/work/compare/editor-after.webp",
+        caption:
+          "Two long lists of signer and sender fields and a row of checkboxes became one panel of fields, placed for one participant at a time.",
       },
       {
-        id: "drafts",
-        label: "Sending & Drafts",
+        id: "send",
+        label: "Sending",
+        before: "/work/compare/send-before.webp",
+        after: "/work/compare/send-after.webp",
+        caption:
+          "A form of icons and buttons became a Send Overview, where documents, participants, fields and recipients are checked in one place before sending.",
+      },
+      {
+        id: "dashboard",
+        label: "Dashboard",
         before: null,
-        after: null,
-        caption: "Admins set up drafts with locked, pre-filled settings, so everyday senders have less to fill in.",
+        after: "/work/compare/dashboard-after.webp",
+        missing: { title: "No dashboard", body: "The sent listings doubled as the home page." },
+        caption:
+          "New in Console. Quick actions, an overview of everything sent, recent activity and next steps, all on the first screen you see.",
       },
     ],
   } satisfies Block,
