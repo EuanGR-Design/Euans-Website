@@ -32,7 +32,7 @@ export type Stage = {
 };
 
 // What each Quick Send version changed, keyed by version number (1 is the
-// oldest, 24 the final design). Versions left out show prompts in the pop-up.
+// oldest, 25 the final design). Versions left out show prompts in the pop-up.
 const declutter = "Decluttering";
 const signatureOnly = "Signature only";
 const recipientsFirst = "Recipients first";
@@ -117,6 +117,8 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
   },
   16: {
     stage: compose,
+    change: "Signature, date and text joined the mode selector, so you pick which field you're placing. The \"Placing signature for\" bar above the document went.",
+    feedback: "Signature alone wasn't enough: people needed signature, text and date fields. The bar above the document was a blind spot, and most people picked recipients in the sidebar anyway.",
   },
   17: {
     stage: compose,
@@ -154,9 +156,14 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
     feedback: "Requires Fields scrolled away with the document, and most people send more than a signature, so More Field Types was an extra click.",
   },
   24: {
+    stage: refining,
+    change: "Alerts turned red, the default fields became signature, date and text (more in team settings), and Manage Recipients opens in a modal.",
+    feedback: "Yellow alerts didn't read as a must-do, and editing recipients from their cards meant doing two things at once.",
+  },
+  25: {
     stage: "Final design",
-    change: "Red alerts, three default fields (more in team settings), recipients and document settings in modals, plus undo and redo. This is the design that went live.",
-    feedback: "Yellow alerts didn't read as a must-do, and users asked for undo and redo.",
+    change: "Document settings moved into a modal too, undo and redo were added, and Send counts down for 5 seconds so you can cancel. This is the design that went live.",
+    feedback: "Users asked for undo and redo, and said Send was too easy to click by mistake.",
   },
 };
 
@@ -224,6 +231,10 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
     { x: 21, y: 7, note: "The mode toggle is back." },
     { x: 88, y: 7, note: "A bigger Send Document button, so nobody loses it." },
   ],
+  16: [
+    { x: 22, y: 5, note: "Signature, date and text joined the mode selector." },
+    { x: 52, y: 10, note: "The \"Placing signature for\" bar above the document is gone. People picked recipients in the sidebar instead." },
+  ],
   17: [
     { x: 15, y: 8, note: "Sender fields, tried again." },
     { x: 15, y: 45, note: "Every control now lives in the left sidebar, so it fits a narrow embed." },
@@ -253,8 +264,13 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
   24: [
     { x: 17, y: 26, note: "Alerts turned red, so they read as a must-do." },
     { x: 12, y: 37, note: "Three default fields. More can be switched on in team settings." },
-    { x: 20, y: 92, note: "Recipients and document settings open in modals." },
+    { x: 20, y: 95, note: "Recipients are edited in a modal, one task at a time." },
+  ],
+  25: [
+    { x: 19, y: 7, note: "Ready to Send shows once every required field is placed." },
+    { x: 17, y: 90, note: "Document settings open in a modal too." },
     { x: 27, y: 96, note: "Undo and redo." },
+    { x: 82, y: 6, note: "Send counts down for 5 seconds, so you can cancel." },
   ],
 };
 
@@ -276,30 +292,30 @@ const quickSendPrototypes: Record<number, { body: string; links: { label: string
       { label: "The full flow", url: "https://sleet-cloth-69056845.figma.site" },
     ],
   },
-  24: {
+  25: {
     body: "Click through the finished Quick Send yourself.",
     links: [{ label: "Open the prototype", url: "https://peach-comma-28912996.figma.site" }],
   },
 };
 
 // Versions whose screen hasn't been added yet. They show a placeholder.
-const quickSendMissingScreens = new Set([16]);
+const quickSendMissingScreens = new Set<number>();
 
 // A Quick Send screen, for the rounds of feedback.
 const quickSendShot = (v: number, alt: string) => ({
   src: `/work/quick-send/iterations/${String(v).padStart(2, "0")}.webp`,
   w: 2000,
-  h: 1430,
+  h: 1425,
   alt,
 });
 
 // Every Quick Send screen, oldest first, in public/work/quick-send/iterations/.
-const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 24 }, (_, i) => ({
+const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 25 }, (_, i) => ({
   image: {
     src: quickSendMissingScreens.has(i + 1) ? null : `/work/quick-send/iterations/${String(i + 1).padStart(2, "0")}.webp`,
     w: 2000,
-    h: 1430,
-    alt: i === 23 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 24`,
+    h: 1425,
+    alt: i === 24 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 25`,
   },
   ...quickSendDetails[i + 1],
   pins: quickSendPins[i + 1],
@@ -435,7 +451,7 @@ export const stages: Stage[] = [
       },
       {
         type: "iterations",
-        eyebrow: "24 versions",
+        eyebrow: "25 versions",
         heading: "From first prototype to the final design.",
         body: "Every version was a prototype, tested with users before any development time was spent, and only the final design went live. Drag the bar to step through them, hover it to see what changed and why, or click a numbered pin on the screen.",
         items: quickSendIterations,
@@ -478,12 +494,12 @@ export const stages: Stage[] = [
             image: quickSendShot(19, "Quick Send version 19, with alerts in the sidebar for missing fields"),
           },
           {
-            title: "Versions 20 to 24 · Refining",
+            title: "Versions 20 to 25 · Refining",
             heard:
               "Requires Fields sat so close to Send that you could send by mistake. With several recipients, it wasn't clear that each one needed fields. Requires Fields scrolled away with the document, most people send more than a signature so More Field Types was an extra click, and the yellow alerts didn't read as a must-do. People also asked for undo and redo, and near the end said Send was too easy to click by accident. Once a document is sent, it's sent.",
             changed:
               "Requires Fields moved into the sidebar, leaving Send alone on the right as the final action. The sidebar became a list of recipient cards that expand to show their fields. Alerts turned red, the default fields became signature, text and date (with more in team settings), and editing recipients and document settings moved into modals. I added undo and redo, and Send now explains on hover what's still needed and counts down for 5 seconds, so you can cancel.",
-            image: quickSendShot(24, "Quick Send, the final design"),
+            image: quickSendShot(25, "Quick Send, the final design"),
           },
         ],
       },
