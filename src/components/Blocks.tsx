@@ -12,6 +12,7 @@ import { Brand } from "./Brand";
 import { IterationScrubber } from "./IterationScrubber";
 import { Video } from "./Video";
 import { Bento } from "./Bento";
+import { FlowPan } from "./FlowPan";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -291,27 +292,200 @@ function BlockView({
           </Reveal>
         </Section>
       );
-    case "insights":
+    case "insights": {
+      const labels = b.labels ?? ["We found", "So the design had to"];
+      const cols = labels.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
+      const cell = (label: string, text: string, i: number) => (
+        <div
+          key={label}
+          className={`rounded-3xl p-6 ${
+            i === labels.length - 1 ? "bg-accent-soft" : i === 0 ? "border border-line bg-raised" : "border border-line"
+          }`}
+        >
+          <span className="eyebrow not-italic md:hidden">{label}</span>
+          <p className={`mt-3 leading-snug md:mt-0 ${i === 0 ? "text-xl font-semibold tracking-[-0.01em]" : "text-lg"}`}>
+            {text}
+          </p>
+        </div>
+      );
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
-          <ol className="mt-12 space-y-4">
+          {/* On wider screens the labels head their columns once. */}
+          <div aria-hidden className={`mt-12 hidden gap-4 px-6 md:grid ${cols}`}>
+            {labels.map((l) => (
+              <span key={l} className="eyebrow">
+                {l}
+              </span>
+            ))}
+          </div>
+          <ol className="mt-4 space-y-4 md:mt-4">
             {b.items.map((it, i) => (
               <Reveal key={i} delay={0.06 * i}>
-                <li className={`grid gap-4 md:grid-cols-2 ${draftText(b.draft)}`}>
-                  <div className="rounded-3xl border border-line bg-raised p-6">
-                    <span className="eyebrow not-italic">We found</span>
-                    <p className="mt-3 text-lg leading-snug">{it.found}</p>
-                  </div>
-                  <div className="rounded-3xl border border-line bg-fg/[0.04] p-6">
-                    <span className="eyebrow not-italic">So the design had to</span>
-                    <p className="mt-3 text-lg leading-snug">{it.so}</p>
-                  </div>
+                <li className={`grid gap-3 md:gap-4 ${cols} ${draftText(b.draft)}`}>
+                  {[it.found, it.so, it.then].slice(0, labels.length).map((text, j) => cell(labels[j], text ?? "", j))}
                 </li>
               </Reveal>
             ))}
           </ol>
         </Section>
+      );
+    }
+    case "callouts":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <ol className="mt-14 md:mt-20">
+            {b.items.map((it, i) => {
+              const words = (
+                <>
+                  <p className="text-lg leading-relaxed text-fg/75 md:text-xl">{it.body}</p>
+                  {it.fix && (
+                    <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-on-accent">
+                      <span aria-hidden>→</span> {it.fix}
+                    </p>
+                  )}
+                </>
+              );
+              return (
+                <Reveal key={it.title}>
+                  <li className="grid gap-6 border-t border-line py-10 md:grid-cols-12 md:gap-10 md:py-14">
+                    <div className="md:col-span-6">
+                      <span className="font-mono text-sm text-accent-ink">{String(i + 1).padStart(2, "0")}</span>
+                      <h3 className="mt-4 text-[clamp(2rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] text-balance">
+                        {it.title}
+                      </h3>
+                      {it.image && <div className="mt-6 max-w-md">{words}</div>}
+                    </div>
+                    <div className={`md:col-span-6 ${it.image ? "" : "self-end md:pb-1"}`}>
+                      {it.image?.src ? (
+                        <div className="overflow-hidden rounded-2xl border border-line bg-raised">
+                          <Image
+                            src={it.image.src}
+                            alt={it.image.alt}
+                            width={it.image.w}
+                            height={it.image.h}
+                            sizes="(min-width: 768px) 640px, 100vw"
+                            className="h-auto w-full"
+                          />
+                        </div>
+                      ) : (
+                        words
+                      )}
+                    </div>
+                  </li>
+                </Reveal>
+              );
+            })}
+          </ol>
+        </Section>
+      );
+    case "overview":
+      return (
+        <Section>
+          <div className="grid gap-12 lg:grid-cols-12">
+            <Reveal className="lg:col-span-7">
+              {b.eyebrow && <p className="eyebrow">{b.eyebrow}</p>}
+              <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
+              <p className="mt-6 text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+            <Reveal delay={0.08} className="lg:col-span-4 lg:col-start-9">
+              <p className="eyebrow">What I did</p>
+              <ol className="mt-4 border-t border-line">
+                {b.did.map((d, i) => (
+                  <li key={d} className="flex gap-4 border-b border-line py-4 text-lg leading-snug font-medium">
+                    <span className="font-mono text-sm leading-7 text-accent-ink">{String(i + 1).padStart(2, "0")}</span>
+                    {d}
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+          </div>
+        </Section>
+      );
+    case "screens":
+      return (
+        <section className="border-t border-line py-20 md:py-28">
+          <div className="container-x">
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
+          </div>
+          <ol className="mt-14 space-y-16 md:mt-20 md:space-y-28">
+            {b.items.map((it, i) => (
+              <li key={it.title}>
+                <Reveal className="container-x flex flex-col gap-2 md:flex-row md:items-end md:justify-between md:gap-10">
+                  <h3 className="flex items-baseline gap-4 text-3xl font-bold tracking-[-0.03em] md:text-5xl">
+                    <span className="font-mono text-sm font-normal tracking-normal text-accent-ink">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {it.title}
+                  </h3>
+                  <p className="max-w-md text-lg leading-snug text-muted md:text-right">{it.body}</p>
+                </Reveal>
+                <Reveal className="mx-auto mt-6 max-w-[1720px] px-3 md:mt-8 md:px-6">
+                  <div className="overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
+                    {it.image.src && (
+                      <Image
+                        src={it.image.src}
+                        alt={it.image.alt}
+                        width={it.image.w}
+                        height={it.image.h}
+                        sizes="(min-width: 1720px) 1680px, 100vw"
+                        className="h-auto w-full"
+                      />
+                    )}
+                  </div>
+                </Reveal>
+              </li>
+            ))}
+          </ol>
+        </section>
+      );
+    case "flow":
+      return <FlowPan b={b} />;
+    case "outcome":
+      return (
+        <section className="bg-tertiary py-24 text-on-tertiary md:py-36">
+          <div className="container-x">
+            <Reveal>
+              {b.eyebrow && <p className="eyebrow !text-on-tertiary/70">{b.eyebrow}</p>}
+              <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
+            </Reveal>
+            <ol className="mt-14 md:mt-20">
+              {b.items.map((it, i) => (
+                <Reveal key={it.title}>
+                  <li className="grid gap-4 border-t border-on-tertiary/20 py-10 md:grid-cols-12 md:gap-10 md:py-14">
+                    <span className="font-mono text-sm text-on-tertiary/60 md:col-span-1">{String(i + 1).padStart(2, "0")}</span>
+                    <p className="text-[clamp(2.25rem,5.6vw,5rem)] leading-[0.98] font-bold tracking-[-0.04em] text-balance md:col-span-7">
+                      {it.title}
+                    </p>
+                    <p className="self-end text-lg leading-relaxed text-on-tertiary/75 md:col-span-4">{it.body}</p>
+                  </li>
+                </Reveal>
+              ))}
+            </ol>
+            {b.stats && (
+              <dl className="mt-6 grid gap-4 sm:grid-cols-3">
+                {b.stats.map((st) => (
+                  <div key={st.label} className="flex flex-col-reverse justify-end gap-3 rounded-3xl bg-on-tertiary/[0.08] p-7">
+                    <dt className="text-on-tertiary/75">{st.label}</dt>
+                    <dd className="text-[clamp(2.5rem,5vw,4.5rem)] leading-none font-bold tracking-[-0.04em] tabular-nums">{st.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {b.todo && <p className="mt-6 border-t border-on-tertiary/20 pt-6 text-on-tertiary/60 italic">{b.todo}</p>}
+          </div>
+        </section>
       );
     case "options":
       return (

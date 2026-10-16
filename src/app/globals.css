@@ -237,3 +237,14 @@ h2 {
 .has-cursor iframe {
   cursor: auto !important;
 }
+
+/* The ring on the scrubber's play button, filling until the next version. */
+.autoplay-ring {
+  stroke-dashoffset: 1;
+  animation: autoplay-ring linear forwards;
+}
+@keyframes autoplay-ring {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { cardInfo, eras, getProject, pageProjects, projectHref, projectImage } from "@/projects";
+import { cardInfo, eras, getProject, pageProjects, projectHref, projectImage, type Project } from "@/projects";
 import { Blocks } from "@/components/Blocks";
 import { ProjectLink } from "@/components/ProjectTransition";
 
@@ -24,7 +24,8 @@ export default async function ProjectPage({ params }: Props) {
 
   const era = eras.find((e) => e.id === p.era);
   const i = pageProjects.indexOf(p);
-  const next = pageProjects[(i + 1) % pageProjects.length];
+  const next = (p.next && getProject(p.next.slug)) || pageProjects[(i + 1) % pageProjects.length];
+  const nextLine = p.next && next.slug === p.next.slug ? p.next.label : next.summary;
   const hero = projectImage(p);
 
   return (
@@ -44,6 +45,9 @@ export default async function ProjectPage({ params }: Props) {
           <h1 className="mt-4 text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.04em]">
             {p.title}
           </h1>
+          {p.statement ? (
+            <StoryHeader p={p} />
+          ) : (
           <div className="mt-8 grid gap-10 md:grid-cols-12">
             <p className="text-lg leading-relaxed text-fg/80 md:col-span-7 md:text-xl">{p.intro}</p>
             <dl className="grid grid-cols-2 gap-6 text-sm md:col-span-4 md:col-start-9 md:grid-cols-1">
@@ -69,6 +73,7 @@ export default async function ProjectPage({ params }: Props) {
               </div>
             </dl>
           </div>
+          )}
         </div>
         {hero?.src && (
           <div className="container-x mt-14 md:mt-20">
@@ -95,10 +100,50 @@ export default async function ProjectPage({ params }: Props) {
             <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent-ink">
               {next.title} <span aria-hidden>→</span>
             </span>
-            <span className="mt-3 block text-muted">{next.summary}</span>
+            <span className="mt-3 block text-lg text-muted">{nextLine}</span>
           </ProjectLink>
         </div>
       </nav>
     </article>
+  );
+}
+
+/**
+ * The opening of a case study told as a story: the problem as one big
+ * statement, my role, where the work sat, and what it achieved.
+ */
+function StoryHeader({ p }: { p: Project }) {
+  return (
+    <>
+      <p className="mt-10 max-w-5xl text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
+        {p.statement}
+      </p>
+      {p.roleStatement && (
+        <p className="mt-8 max-w-3xl text-lg leading-relaxed text-fg/75 md:text-xl">{p.roleStatement}</p>
+      )}
+      {p.context && (
+        <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 md:grid-cols-4">
+          {p.context.map((c) => (
+            <div key={c.label}>
+              <dt className="eyebrow">{c.label}</dt>
+              <dd className="mt-2 text-lg leading-snug font-semibold tracking-[-0.01em] md:text-xl">{c.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {p.impact && (
+        <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+          {p.impact.map((s) => (
+            // The number reads first, but the label comes first in the markup.
+            <div key={s.label} className="flex flex-col-reverse justify-end gap-3 rounded-3xl bg-accent-soft p-6 md:p-7">
+              <dt className="text-sm leading-snug text-fg/75 md:text-base">{s.label}</dt>
+              <dd className="text-[clamp(2.5rem,5vw,4rem)] leading-none font-bold tracking-[-0.04em] text-accent-ink tabular-nums">
+                {s.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </>
   );
 }

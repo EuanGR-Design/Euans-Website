@@ -79,7 +79,7 @@ export function LoopVideo({
         type="button"
         onClick={() => setWantsPlay(!playing)}
         aria-label={playing ? "Pause clip" : "Play clip"}
-        className="absolute right-3 bottom-3 flex size-9 items-center justify-center rounded-full bg-black/55 text-white opacity-70 backdrop-blur transition-opacity group-hover/video:opacity-100 hover:bg-black/75 focus-visible:opacity-100"
+        className="absolute top-3 right-3 z-20 flex size-9 items-center justify-center rounded-full bg-black/55 text-white opacity-70 backdrop-blur transition-opacity group-hover/video:opacity-100 hover:bg-black/75 focus-visible:opacity-100"
       >
         {playing ? (
           <svg viewBox="0 0 16 16" className="size-3.5" fill="currentColor" aria-hidden>

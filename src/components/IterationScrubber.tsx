@@ -32,6 +32,9 @@ const prompts = {
  * only one row (the version, the bar and the full-screen button) sits below.
  */
 const SCRUBBER_ID = "iterations";
+// Autoplay: time on each version, and the pause after someone takes over.
+const STEP = 3500;
+const IDLE = 10000;
 const SHOW_EVENT = "iterations:show";
 
 /** Scrolls to the iterations scrubber and shows `version`, counted from 1. */
@@ -64,6 +67,33 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
   const closeButton = useRef<HTMLButtonElement>(null);
   // Versions whose "Try the prototype" card has been dismissed.
   const [closedPrompts, setClosedPrompts] = useState<Set<number>>(() => new Set());
+
+  // Autoplay: steps through the versions on its own while the scrubber is in
+  // view. It holds while a comment is open or the bar is in use, goes quiet
+  // for IDLE after any click or key press (and briefly while the mouse moves
+  // over it), then carries on. The play button turns it off for good, and
+  // reduced motion leaves it off to begin with.
+  const [auto, setAuto] = useState(false);
+  const [inView, setInView] = useState(false);
+  const quietUntil = useRef(0);
+  // Bumped to restart the autoplay timer.
+  const [tick, setTick] = useState(0);
+  const [counting, setCounting] = useState(false);
+  const hush = (ms: number) => {
+    const until = Date.now() + ms;
+    if (until - quietUntil.current < 1000) return;
+    quietUntil.current = until;
+    setTick((n) => n + 1);
+  };
+
+  useEffect(() => {
+    setAuto(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const el = inlineRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.45 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!dragging) return;
@@ -125,6 +155,33 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
     setOpenPin(null);
     setSeen((s) => (s.has(next - 1) && s.has(next) && s.has(next + 1) ? s : new Set([...s, next - 1, next, next + 1])));
   };
+
+  const running = auto && (inView || full) && !(hover || dragging || focused || openPin !== null);
+  // The final design stays up a little longer before it starts over.
+  const step = index === last ? STEP * 2 : STEP;
+  useEffect(() => {
+    if (!running) {
+      setCounting(false);
+      return;
+    }
+    const rest = quietUntil.current - Date.now();
+    if (rest > 0) {
+      setCounting(false);
+      const t = setTimeout(() => setTick((n) => n + 1), rest);
+      return () => clearTimeout(t);
+    }
+    setCounting(true);
+    const t = setTimeout(() => {
+      if (index === last) {
+        setPrev(index);
+        setIndex(0);
+        setOpenPin(null);
+      } else go(index + 1);
+    }, step);
+    return () => clearTimeout(t);
+    // `go` is rebuilt every render; the timer only restarts when these change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [running, index, tick]);
 
   const item = items[index];
   const p = last > 0 ? index / last : 0;
@@ -212,7 +269,12 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
   const reserved = full ? "7rem" : "10rem";
 
   const scrubber = (
-    <div className="flex items-center justify-center gap-3 lg:gap-5">
+    <div
+      className="flex items-center justify-center gap-3 lg:gap-5"
+      onPointerMove={(e) => e.pointerType === "mouse" && hush(4000)}
+      onPointerDownCapture={() => hush(IDLE)}
+      onKeyDownCapture={() => hush(IDLE)}
+    >
       {arrow(-1, "hidden md:flex")}
 
       <div className="min-w-0 shrink" style={{ width: `calc((100dvh - ${reserved}) * ${ratio})` }}>
@@ -293,7 +355,47 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
 
         <div className="mt-4 flex items-center gap-3">
           {arrow(-1, "flex md:hidden")}
-          <p className="hidden shrink-0 text-sm text-muted tabular-nums md:block" aria-live="polite">
+          <button
+            type="button"
+            onClick={() => {
+              setAuto(!auto);
+              quietUntil.current = 0;
+              setTick((n) => n + 1);
+            }}
+            aria-pressed={auto}
+            aria-label={auto ? "Stop playing through versions" : "Play through versions"}
+            title={auto ? "Stop autoplay" : "Autoplay"}
+            className={`${roundButton} relative flex`}
+          >
+            {auto ? (
+              <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
+                <rect x="3" y="2" width="3.5" height="12" rx="1" />
+                <rect x="9.5" y="2" width="3.5" height="12" rx="1" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 16 16" className="ml-0.5 h-3.5 w-3.5" fill="currentColor" aria-hidden>
+                <path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5Z" />
+              </svg>
+            )}
+            {/* A ring that fills while it waits to move on. */}
+            {counting && (
+              <svg key={`${index}-${tick}`} viewBox="0 0 40 40" className="absolute -inset-px -rotate-90" aria-hidden>
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="19"
+                  fill="none"
+                  stroke="var(--accent)"
+                  strokeWidth="2"
+                  pathLength={1}
+                  strokeDasharray="1"
+                  className="autoplay-ring"
+                  style={{ animationDuration: `${step}ms` }}
+                />
+              </svg>
+            )}
+          </button>
+          <p className="hidden shrink-0 text-sm text-muted tabular-nums md:block" aria-live={auto ? "off" : "polite"}>
             <span className="sr-only">{label}</span>
             <span aria-hidden>
               <span className="text-fg">{index + 1}</span> / {items.length}

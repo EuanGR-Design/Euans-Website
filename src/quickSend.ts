@@ -301,13 +301,14 @@ export const quickSendIterations: Extract<Block, { type: "iterations" }>["items"
 
 // How the prototypes were tested, and what happened after launch.
 export const quickSendTesting: Block = {
-  type: "text",
+  type: "points",
   eyebrow: "Testing",
-  heading: "How I ran testing.",
-  body: [
-    "Every version on this page was a Figma prototype, not a release. We were a small team and developer time was precious, so I didn't want to commit it until we were confident in the design, and I was careful about when it was ready for handoff. Prototypes let us put something real in front of users using only my time, not the developers'.",
-    "I tested them with users in interviews over video calls, many of them the same people whose feedback started the project, set up by their account managers. I worked from a script of questions I needed answered, then let people explore the prototype freely and say whatever came to mind. Alongside that, I ran internal workshops and feedback rounds where several people went through the user flows and left comments, and I compiled and worked through every one before the next version.",
-    "The final design launched as an MVP with a beta label. Since then it has kept evolving in smaller steps, guided by screen recordings and heatmaps in Hotjar and usage data in PostHog. The beta also became a safe place to test the Compose editor component, so what we learned fed into the main editor without putting anyone's everyday sending at risk.",
+  heading: "How I tested it.",
+  items: [
+    { title: "Prototypes, not releases", body: "Every version was a Figma prototype, so testing cost my time, not the developers'." },
+    { title: "Interviews with real users", body: "Video calls with the people whose feedback started it, set up by their account managers." },
+    { title: "Internal workshops", body: "Colleagues walked the flows and left comments. I worked through every one before the next version." },
+    { title: "A beta, then the data", body: "Launched as an MVP with a beta label, then refined with Hotjar and PostHog." },
   ],
 };
 

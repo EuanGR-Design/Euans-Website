@@ -32,10 +32,16 @@ export function Bento({ feature, tiles }: { feature?: Feature; tiles: BentoTile[
           <Reveal
             key={t.title}
             delay={0.05 * (i % 3)}
-            className={`flex flex-col overflow-hidden rounded-3xl border border-line bg-raised ${spans[t.span]}`}
+            className={`group/tile relative flex flex-col overflow-hidden rounded-3xl border border-line bg-raised ${spans[t.span]}`}
           >
-            <Media tile={t} />
-            <Caption title={t.title} caption={t.caption} compare={t.compare} grow={t.kind === "note"} />
+            {t.kind === "note" ? (
+              <Caption title={t.title} caption={t.caption} compare={t.compare} grow />
+            ) : (
+              <>
+                <Media tile={t} />
+                <Overlay title={t.title} caption={t.caption} compare={t.compare} />
+              </>
+            )}
           </Reveal>
         ))}
       </div>
@@ -70,6 +76,31 @@ function Media({ tile }: { tile: BentoTile }) {
   );
 }
 
+/**
+ * A clip's words, in a frosted panel along its bottom edge. With a mouse it
+ * stays hidden until the tile is hovered or focused, so the clip leads; on
+ * touch screens only the title shows.
+ */
+function Overlay({ title, caption, compare }: { title: string; caption: string; compare?: number }) {
+  return (
+    <div className="pointer-events-none absolute inset-x-2 bottom-2 z-10 transition-[opacity,translate] duration-300 group-focus-within/tile:translate-y-0 group-focus-within/tile:opacity-100 group-hover/tile:translate-y-0 group-hover/tile:opacity-100 md:inset-x-3 md:bottom-3 [@media(hover:hover)]:translate-y-2 [@media(hover:hover)]:opacity-0">
+      <div className="pointer-events-auto inline-block max-w-full rounded-2xl bg-bg/80 px-4 py-3 shadow-lg backdrop-blur-md md:px-5 md:py-4">
+        <h3 className="text-sm font-semibold tracking-tight md:text-base">{title}</h3>
+        <p className="mt-1 hidden text-sm leading-snug text-fg/75 [@media(hover:hover)]:block">{caption}</p>
+        {compare && (
+          <button
+            type="button"
+            onClick={() => showIteration(compare)}
+            className="mt-2 hidden text-sm font-medium text-accent-ink hover:underline [@media(hover:hover)]:block"
+          >
+            Compare with version {compare}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Caption({
   title,
   caption,
@@ -91,7 +122,7 @@ function Caption({
           onClick={() => showIteration(compare)}
           className="mt-2 self-start text-sm font-medium text-accent-ink hover:underline"
         >
-          Compare with version {compare} ↑
+          Compare with version {compare}
         </button>
       )}
     </div>
