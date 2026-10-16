@@ -305,7 +305,7 @@ export const quickSendTesting: Block = {
   eyebrow: "Testing",
   heading: "How I tested it.",
   items: [
-    { title: "Prototypes, not releases", body: "Every version was a Figma prototype, so testing cost my time, not the developers'." },
+    { title: "Designs, not releases", body: "Every version was a Figma design, so testing cost my time, not the developers'. Four became clickable prototypes." },
     { title: "Interviews with real users", body: "Video calls with the people whose feedback started it, set up by their account managers." },
     { title: "Internal workshops", body: "Colleagues walked the flows and left comments. I worked through every one before the next version." },
     { title: "A beta, then the data", body: "Launched as an MVP with a beta label, then refined with Hotjar and PostHog." },
@@ -318,7 +318,7 @@ export const quickSendInProduction: Extract<Block, { type: "bento" }> = {
   id: "in-production",
   eyebrow: "In production",
   heading: "What it became.",
-  body: "These are recordings of Quick Send live today. Set them beside the prototypes above and you can see how closely the build follows the final design.",
+  body: "These are recordings of Quick Send live today. Set them beside the designs above and you can see how closely the build follows the final design.",
   feature: {
     src: "/work/quick-send/send-flow.mp4",
     poster: "/work/quick-send/send-flow-poster.jpg",
@@ -439,7 +439,7 @@ export const quickSendInProduction: Extract<Block, { type: "bento" }> = {
       kind: "note",
       span: "full",
       title: "Built as designed.",
-      caption: "Every version was tested as a prototype first, so by handoff there was little left to guess. The live product follows the final design closely, down to the recipient colours and the countdown on Send.",
+      caption: "Every version was tested in Figma first, so by handoff there was little left to guess. The live product follows the final design closely, down to the recipient colours and the countdown on Send.",
       compare: 25,
     },
   ],

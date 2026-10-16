@@ -13,6 +13,7 @@ import { IterationScrubber } from "./IterationScrubber";
 import { Video } from "./Video";
 import { Bento } from "./Bento";
 import { FlowPan } from "./FlowPan";
+import { BrowserFrame } from "./BrowserFrame";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -419,10 +420,10 @@ function BlockView({
               </Reveal>
             )}
           </div>
-          <ol className="mt-14 space-y-16 md:mt-20 md:space-y-28">
+          <ol className="container-x mt-14 space-y-16 md:mt-20 md:space-y-24">
             {b.items.map((it, i) => (
               <li key={it.title}>
-                <Reveal className="container-x flex flex-col gap-2 md:flex-row md:items-end md:justify-between md:gap-10">
+                <Reveal className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between md:gap-10">
                   <h3 className="flex items-baseline gap-4 text-3xl font-bold tracking-[-0.03em] md:text-5xl">
                     <span className="font-mono text-sm font-normal tracking-normal text-accent-ink">
                       {String(i + 1).padStart(2, "0")}
@@ -431,19 +432,8 @@ function BlockView({
                   </h3>
                   <p className="max-w-md text-lg leading-snug text-muted md:text-right">{it.body}</p>
                 </Reveal>
-                <Reveal className="mx-auto mt-6 max-w-[1720px] px-3 md:mt-8 md:px-6">
-                  <div className="overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
-                    {it.image.src && (
-                      <Image
-                        src={it.image.src}
-                        alt={it.image.alt}
-                        width={it.image.w}
-                        height={it.image.h}
-                        sizes="(min-width: 1720px) 1680px, 100vw"
-                        className="h-auto w-full"
-                      />
-                    )}
-                  </div>
+                <Reveal className="mt-6 md:mt-8">
+                  <BrowserFrame video={it.video} />
                 </Reveal>
               </li>
             ))}

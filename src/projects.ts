@@ -170,8 +170,15 @@ export type Block =
     }
   // A few lines on the project and a list of what I did on it.
   | { type: "overview"; eyebrow?: string; heading: string; body: string; did: string[] }
-  // Full-width screens one after another, each with a step number and caption.
-  | { type: "screens"; eyebrow?: string; heading: string; body?: string; items: { title: string; body: string; image: Img }[] }
+  // The flow step by step: a short looping clip of each step, playing in a
+  // browser window on a blue panel the shape of the hero.
+  | {
+      type: "screens";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      items: { title: string; body: string; video: { src: string; poster: string; label: string } }[];
+    }
   // A wide annotated flow that pans sideways as the page scrolls. With no
   // `src` it shows a slot until the image is added.
   | { type: "flow"; eyebrow?: string; heading: string; body?: string; image: Img }
@@ -299,8 +306,12 @@ const quickSendHero: Img = {
   alt: "Quick Send in a browser: colour-coded recipients on the left, their signature fields on the document and a countdown to cancel the send",
 };
 
-// A still from the Quick Send recording, for the screen-by-screen section.
-const qsScreen = (name: string, alt: string): Img => ({ src: `/work/quick-send/screens/${name}.webp`, w: 1920, h: 1080, alt });
+// A short loop of one step of the Quick Send recording.
+const qsStep = (name: string, label: string) => ({
+  src: `/work/quick-send/steps/${name}.mp4`,
+  poster: `/work/quick-send/steps/${name}-poster.jpg`,
+  label,
+});
 
 export const projects: Project[] = [
   {
@@ -385,7 +396,7 @@ export const projects: Project[] = [
     statement:
       "New users just wanted to send a document. We made them build a template first, so most trials ended before anything was sent.",
     roleStatement:
-      "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 prototypes with users and launched one flow from upload to sent.",
+      "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
     context: [
       { label: "Company", value: "Legalesign, in-house" },
       { label: "Product", value: "B2B SaaS e-signature web app" },
@@ -394,7 +405,7 @@ export const projects: Project[] = [
     ],
     impact: [
       { value: "4 → 1", label: "Four steps in four places became one flow" },
-      { value: "25", label: "Prototypes tested with users before any build" },
+      { value: "25", label: "Versions tested with users, four as clickable prototypes" },
       { value: "3", label: "Products built on the one editor component" },
     ],
     next: { slug: "template-editor", label: "See how Compose powers the Template Editor too." },
@@ -417,7 +428,7 @@ export const projects: Project[] = [
         did: [
           "Found the problem in feedback and session recordings",
           "Shaped the brief as product owner",
-          "Designed and tested 25 prototypes with users",
+          "Designed 25 versions and tested them with users",
           "Handed off annotated flows to development",
           "Launched it as a beta and kept iterating",
         ],
@@ -434,12 +445,10 @@ export const projects: Project[] = [
           {
             title: "Template first, send second",
             body: "To send a document, you first had to turn it into a template.",
-            image: { src: "/work/compare/send-before.webp", w: 2400, h: 1337, alt: "The old send page, with a single recipient row and a Final Step: Create & Send button" },
           },
           {
             title: "Four steps in four places",
             body: "Upload, find it in the library, make a template, then pick that template to send.",
-            image: { src: "/work/compare/library-before.webp", w: 2400, h: 1337, alt: "The old document library, a plain list of uploaded documents" },
           },
           {
             title: "A Send button that led nowhere",
@@ -507,7 +516,6 @@ export const projects: Project[] = [
             title: "A cluttered UI",
             body: "Two sidebars showed every recipient, field and control at once.",
             fix: "Simplify",
-            image: { src: "/work/compare/editor-before.webp", w: 2400, h: 1337, alt: "The old editor, with lists of signer and sender fields beside the document" },
           },
           {
             title: "Navigation that lost people",
@@ -545,33 +553,13 @@ export const projects: Project[] = [
           { title: "Safe to test", body: "A beta for the new editor, away from daily work." },
         ],
       },
+      quickSendTesting,
       {
-        type: "flow",
-        eyebrow: "User flow",
-        heading: "From Send to sent.",
-        image: { src: null, w: 6000, h: 1500, alt: "The annotated Quick Send user flow, screen by screen" },
-      },
-      {
-        type: "screens",
-        eyebrow: "How it works",
-        heading: "Screen by screen.",
-        items: [
-          { title: "Start", body: "Quick Send leads the dashboard, and goes straight to upload. Drop in a document, or several PDFs to merge.", image: qsScreen("01-start", "The dashboard, with Quick Send first in a row of ways to send") },
-          { title: "Recipients", body: "Add who it's going to, up to 12 people, each with their own colour.", image: qsScreen("02-recipients", "The Recipient Details window with two recipients added") },
-          { title: "Fields", body: "Place each person's fields. Alerts show what's still missing until it's ready.", image: qsScreen("03-fields", "A tenancy agreement with colour-coded signature and date fields for three recipients") },
-          { title: "Send", body: "Send counts down for five seconds, so a mistaken click can be cancelled.", image: qsScreen("04-undo", "The Send button counting down with Cancel, and a Pending Send note") },
-          { title: "Sent", body: "See who it went to and where it's up to.", image: qsScreen("05-sent", "The Sending confirmation listing the document and its three recipients") },
-          { title: "What next", body: "Send again with the same document, the same people, or something new.", image: qsScreen("06-next", "A What would you like to send? dialog with three options") },
-        ],
-      },
-      {
-        ...quickSendInProduction,
-        id: "up-close",
-        eyebrow: "Up close",
-        heading: "The details, live.",
-        body: undefined,
-        feature: undefined,
-        tiles: quickSendInProduction.tiles.filter((t) => t.kind !== "note"),
+        type: "iterations",
+        eyebrow: "25 versions",
+        heading: "From Figma screens to prototypes to the final design.",
+        body: "Versions 1 to 14 were screens I shared for feedback. From version 15, users tried clickable prototypes. Nothing was built until the design settled. It plays through on its own; drag the bar or click a numbered pin to take over.",
+        items: quickSendIterations,
       },
       {
         type: "points",
@@ -586,13 +574,34 @@ export const projects: Project[] = [
           { title: "A Send you can't hit by accident", body: "Bold, explains what's missing, and counts down before sending." },
         ],
       },
-      quickSendTesting,
       {
-        type: "iterations",
-        eyebrow: "25 versions",
-        heading: "From first prototype to the final design.",
-        body: "Every version was tested with users before any build. It plays through on its own; drag the bar, or click a numbered pin, to take over.",
-        items: quickSendIterations,
+        type: "flow",
+        eyebrow: "User flow",
+        heading: "From Send to sent.",
+        image: { src: null, w: 6000, h: 1500, alt: "The annotated Quick Send user flow, screen by screen" },
+      },
+      {
+        type: "screens",
+        eyebrow: "How it works",
+        heading: "Screen by screen.",
+        items: [
+          { title: "Start", body: "Quick Send leads the dashboard. One click starts the flow.", video: qsStep("01-start", "Clicking Quick Send on the dashboard") },
+          { title: "Upload", body: "Drop in a document, or several PDFs to merge into one.", video: qsStep("02-upload", "A document uploading, with a progress bar across the top") },
+          { title: "Recipients", body: "Add who it's going to, up to 12 people, each in their own colour.", video: qsStep("03-recipients", "Adding recipients in the Recipient Details window") },
+          { title: "Fields", body: "Drag each person's fields onto the document. Alerts show what's still missing.", video: qsStep("04-fields", "Dragging a signature field and a date field onto a tenancy agreement") },
+          { title: "Send", body: "Send counts down for five seconds, so a mistaken click can be cancelled.", video: qsStep("05-send", "Clicking Send Document, which counts down with a Cancel button") },
+          { title: "Sending", body: "See who it went to and where it's up to.", video: qsStep("06-sending", "The Sending screen animating into Example Doc Sent") },
+          { title: "What next", body: "Send another with the same document or people, or track it on the dashboard.", video: qsStep("07-track", "Opening Send Another, then Track on Listings, which opens the Sent page") },
+        ],
+      },
+      {
+        ...quickSendInProduction,
+        id: "up-close",
+        eyebrow: "Up close",
+        heading: "The details, live.",
+        body: undefined,
+        feature: undefined,
+        tiles: quickSendInProduction.tiles.filter((t) => t.kind !== "note"),
       },
       {
         type: "outcome",
