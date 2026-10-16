@@ -408,7 +408,7 @@ export const stages: Stage[] = [
     blocks: [
       {
         type: "text",
-        eyebrow: "The brief",
+        eyebrow: "The research behind it",
         heading: "Several signals, one problem.",
         body: [
           "Trial users had a high bounce rate, and few of them ever reached a first send. In-app feedback and Hotjar recordings showed why. The head of sales and I grouped the feedback into shared pain points, and the recordings showed dead ends, U-turns and rage clicks, nearly all in the send flow. People wanted to upload a document and send it, but we made them upload, build a template and then send, in three different places. And they weren't occasional users: many were lawyers and other professionals sending one-off documents, high-value customers whose needs didn't fit our workflow.",
