@@ -37,7 +37,7 @@ const declutter = "Decluttering";
 const signatureOnly = "Signature only";
 const recipientsFirst = "Recipients first";
 const compose = "Joined with Compose";
-const refining = "Refining";
+const refining = "Refining after launch";
 
 const quickSendDetails: Record<number, { stage?: string; change?: string; feedback?: string }> = {
   1: {
@@ -127,7 +127,7 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
   },
   18: {
     stage: compose,
-    change: "Added alerts in the sidebar: a red dot on recipients who still need fields, and a caution icon on the field to place.",
+    change: "Added alerts in the sidebar: a red dot on recipients who still need fields, and a caution icon on the field to place. This version launched as an MVP beta.",
     feedback: "Our main customer contact loved the dropdown, but wanted more alerts on screen.",
   },
   19: {
@@ -259,7 +259,7 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
 const quickSendPrototypes: Record<number, { url: string; body: string }> = {
   18: {
     url: "https://gloss-pod-32624458.figma.site",
-    body: "Click through Quick Send as it was once it joined up with Compose, with the first required-field alerts.",
+    body: "Click through the version that launched as an MVP beta, once Quick Send had joined up with Compose.",
   },
   23: {
     url: "https://peach-comma-28912996.figma.site",
@@ -407,10 +407,18 @@ export const stages: Stage[] = [
     why: "Quick Send went through the most rounds of prototypes and user feedback, so I use it to show how I iterate.",
     blocks: [
       {
+        type: "text",
+        eyebrow: "Where it started",
+        heading: "Real users set the scope.",
+        body: [
+          "Quick Send didn't start as a feature idea. In-app feedback and Hotjar recordings showed trial users failing to reach their goal: they wanted to upload a document and send it, and the product made them build a template first. I used those insights to make the case for Quick Send, and that feedback set its initial scope and requirements.",
+        ],
+      },
+      {
         type: "iterations",
         eyebrow: "23 versions",
         heading: "From first prototype to the final design.",
-        body: "Drag the bar to step through every version of Quick Send, oldest first. Hover the bar to see what changed and why, or click a numbered pin on the screen.",
+        body: "Versions 1 to 18 were design prototypes tested with users. Version 18 launched as an MVP beta, and versions 19 to 23 came from watching it in real use. Drag the bar to step through them, hover it to see what changed and why, or click a numbered pin on the screen.",
         items: quickSendIterations,
       },
       {
@@ -451,9 +459,9 @@ export const stages: Stage[] = [
             image: quickSendShot(18, "Quick Send version 18, with alerts in the sidebar for missing fields"),
           },
           {
-            title: "Versions 19 to 23 · Refining",
+            title: "Versions 19 to 23 · After launch",
             heard:
-              "Requires Fields sat so close to Send that you could send by mistake. With several recipients, it wasn't clear that each one needed fields. Requires Fields scrolled away with the document, most people send more than a signature so More Field Types was an extra click, and the yellow alerts didn't read as a must-do. People also asked for undo and redo, and near the end said Send was too easy to click by accident. Once a document is sent, it's sent.",
+              "With the MVP live as a beta, I watched real sessions in Hotjar and PostHog alongside direct feedback. Requires Fields sat so close to Send that you could send by mistake. With several recipients, it wasn't clear that each one needed fields. Requires Fields scrolled away with the document, most people send more than a signature so More Field Types was an extra click, and the yellow alerts didn't read as a must-do. People also asked for undo and redo, and near the end said Send was too easy to click by accident. Once a document is sent, it's sent.",
             changed:
               "Requires Fields moved into the sidebar, leaving Send alone on the right as the final action. The sidebar became a list of recipient cards that expand to show their fields. Alerts turned red, the default fields became signature, text and date (with more in team settings), and editing recipients and document settings moved into modals. I added undo and redo, and Send now explains on hover what's still needed and counts down for 5 seconds, so you can cancel.",
             image: quickSendShot(23, "Quick Send, the final design"),
@@ -465,8 +473,8 @@ export const stages: Stage[] = [
         eyebrow: "Testing",
         heading: "How I ran testing.",
         body: [
-          "Every round of feedback set the direction for the next version. Most of it came from video calls with customers, many of them the same people whose feedback started the project. Their account managers set up the calls. I worked from a script of questions I needed answered, then let people explore the prototype freely and say whatever came to mind.",
-          "Alongside that, I ran internal review sessions where several people went through the user flows together and left comments. I compiled every comment and worked through them before the next version. Once Quick Send launched with a beta label, real use on the live product added another layer of feedback, without putting anyone's everyday sending at risk.",
+          "Before launch, every version was a design prototype, not a release. I tested them with users in interviews over video calls, many of them the same people whose feedback started the project, set up by their account managers. I worked from a script of questions I needed answered, then let people explore the prototype freely and say whatever came to mind. Alongside that, I ran internal review sessions where several people went through the user flows and left comments, and I compiled and worked through every one before the next version.",
+          "Version 18 launched as an MVP with a beta label, so we could learn from real use. From then on, Hotjar and PostHog gave us screen recordings, heatmaps and usage numbers, a mix of qualitative and quantitative data that shaped versions 19 to 23. The beta also became a safe place to test the Compose editor component, so what we learned fed into the main editor without putting anyone's everyday sending at risk.",
         ],
       },
       {
