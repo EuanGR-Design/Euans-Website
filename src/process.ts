@@ -8,6 +8,7 @@
 // follow the slug.
 
 import type { Block } from "./projects";
+import { quickSendInProduction, quickSendIterations, quickSendShot, quickSendTesting } from "./quickSend";
 
 export type StageId = "research" | "ideation" | "iteration" | "outcome";
 
@@ -146,31 +147,74 @@ export const stages: Stage[] = [
       "I put prototypes in front of real users early and often, and let what they struggle with decide what changes next.",
     question: "How testing changed the design",
     project: "quick-send",
-    problem: "Trial users were bouncing before they'd sent anything, and the send flow was the reason.",
+    problem: "Trial users were bouncing before their first send, because sending meant building a template first.",
     why: "Quick Send went through the most rounds of prototypes and user feedback, so I use it to show how I iterate.",
     blocks: [
       {
-        type: "image",
-        image: { src: null, w: 1440, h: 900, alt: "The first Quick Send prototype", caption: "Where it started: the first prototype." },
+        type: "text",
+        eyebrow: "The research behind it",
+        heading: "From research to the brief.",
+        body: [
+          "Trial users had a high bounce rate, and few of them ever reached a first send. In-app feedback and Hotjar recordings showed why. The feedback was grouped into shared pain points, and the recordings showed dead ends, U-turns and rage clicks, nearly all in the send flow. People wanted to upload a document and send it, but we made them upload, build a template and then send, in three different places. And they weren't occasional users: many were lawyers and other professionals sending one-off documents, high-value customers whose needs didn't fit our workflow.",
+          "At the same time, customers were asking for Compose, an editor they could embed in their own products. Working as product owner as well as designer, I saw that one piece of work could answer both. Together, those insights showed the opportunity for Quick Send, built around Compose, and that became the brief: its scope and requirements came straight from what users had told and shown us.",
+        ],
+      },
+      {
+        type: "iterations",
+        eyebrow: "25 versions",
+        heading: "From first prototype to the final design.",
+        body: "Every version was a prototype, tested with users before any development time was spent, and only the final design went live. Drag the bar to step through them, hover it to see what changed and why, or click a numbered pin on the screen.",
+        items: quickSendIterations,
       },
       {
         type: "rounds",
         eyebrow: "Rounds of feedback",
         heading: "What testers told us, and what changed.",
         items: [
-          { heard: "What testers struggled with in this round.", changed: "The change you made because of it.", image: null },
-          { heard: "What testers struggled with in this round.", changed: "The change you made because of it.", image: null },
-          { heard: "What testers struggled with in this round.", changed: "The change you made because of it.", image: null },
+          {
+            title: "Versions 1 to 2 · Decluttering",
+            heard:
+              "The editor showed everything at once: every field type, two sidebars and all the document options. Testers said it was too much information, and that they didn't need most of those fields to send a simple document. Hiding some of it helped, but the next round still found the screen too busy.",
+            changed:
+              "I moved the extra field types behind a More Field Types dropdown, and made the right sidebar show only the details of the field you'd selected. Then I tried Minimised and Advanced toggles, so people could choose a stripped-back screen or the full set of features.",
+            image: quickSendShot(2, "Quick Send version 2, with Minimised and Advanced toggles"),
+          },
+          {
+            title: "Versions 3 to 8 · Signature only",
+            heard:
+              "Internal testing suggested that a quick send only needs a signature. It was an assumption, so we tested it, and pushed it further each time. Letting signers sign anywhere, with no fields placed, was wrong: senders need signatures in specific places, and losing that control made signing worse. A one-field shortcut with an optional full preparation step was wrong too. Most people place more than one field, so the shortcut added a step for them, and splitting the flow broke their idea of how preparing a document works.",
+            changed:
+              "I made the document the centre of the page, on an open canvas with floating panels, with what you need first on the left. Over six versions I cut back to a single signature field, tried skipping fields altogether, brought one field back with a Go Straight to Send shortcut, then committed to place and send. Looking back it was a rabbit hole, and testing is what pulled the design back out of it.",
+            image: quickSendShot(4, "Quick Send version 4, with large page thumbnails and no fields to place"),
+          },
+          {
+            title: "Versions 9 to 14 · Recipients first",
+            heard:
+              "Until now we'd assumed a quick send goes to one person. Testers told us they wanted to send to several, and since nothing was saved as a template, there was no reason for placeholder recipients. Each version after that was well received but still felt busy. People didn't realise they had to pick a recipient before placing a field, missed the Sign upon sending toggle, couldn't find how to edit recipients once they'd added them, and couldn't tell why Send was still disabled.",
+            changed:
+              "You now add recipients first and choose who you're placing fields for, so Send became the very last click. The recipient picker moved into a \"Placing signature for\" bar, the old header went, and a toggle separated placing new fields from editing placed ones. I removed sender signatures: few people signed their own documents, nobody missed them, and that need became its own inbox feature. Panels stopped floating to give the document more room, and a Requires Fields label explained why Send was disabled.",
+            image: quickSendShot(13, "Quick Send version 13, with recipients first and an Edit button in the sidebar"),
+          },
+          {
+            title: "Versions 15 to 19 · Joined with Compose",
+            heard:
+              "Letting where you clicked decide the mode was too fiddly, and people lost the Send button when it moved into the header. At the same time, Compose, our embeddable editor, had to fit inside a customer's product with very little screen width. The Requires Fields label said something was missing, but not what, or for whom. Trying sender fields again in the new layout cluttered it and mixed up two different jobs.",
+            changed:
+              "The mode toggle came back, with a bigger Send button. Quick Send joined up with Compose, and every control from the right sidebar moved into one left sidebar that changes with what you select. Requires Fields became a dropdown of who still needs fields, and picking someone readies their signature field. Our main customer contact and their team loved it, and asked for more alerts, so recipients who still need fields got a red dot and the field to place got a caution icon.",
+            image: quickSendShot(19, "Quick Send version 19, with alerts in the sidebar for missing fields"),
+          },
+          {
+            title: "Versions 20 to 25 · Refining",
+            heard:
+              "Requires Fields sat so close to Send that you could send by mistake. With several recipients, it wasn't clear that each one needed fields. Requires Fields scrolled away with the document, most people send more than a signature so More Field Types was an extra click, and the yellow alerts didn't read as a must-do. People also asked for undo and redo, and near the end said Send was too easy to click by accident. Once a document is sent, it's sent.",
+            changed:
+              "Requires Fields moved into the sidebar, leaving Send alone on the right as the final action. The sidebar became a list of recipient cards that expand to show their fields. Alerts turned red, the default fields became signature, text and date (with more in team settings), and editing recipients and document settings moved into modals. In the version that went live, Send counts down for 5 seconds so a mistaken click can be cancelled, undo and redo buttons help new users who don't know the shortcuts, and a Document Settings modal lets people change settings for a single send instead of always using the team defaults.",
+            image: quickSendShot(25, "Quick Send, the final design"),
+          },
         ],
-        draft: true,
       },
-      {
-        type: "text",
-        eyebrow: "Testing",
-        heading: "How I ran testing.",
-        body: ["Who tested, how many people per round, and the tools you used."],
-        draft: true,
-      },
+      quickSendTesting,
+      quickSendInProduction,
     ],
   },
   {
@@ -256,26 +300,44 @@ export const legalesign = {
     heading: "Same product. Unrecognisable experience.",
     items: [
       {
-        id: "dashboard",
-        label: "Dashboard",
-        before: null,
-        after: "/work/dashboard.png",
+        id: "sent",
+        label: "Sent",
+        before: "/work/compare/sent-before.webp",
+        after: "/work/compare/sent-after.webp",
         caption:
-          "From a table of links to a hub: quick actions, a live document overview, ready-to-send templates and team activity.",
+          "From rows of status buttons beside an event log to a card for each document, with every recipient's progress from emailed to signed, plus search and filters.",
+      },
+      {
+        id: "library",
+        label: "Library",
+        before: "/work/compare/library-before.webp",
+        after: "/work/compare/library-after.webp",
+        caption: "A bare list of uploaded files became a template library, with status, tags and quick actions to edit or send.",
       },
       {
         id: "editor",
         label: "Editor",
-        before: null,
-        after: null,
-        caption: "Placing and assigning fields before sending, rebuilt to be faster and far harder to get wrong.",
+        before: "/work/compare/editor-before.webp",
+        after: "/work/compare/editor-after.webp",
+        caption:
+          "Two long lists of signer and sender fields and a row of checkboxes became one panel of fields, placed for one participant at a time.",
       },
       {
-        id: "drafts",
-        label: "Sending & Drafts",
+        id: "send",
+        label: "Sending",
+        before: "/work/compare/send-before.webp",
+        after: "/work/compare/send-after.webp",
+        caption:
+          "A form of icons and buttons became a Send Overview, where documents, participants, fields and recipients are checked in one place before sending.",
+      },
+      {
+        id: "dashboard",
+        label: "Dashboard",
         before: null,
-        after: null,
-        caption: "Admins set up drafts with locked, pre-filled settings, so everyday senders have less to fill in.",
+        after: "/work/compare/dashboard-after.webp",
+        missing: { title: "No dashboard", body: "The sent listings doubled as the home page." },
+        caption:
+          "New in Console. Quick actions, an overview of everything sent, recent activity and next steps, all on the first screen you see.",
       },
     ],
   } satisfies Block,

@@ -9,6 +9,9 @@ import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
 import { Prototype } from "./Prototype";
 import { Brand } from "./Brand";
+import { IterationScrubber } from "./IterationScrubber";
+import { Video } from "./Video";
+import { Bento } from "./Bento";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -104,6 +107,41 @@ function BlockView({
             ))}
           </div>
         </Section>
+      );
+    case "video":
+      return (
+        <Section id={b.id}>
+          <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              {b.eyebrow && <p className="eyebrow">{b.eyebrow}</p>}
+              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">
+                {b.heading}
+              </h2>
+            </div>
+            {b.body && <p className="max-w-sm text-muted">{b.body}</p>}
+          </Reveal>
+          <Reveal className="mt-12">
+            <div className="overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl">
+              <Video src={b.src} poster={b.poster} label={b.label} />
+            </div>
+          </Reveal>
+        </Section>
+      );
+    case "bento":
+      return (
+        <section id={b.id} className="scroll-mt-16 border-t border-line py-20 md:py-28">
+          <div className="container-x">
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
+          </div>
+          <div className="mx-auto mt-12 max-w-[1440px] px-3 md:px-6">
+            <Bento feature={b.feature} tiles={b.tiles} />
+          </div>
+        </section>
       );
     case "comparison":
       return (
@@ -309,8 +347,11 @@ function BlockView({
             {b.items.map((r, i) => (
               <Reveal key={i} delay={0.06 * i}>
                 <li className="grid gap-6 rounded-3xl border border-line bg-raised p-6 md:grid-cols-12 md:p-8">
-                  <span className="font-mono text-sm text-accent md:col-span-2">Round {i + 1}</span>
-                  <div className={`space-y-5 md:col-span-4 ${draftText(b.draft)}`}>
+                  <div className="md:col-span-2">
+                    <span className="font-mono text-sm text-accent">Round {i + 1}</span>
+                    {r.title && <p className="mt-2 text-sm leading-snug text-muted">{r.title}</p>}
+                  </div>
+                  <div className={`space-y-5 md:col-span-5 ${draftText(b.draft)}`}>
                     <div>
                       <p className="eyebrow not-italic">Testers struggled with</p>
                       <p className="mt-2 leading-relaxed">{r.heard}</p>
@@ -320,7 +361,7 @@ function BlockView({
                       <p className="mt-2 leading-relaxed">{r.changed}</p>
                     </div>
                   </div>
-                  <div className="overflow-hidden rounded-2xl border border-line md:col-span-6">
+                  <div className="self-start overflow-hidden rounded-2xl border border-line md:col-span-5">
                     <Shot img={r.image} label={`Round ${i + 1}, before and after`} />
                   </div>
                 </li>
@@ -328,6 +369,23 @@ function BlockView({
             ))}
           </ol>
         </Section>
+      );
+    case "iterations":
+      return (
+        <section className="border-t border-line py-20 md:py-28">
+          <div className="container-x">
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
+          </div>
+          {/* Wider than the page column, so the screens get all the room they can. */}
+          <div className="mx-auto mt-12 max-w-[1720px] px-3 md:px-6">
+            <IterationScrubber items={b.items} />
+          </div>
+        </section>
       );
     case "stats":
       return (
