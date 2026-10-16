@@ -294,61 +294,123 @@ function BlockView({
         </Section>
       );
     case "insights": {
-      const labels = b.labels ?? ["We found", "So the design had to"];
-      const cols = labels.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
-      const cell = (label: string, text: string, i: number) => (
-        <div
-          key={label}
-          className={`rounded-3xl p-6 ${
-            i === labels.length - 1 ? "bg-accent-soft" : i === 0 ? "border border-line bg-raised" : "border border-line"
-          }`}
-        >
-          <span className="eyebrow not-italic md:hidden">{label}</span>
-          <p className={`mt-3 leading-snug md:mt-0 ${i === 0 ? "text-xl font-semibold tracking-[-0.01em]" : "text-lg"}`}>
-            {text}
-          </p>
-        </div>
-      );
+      // Without labels: the original two columns, found and so.
+      if (!b.labels) {
+        return (
+          <Section>
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            <ol className="mt-12 space-y-4">
+              {b.items.map((it, i) => (
+                <Reveal key={i} delay={0.06 * i}>
+                  <li className={`grid gap-4 md:grid-cols-2 ${draftText(b.draft)}`}>
+                    <div className="rounded-3xl border border-line bg-raised p-6">
+                      <span className="eyebrow not-italic">We found</span>
+                      <p className="mt-3 text-lg leading-snug">{it.found}</p>
+                    </div>
+                    <div className="rounded-3xl border border-line bg-fg/[0.04] p-6">
+                      <span className="eyebrow not-italic">So the design had to</span>
+                      <p className="mt-3 text-lg leading-snug">{it.so}</p>
+                    </div>
+                  </li>
+                </Reveal>
+              ))}
+            </ol>
+          </Section>
+        );
+      }
+      // With labels: one card per finding, read top to bottom, side by side.
+      const labels = b.labels;
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
-          {/* On wider screens the labels head their columns once. */}
-          <div aria-hidden className={`mt-12 hidden gap-4 px-6 md:grid ${cols}`}>
-            {labels.map((l) => (
-              <span key={l} className="eyebrow">
-                {l}
-              </span>
-            ))}
-          </div>
-          <ol className="mt-4 space-y-4 md:mt-4">
-            {b.items.map((it, i) => (
-              <Reveal key={i} delay={0.06 * i}>
-                <li className={`grid gap-3 md:gap-4 ${cols} ${draftText(b.draft)}`}>
-                  {[it.found, it.so, it.then].slice(0, labels.length).map((text, j) => cell(labels[j], text ?? "", j))}
-                </li>
-              </Reveal>
-            ))}
+          <ol className={`mt-12 grid gap-4 sm:grid-cols-2 ${b.items.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+            {b.items.map((it, i) => {
+              const parts = [it.found, it.so, it.then].slice(0, labels.length);
+              const last = parts.length - 1;
+              return (
+                <Reveal key={i} delay={0.06 * i} className="h-full">
+                  <li className={`flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised ${draftText(b.draft)}`}>
+                    {parts.map((text, j) =>
+                      j === last ? (
+                        <div key={j} className="mt-auto bg-accent-soft p-6">
+                          <span className="eyebrow not-italic">{labels[j]}</span>
+                          <p className="mt-2 leading-snug font-medium">{text}</p>
+                        </div>
+                      ) : (
+                        <div key={j} className={`p-6 ${j > 0 ? "border-t border-line" : ""}`}>
+                          <span className="eyebrow not-italic">{labels[j]}</span>
+                          {j === 0 && b.quotes ? (
+                            <blockquote className="mt-3 text-xl leading-snug font-semibold tracking-[-0.01em]">
+                              <span aria-hidden className="text-accent-ink">“</span>
+                              {text}
+                              <span aria-hidden className="text-accent-ink">”</span>
+                            </blockquote>
+                          ) : (
+                            <p className={`mt-2 leading-snug ${j === 0 ? "text-lg font-semibold" : "text-fg/80"}`}>{text}</p>
+                          )}
+                        </div>
+                      ),
+                    )}
+                  </li>
+                </Reveal>
+              );
+            })}
           </ol>
         </Section>
       );
     }
-    case "callouts":
-      return (
-        <Section>
+    case "callouts": {
+      const withImages = b.items.some((it) => it.image?.src);
+      const intro = (
+        <>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
           {b.body && (
             <Reveal>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
             </Reveal>
           )}
+        </>
+      );
+      // Words only: one row of short, bold cards that read at a glance.
+      if (!withImages) {
+        const cols = b.items.length === 4 ? "lg:grid-cols-4" : b.items.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
+        return (
+          <Section>
+            {intro}
+            <ol className={`mt-12 grid gap-4 sm:grid-cols-2 ${cols}`}>
+              {b.items.map((it, i) => (
+                <Reveal key={it.title} delay={0.06 * i} className="h-full">
+                  <li className="flex h-full flex-col rounded-3xl border border-line bg-raised p-6 md:p-7">
+                    <span className="font-mono text-sm text-accent-ink">{String(i + 1).padStart(2, "0")}</span>
+                    <h3 className="mt-5 text-2xl leading-[1.05] font-bold tracking-[-0.03em] text-balance md:text-[1.75rem]">{it.title}</h3>
+                    <p className="mt-3 leading-relaxed text-fg/75">{it.body}</p>
+                    {it.fix && (
+                      <p className="mt-auto pt-6">
+                        <span className="block border-t border-line pt-4">
+                          <span className="eyebrow block">The fix</span>
+                          <span className="mt-1 block text-lg leading-snug font-semibold text-accent-ink">{it.fix}</span>
+                        </span>
+                      </p>
+                    )}
+                  </li>
+                </Reveal>
+              ))}
+            </ol>
+          </Section>
+        );
+      }
+      return (
+        <Section>
+          {intro}
           <ol className="mt-14 md:mt-20">
             {b.items.map((it, i) => {
               const words = (
                 <>
                   <p className="text-lg leading-relaxed text-fg/75 md:text-xl">{it.body}</p>
                   {it.fix && (
-                    <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-on-accent">
-                      <span aria-hidden>→</span> {it.fix}
+                    <p className="mt-5">
+                      <span className="eyebrow block">The fix</span>
+                      <span className="mt-1 block text-lg font-semibold text-accent-ink">{it.fix}</span>
                     </p>
                   )}
                 </>
@@ -386,6 +448,7 @@ function BlockView({
           </ol>
         </Section>
       );
+    }
     case "overview":
       return (
         <Section>

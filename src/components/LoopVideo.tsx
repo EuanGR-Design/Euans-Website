@@ -15,12 +15,17 @@ export function LoopVideo({
   label,
   className = "",
   objectPosition,
+  wrapperClassName = "relative h-full w-full",
+  buttonClassName = "top-3 right-3",
 }: {
   src: string;
   poster: string;
   label: string;
   className?: string;
   objectPosition?: string;
+  // Leave the wrapper unpositioned to anchor the play button to a parent.
+  wrapperClassName?: string;
+  buttonClassName?: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
@@ -54,7 +59,7 @@ export function LoopVideo({
   }, [near, shouldPlay]);
 
   return (
-    <div className="group/video relative h-full w-full">
+    <div className={`group/video ${wrapperClassName}`}>
       <video
         ref={ref}
         poster={`${basePath}${poster}`}
@@ -79,7 +84,7 @@ export function LoopVideo({
         type="button"
         onClick={() => setWantsPlay(!playing)}
         aria-label={playing ? "Pause clip" : "Play clip"}
-        className="absolute top-3 right-3 z-20 flex size-9 items-center justify-center rounded-full bg-black/55 text-white opacity-70 backdrop-blur transition-opacity group-hover/video:opacity-100 hover:bg-black/75 focus-visible:opacity-100"
+        className={`absolute ${buttonClassName} z-20 flex size-9 items-center justify-center rounded-full bg-black/55 text-white opacity-70 backdrop-blur transition-opacity group-hover/video:opacity-100 hover:bg-black/75 focus-visible:opacity-100`}
       >
         {playing ? (
           <svg viewBox="0 0 16 16" className="size-3.5" fill="currentColor" aria-hidden>

@@ -156,6 +156,8 @@ export type Block =
       eyebrow?: string;
       heading: string;
       labels?: string[];
+      // Show the first of each as a quote from users.
+      quotes?: boolean;
       items: { found: string; so: string; then?: string }[];
       draft?: boolean;
     }
@@ -472,6 +474,7 @@ export const projects: Project[] = [
         eyebrow: "What we heard",
         heading: "What they said, and what they needed.",
         labels: ["They said", "They needed"],
+        quotes: true,
         items: [
           { found: "I just want to send this document.", so: "One flow from upload to Send, with a clear start and end." },
           { found: "I clicked Send and there was nothing there.", so: "Send to be the start of the flow, not a dead end." },
@@ -515,17 +518,17 @@ export const projects: Project[] = [
           {
             title: "A cluttered UI",
             body: "Two sidebars showed every recipient, field and control at once.",
-            fix: "Simplify",
+            fix: "Simplify every screen",
           },
           {
             title: "Navigation that lost people",
             body: "Sending was spread across the app, with no clear start or end.",
-            fix: "One flow, one next step",
+            fix: "One flow, with one clear next step",
           },
           {
             title: "Features forced on everyone",
             body: "Everything the power users needed sat in front of people who just wanted to send.",
-            fix: "Show features at the right time, in the right place",
+            fix: "Reveal features when and where they're needed",
           },
         ],
       },
