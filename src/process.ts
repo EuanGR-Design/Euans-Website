@@ -32,7 +32,7 @@ export type Stage = {
 };
 
 // What each Quick Send version changed, keyed by version number (1 is the
-// oldest, 23 the final design). Versions left out show prompts in the pop-up.
+// oldest, 24 the final design). Versions left out show prompts in the pop-up.
 const declutter = "Decluttering";
 const signatureOnly = "Signature only";
 const recipientsFirst = "Recipients first";
@@ -117,40 +117,43 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
   },
   16: {
     stage: compose,
+  },
+  17: {
+    stage: compose,
     change: "Every control from the right sidebar moved into the left one, Compose's pattern. Sender fields were tried again.",
     feedback: "A customer embedding Compose had very little screen width, so everything had to fit one sidebar.",
   },
-  17: {
+  18: {
     stage: compose,
     change: "Requires Fields became a dropdown of who still needs fields, picking someone readies their signature field. Zoom and page controls were added.",
     feedback: "Sender fields cluttered it again, and the label didn't say which fields were needed or for whom.",
   },
-  18: {
+  19: {
     stage: compose,
     change: "Added alerts in the sidebar: a red dot on recipients who still need fields, and a caution icon on the field to place.",
     feedback: "Our main customer contact loved the dropdown, but wanted more alerts on screen.",
   },
-  19: {
+  20: {
     stage: refining,
     change: "Simplified the sidebar and moved Requires Fields to the left, leaving Send alone on the right as the final action.",
     feedback: "Requires Fields sat so close to Send that you could send by mistake.",
   },
-  20: {
+  21: {
     stage: refining,
     change: "The icon rail went, leaving the sidebar as a list of your recipients. An edit button appears when you hover a card.",
     feedback: "Keep simplifying the sidebar.",
   },
-  21: {
+  22: {
     stage: refining,
     change: "Every recipient shows in the sidebar at all times with their signature field. Other field types sit under More Field Types.",
     feedback: "With several recipients, it wasn't clear that each one needed fields placing.",
   },
-  22: {
+  23: {
     stage: refining,
     change: "Requires Fields moved into the sidebar, and selecting a recipient expands their card to show all their fields.",
     feedback: "Requires Fields scrolled away with the document, and most people send more than a signature, so More Field Types was an extra click.",
   },
-  23: {
+  24: {
     stage: "Final design",
     change: "Red alerts, three default fields (more in team settings), recipients and document settings in modals, plus undo and redo. This is the design that went live.",
     feedback: "Yellow alerts didn't read as a must-do, and users asked for undo and redo.",
@@ -221,33 +224,33 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
     { x: 21, y: 7, note: "The mode toggle is back." },
     { x: 88, y: 7, note: "A bigger Send Document button, so nobody loses it." },
   ],
-  16: [
+  17: [
     { x: 15, y: 8, note: "Sender fields, tried again." },
     { x: 15, y: 45, note: "Every control now lives in the left sidebar, so it fits a narrow embed." },
   ],
-  17: [
+  18: [
     { x: 91, y: 4, note: "Requires Fields is now a dropdown of who still needs fields." },
     { x: 80, y: 95, note: "Zoom, fit and page controls." },
   ],
-  18: [
+  19: [
     { x: 21, y: 16, note: "A red dot on recipients who still need fields." },
     { x: 18, y: 33, note: "A caution icon on the field to place." },
   ],
-  19: [
+  20: [
     { x: 37, y: 10, note: "Requires Fields moved left, away from Send." },
     { x: 90, y: 8, note: "Send stands alone as the final action." },
   ],
-  20: [
+  21: [
     { x: 11, y: 10, note: "The icon rail is gone. The sidebar is just your recipients." },
   ],
-  21: [
+  22: [
     { x: 19, y: 14, note: "Every recipient shown at all times, with More Field Types for the rest." },
   ],
-  22: [
+  23: [
     { x: 19, y: 8, note: "Requires Fields now lives in the sidebar." },
     { x: 12, y: 30, note: "Selecting a recipient expands their card to show all their fields." },
   ],
-  23: [
+  24: [
     { x: 17, y: 26, note: "Alerts turned red, so they read as a must-do." },
     { x: 12, y: 37, note: "Three default fields. More can be switched on in team settings." },
     { x: 20, y: 92, note: "Recipients and document settings open in modals." },
@@ -255,17 +258,32 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
   ],
 };
 
-// Clickable prototypes of Quick Send, keyed by the version they show.
-const quickSendPrototypes: Record<number, { url: string; body: string }> = {
-  18: {
-    url: "https://gloss-pod-32624458.figma.site",
-    body: "Click through Quick Send as it was once it joined up with Compose, with the first required-field alerts.",
+// Clickable prototypes of Quick Send, keyed by the version they show. A
+// version can have more than one, such as the screen alone and the full flow.
+const quickSendPrototypes: Record<number, { body: string; links: { label: string; url: string }[] }> = {
+  15: {
+    body: "Click through Quick Send as it was when it first joined up with Compose.",
+    links: [{ label: "Open the prototype", url: "https://lace-bonus-64273429.figma.site" }],
   },
-  23: {
-    url: "https://peach-comma-28912996.figma.site",
+  16: {
+    body: "Click through this version of Quick Send.",
+    links: [{ label: "Open the prototype", url: "https://umber-rerun-82210169.figma.site" }],
+  },
+  19: {
+    body: "Click through this screen, or the full flow from choosing Quick Send to pressing Send.",
+    links: [
+      { label: "This screen", url: "https://gloss-pod-32624458.figma.site" },
+      { label: "The full flow", url: "https://sleet-cloth-69056845.figma.site" },
+    ],
+  },
+  24: {
     body: "Click through the finished Quick Send yourself.",
+    links: [{ label: "Open the prototype", url: "https://peach-comma-28912996.figma.site" }],
   },
 };
+
+// Versions whose screen hasn't been added yet. They show a placeholder.
+const quickSendMissingScreens = new Set([16]);
 
 // A Quick Send screen, for the rounds of feedback.
 const quickSendShot = (v: number, alt: string) => ({
@@ -276,12 +294,12 @@ const quickSendShot = (v: number, alt: string) => ({
 });
 
 // Every Quick Send screen, oldest first, in public/work/quick-send/iterations/.
-const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 23 }, (_, i) => ({
+const quickSendIterations: Extract<Block, { type: "iterations" }>["items"] = Array.from({ length: 24 }, (_, i) => ({
   image: {
-    src: `/work/quick-send/iterations/${String(i + 1).padStart(2, "0")}.webp`,
+    src: quickSendMissingScreens.has(i + 1) ? null : `/work/quick-send/iterations/${String(i + 1).padStart(2, "0")}.webp`,
     w: 2000,
     h: 1430,
-    alt: i === 22 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 23`,
+    alt: i === 23 ? "Quick Send, the final design" : `Quick Send, version ${i + 1} of 24`,
   },
   ...quickSendDetails[i + 1],
   pins: quickSendPins[i + 1],
@@ -417,7 +435,7 @@ export const stages: Stage[] = [
       },
       {
         type: "iterations",
-        eyebrow: "23 versions",
+        eyebrow: "24 versions",
         heading: "From first prototype to the final design.",
         body: "Every version was a prototype, tested with users before any development time was spent, and only the final design went live. Drag the bar to step through them, hover it to see what changed and why, or click a numbered pin on the screen.",
         items: quickSendIterations,
@@ -452,20 +470,20 @@ export const stages: Stage[] = [
             image: quickSendShot(13, "Quick Send version 13, with recipients first and an Edit button in the sidebar"),
           },
           {
-            title: "Versions 15 to 18 · Joined with Compose",
+            title: "Versions 15 to 19 · Joined with Compose",
             heard:
               "Letting where you clicked decide the mode was too fiddly, and people lost the Send button when it moved into the header. At the same time, Compose, our embeddable editor, had to fit inside a customer's product with very little screen width. The Requires Fields label said something was missing, but not what, or for whom. Trying sender fields again in the new layout cluttered it and mixed up two different jobs.",
             changed:
               "The mode toggle came back, with a bigger Send button. Quick Send joined up with Compose, and every control from the right sidebar moved into one left sidebar that changes with what you select. Requires Fields became a dropdown of who still needs fields, and picking someone readies their signature field. Our main customer contact and their team loved it, and asked for more alerts, so recipients who still need fields got a red dot and the field to place got a caution icon.",
-            image: quickSendShot(18, "Quick Send version 18, with alerts in the sidebar for missing fields"),
+            image: quickSendShot(19, "Quick Send version 19, with alerts in the sidebar for missing fields"),
           },
           {
-            title: "Versions 19 to 23 · Refining",
+            title: "Versions 20 to 24 · Refining",
             heard:
               "Requires Fields sat so close to Send that you could send by mistake. With several recipients, it wasn't clear that each one needed fields. Requires Fields scrolled away with the document, most people send more than a signature so More Field Types was an extra click, and the yellow alerts didn't read as a must-do. People also asked for undo and redo, and near the end said Send was too easy to click by accident. Once a document is sent, it's sent.",
             changed:
               "Requires Fields moved into the sidebar, leaving Send alone on the right as the final action. The sidebar became a list of recipient cards that expand to show their fields. Alerts turned red, the default fields became signature, text and date (with more in team settings), and editing recipients and document settings moved into modals. I added undo and redo, and Send now explains on hover what's still needed and counts down for 5 seconds, so you can cancel.",
-            image: quickSendShot(23, "Quick Send, the final design"),
+            image: quickSendShot(24, "Quick Send, the final design"),
           },
         ],
       },

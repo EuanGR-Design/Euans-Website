@@ -122,14 +122,15 @@ export type Block =
       heading: string;
       body?: string;
       // `pins` mark where on the screen things changed, in percent of the frame.
-      // `prototype` offers a clickable prototype of that version in a card.
+      // `prototype` offers clickable prototypes of that version in a card. An
+      // image with no `src` shows a placeholder until the screen is added.
       items: {
         image: Img;
         stage?: string;
         change?: string;
         feedback?: string;
         pins?: { x: number; y: number; note: string }[];
-        prototype?: { url: string; body: string };
+        prototype?: { body: string; links: { label: string; url: string }[] };
       }[];
     };
 

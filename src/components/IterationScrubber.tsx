@@ -7,8 +7,8 @@ import type { Img } from "@/projects";
 
 // A comment pin on the screen, at x and y percent of the frame.
 export type Pin = { x: number; y: number; note: string };
-// A clickable prototype of a version, offered in a card while it's showing.
-export type Prototype = { url: string; body: string };
+// Clickable prototypes of a version, offered in a card while it's showing.
+export type Prototype = { body: string; links: { label: string; url: string }[] };
 export type Iteration = {
   image: Img;
   stage?: string;
@@ -162,14 +162,21 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
         </div>
         <p className="mt-2 text-lg font-semibold">Try the prototype</p>
         <p className="mt-1 text-sm leading-relaxed text-muted">{prototype.body}</p>
-        <a
-          href={prototype.url}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-4 inline-flex rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
-        >
-          Open the prototype ↗
-        </a>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {prototype.links.map((link, i) => (
+            <a
+              key={link.url}
+              href={link.url}
+              target="_blank"
+              rel="noreferrer"
+              className={`inline-flex rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                i === 0 ? "bg-accent text-white hover:opacity-90" : "border border-line hover:border-accent"
+              }`}
+            >
+              {link.label} ↗
+            </a>
+          ))}
+        </div>
       </div>
     );
 
@@ -203,6 +210,13 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
                   }`}
                 />
               ) : null,
+            )}
+
+            {/* A version whose screen hasn't been added yet. */}
+            {!item.image.src && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-raised bg-[radial-gradient(var(--line)_1px,transparent_1px)] [background-size:16px_16px]">
+                <span className="eyebrow rounded-full border border-line bg-bg px-3 py-1.5">Screen coming soon</span>
+              </div>
             )}
 
             {/* Comment pins, like Figma's, marking where this version changed. */}
