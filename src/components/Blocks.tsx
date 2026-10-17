@@ -761,7 +761,7 @@ function BlockView({
                 className={b.items.length % 2 && i === b.items.length - 1 ? "md:col-span-2 md:mx-auto md:w-[calc(50%-0.75rem)]" : ""}
               >
                 <Reveal>
-                  <BrowserFrame video={it.video} compact />
+                  <BrowserFrame video={it.video} compact button={false} />
                 </Reveal>
                 <Reveal className="mt-5">
                   <h3 className="flex items-baseline gap-3 text-2xl font-bold tracking-[-0.02em] md:text-3xl">

@@ -6,7 +6,6 @@ import { Contact } from "@/components/Contact";
 import { MotionProvider } from "@/components/motion";
 import { Cursor } from "@/components/Cursor";
 import { ProjectTransitionProvider } from "@/components/ProjectTransition";
-import { ThemeSwitcher, themeScript } from "@/components/ThemeSwitcher";
 
 const sans = Inter_Tight({
   variable: "--font-inter-tight",
@@ -29,10 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-GB" data-theme="orange" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+    <html lang="en-GB" data-theme="orange">
       <body
         className={`${sans.variable} antialiased`}
       >
@@ -48,7 +44,6 @@ export default function RootLayout({
             <main id="main">{children}</main>
             <Contact />
           </ProjectTransitionProvider>
-          <ThemeSwitcher />
           <Cursor />
         </MotionProvider>
       </body>

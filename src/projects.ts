@@ -307,6 +307,9 @@ export type Project = {
   // achieved. Projects without a statement show `intro` instead.
   statement?: string;
   roleStatement?: string;
+  // Buttons beside the role line, such as a prototype to try or a video to
+  // watch. A link starting with # jumps down the page; others open a new tab.
+  actions?: { label: string; href: string; icon: IconName }[];
   context?: { label: string; value: string }[];
   impact?: { value: string; label: string }[];
   // Which project to suggest next, and why. Defaults to the next in the list.
@@ -456,6 +459,10 @@ export const projects: Project[] = [
       "A streamlined way to send a document for signature. One focused flow that cuts trial bounce and gets new users to a successful send, first time.",
     roleStatement:
       "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
+    actions: [
+      { label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays" },
+      { label: "Watch the production demo", href: "#in-production", icon: "Play" },
+    ],
     context: [
       { label: "Company", value: "Legalesign, in-house" },
       { label: "Product", value: "B2B SaaS e-signature web app" },
@@ -543,7 +550,7 @@ export const projects: Project[] = [
             fix: "One flow, with one clear next step",
           },
           {
-            title: "Everything at once",
+            title: "Information overload, which caused decision paralysis",
             body: "Two sidebars showed every recipient, field and control at the same time.",
             fix: "Simplify every screen",
           },

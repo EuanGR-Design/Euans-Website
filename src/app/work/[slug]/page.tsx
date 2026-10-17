@@ -6,6 +6,8 @@ import { cardInfo, eras, getProject, pageProjects, projectHref, projectImage, se
 import { Blocks } from "@/components/Blocks";
 import { ProjectLink } from "@/components/ProjectTransition";
 import { SectionNav } from "@/components/SectionNav";
+import { Icon } from "@/components/Icon";
+import { ArrowUpRightIcon } from "@heroicons/react/20/solid";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -29,6 +31,7 @@ export default async function ProjectPage({ params }: Props) {
   const nextLine = p.next && next.slug === p.next.slug ? p.next.label : next.summary;
   const hero = projectImage(p);
   const nextImage = projectImage(next);
+  const nextTitle = "mt-4 text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em]";
   // A headless grid of clips sits tight under the hero, as one run of images.
   const first = p.blocks[0];
   const leadsWithClips = first?.type === "bento" && !first.heading;
@@ -116,36 +119,34 @@ export default async function ProjectPage({ params }: Props) {
       </div>
 
       <nav aria-label="Next project" className="border-t border-line py-20 md:py-28">
-        <div className="container-x">
-          <p className="eyebrow">Next project</p>
-          <ProjectLink
-            card={cardInfo(next)}
-            href={projectHref(next)}
-            className="group mt-4 grid items-center gap-8 md:grid-cols-12 md:gap-12"
-          >
-            <span className="md:col-span-7">
-              <span className="block text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent-ink">
+        <div className="container-x grid items-center gap-8 md:grid-cols-12 md:gap-12">
+          <div className="md:col-span-7">
+            <p className="eyebrow">Next project</p>
+            {nextImage?.src ? (
+              <p className={nextTitle}>
                 {next.title} <span aria-hidden>→</span>
-              </span>
-              <span className="mt-3 block text-lg text-muted">{nextLine}</span>
-            </span>
-            {/* A glimpse of the next hero. The card grows from it when clicked. */}
-            {nextImage?.src && (
-              <span
-                data-cover
-                className="relative block max-w-sm overflow-hidden rounded-3xl bg-raised md:col-span-5 md:max-w-none"
-                style={{ aspectRatio: `${nextImage.w} / ${nextImage.h}` }}
-              >
-                <Image
-                  src={nextImage.src}
-                  alt=""
-                  fill
-                  sizes="(min-width: 768px) 480px, 384px"
-                  className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
-                />
-              </span>
+              </p>
+            ) : (
+              <ProjectLink card={cardInfo(next)} href={projectHref(next)} className={`block ${nextTitle} transition-colors hover:text-accent-ink`}>
+                {next.title} <span aria-hidden>→</span>
+              </ProjectLink>
             )}
-          </ProjectLink>
+            <p className="mt-3 text-lg text-muted">{nextLine}</p>
+          </div>
+          {/* Only the image is the link. It lifts on hover, and the card
+              grows from it when clicked. */}
+          {nextImage?.src && (
+            <ProjectLink
+              card={cardInfo(next)}
+              href={projectHref(next)}
+              aria-label={`Next project: ${next.title}`}
+              data-cover
+              className="relative block max-w-sm overflow-hidden rounded-3xl bg-raised transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-24px_rgba(20,20,60,0.45)] md:col-span-5 md:max-w-none"
+              style={{ aspectRatio: `${nextImage.w} / ${nextImage.h}` }}
+            >
+              <Image src={nextImage.src} alt="" fill sizes="(min-width: 768px) 480px, 384px" className="object-cover object-top" />
+            </ProjectLink>
+          )}
         </div>
       </nav>
       <SectionNav links={sectionLinks(p)} />
@@ -163,8 +164,32 @@ function StoryHeader({ p }: { p: Project }) {
       <p className="mt-10 max-w-5xl text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
         {p.statement}
       </p>
-      {p.roleStatement && (
-        <p className="mt-8 max-w-3xl text-lg leading-relaxed text-fg/75 md:text-xl">{p.roleStatement}</p>
+      {(p.roleStatement || p.actions) && (
+        <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-12">
+          {p.roleStatement && <p className="max-w-3xl text-lg leading-relaxed text-fg/75 md:text-xl">{p.roleStatement}</p>}
+          {p.actions && (
+            <div className="flex shrink-0 flex-col gap-3 sm:flex-row md:flex-col">
+              {p.actions.map((a, i) => {
+                const external = !a.href.startsWith("#");
+                return (
+                  <a
+                    key={a.href}
+                    href={a.href}
+                    {...(external && { target: "_blank", rel: "noreferrer" })}
+                    className={`group inline-flex h-12 items-center gap-2.5 rounded-full pr-5 pl-4 font-medium transition-colors ${
+                      i === 0 ? "bg-fg text-bg hover:bg-fg/85" : "border border-line hover:border-fg/30"
+                    }`}
+                  >
+                    <Icon name={a.icon} className="size-5" />
+                    {a.label}
+                    {external && <ArrowUpRightIcon aria-hidden className="ml-auto size-4 opacity-60" />}
+                    {external && <span className="sr-only">(opens in a new tab)</span>}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
       )}
       {p.context && (
         <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 md:grid-cols-4">

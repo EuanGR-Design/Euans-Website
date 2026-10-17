@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /*
- * Three colour themes to try, picked with the switcher in the corner and
- * stored as data-theme on <html>. Each sets the same tokens:
+ * Three colour themes, set as data-theme on <html>. Orange is the one in
+ * use; the others stay here to try again. Each sets the same tokens:
  *   accent      the primary colour: fills, the cursor, focus rings
  *   accent-ink  the primary dark enough to read as text on the page
  *   on-accent   text that sits on an accent fill
