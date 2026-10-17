@@ -19,7 +19,7 @@ export function About() {
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-accent/40 via-raised to-raised">
-                <span className="font-serif text-8xl italic">ER</span>
+                <span className="text-8xl font-bold tracking-[-0.05em]">ER</span>
                 <span className="eyebrow">Photo coming soon</span>
               </div>
             )}
@@ -45,7 +45,7 @@ export function About() {
                 delay={0.08 * i}
                 className="rounded-3xl border border-line bg-raised p-6"
               >
-                <span className="font-mono text-xs text-accent">0{i + 1}</span>
+                <span className="font-mono text-xs text-accent-ink">0{i + 1}</span>
                 <p className="mt-5 font-semibold">{a.title}</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted">{a.body}</p>
               </Reveal>

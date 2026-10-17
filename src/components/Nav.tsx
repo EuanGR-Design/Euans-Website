@@ -37,26 +37,23 @@ export function Nav() {
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 p-3 md:p-4">
-      <nav
-        aria-label="Main"
-        className={`container-x flex h-14 items-center justify-between rounded-full transition-all duration-500 ${
-          scrolled
-            ? "border border-line bg-bg/70 backdrop-blur-xl"
-            : "border border-transparent"
-        }`}
-      >
-        <Link href="/" className="font-medium tracking-tight">
+    <header
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
+        scrolled || open ? "border-line bg-bg/90 backdrop-blur-xl" : "border-transparent"
+      }`}
+    >
+      <nav aria-label="Main" className="container-x flex h-16 items-center justify-between">
+        <Link href="/" className="text-[15px] font-bold tracking-[-0.02em]">
           {person.name}
         </Link>
 
-        <ul className="hidden items-center gap-8 text-sm text-muted md:flex">
+        <ul className="hidden items-center gap-7 text-sm font-medium md:flex">
           {links.map((l) => (
             <li key={l.href}>
               <Link
                 href={l.href}
                 aria-current={active(l.href) ? "page" : undefined}
-                className={`transition-colors hover:text-fg ${active(l.href) ? "text-fg" : ""}`}
+                className={`transition-colors hover:text-muted ${active(l.href) ? "underline decoration-2 underline-offset-[6px]" : ""}`}
               >
                 {l.label}
               </Link>
@@ -68,7 +65,7 @@ export function Nav() {
           <a
             href={person.cv}
             download
-            className="hidden rounded-full bg-fg px-4 py-2 text-sm font-medium text-bg transition-transform hover:scale-[1.03] sm:inline-flex"
+            className="hidden rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-bg transition-opacity hover:opacity-85 sm:inline-flex"
           >
             Download CV
           </a>
@@ -98,7 +95,7 @@ export function Nav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25 }}
-            className="mt-2 rounded-3xl border border-line bg-raised/95 p-6 backdrop-blur-xl md:hidden"
+            className="container-x border-t border-line pt-4 pb-8 md:hidden"
           >
             <ul className="flex flex-col gap-1">
               {links.map((l) => (
@@ -106,7 +103,7 @@ export function Nav() {
                   <Link
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    className="block py-2 font-serif text-4xl"
+                    className="block py-2 text-4xl font-bold tracking-[-0.035em]"
                   >
                     {l.label}
                   </Link>

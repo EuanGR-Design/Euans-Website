@@ -28,7 +28,7 @@ export function Milestones() {
                 delay={0.04 * i}
                 className="grid gap-2 py-7 md:grid-cols-12 md:gap-8 md:py-9"
               >
-                <span className="font-mono text-sm text-accent md:col-span-2">
+                <span className="font-mono text-sm text-accent-ink md:col-span-2">
                   {m.when}
                 </span>
                 <div className="md:col-span-7">

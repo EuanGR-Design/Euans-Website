@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { eras, getProject, pageProjects, projectHref } from "@/projects";
+import Image from "next/image";
+import { cardInfo, eras, getProject, pageProjects, projectHref, projectImage, sectionLinks, type Project } from "@/projects";
 import { Blocks } from "@/components/Blocks";
-import { Cover } from "@/components/ProjectCard";
+import { ProjectLink } from "@/components/ProjectTransition";
+import { SectionNav } from "@/components/SectionNav";
+import { Icon } from "@/components/Icon";
+import { HeroPrototype, PlayLink } from "@/components/HeroPrototype";
+import { ArrowUpRightIcon } from "@heroicons/react/20/solid";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -23,7 +28,14 @@ export default async function ProjectPage({ params }: Props) {
 
   const era = eras.find((e) => e.id === p.era);
   const i = pageProjects.indexOf(p);
-  const next = pageProjects[(i + 1) % pageProjects.length];
+  const next = (p.next && getProject(p.next.slug)) || pageProjects[(i + 1) % pageProjects.length];
+  const nextLine = p.next && next.slug === p.next.slug ? p.next.label : next.summary;
+  const hero = projectImage(p);
+  const nextImage = projectImage(next);
+  const nextTitle = "mt-4 text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em]";
+  // A headless grid of clips sits tight under the hero, as one run of images.
+  const first = p.blocks[0];
+  const leadsWithClips = first?.type === "bento" && !first.heading;
 
   return (
     <article>
@@ -42,6 +54,9 @@ export default async function ProjectPage({ params }: Props) {
           <h1 className="mt-4 text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.04em]">
             {p.title}
           </h1>
+          {p.statement ? (
+            <StoryHeader p={p} />
+          ) : (
           <div className="mt-8 grid gap-10 md:grid-cols-12">
             <p className="text-lg leading-relaxed text-fg/80 md:col-span-7 md:text-xl">{p.intro}</p>
             <dl className="grid grid-cols-2 gap-6 text-sm md:col-span-4 md:col-start-9 md:grid-cols-1">
@@ -59,7 +74,7 @@ export default async function ProjectPage({ params }: Props) {
                 <dt className="eyebrow">Focus</dt>
                 <dd className="mt-2 flex flex-wrap gap-2">
                   {p.tags.map((t) => (
-                    <span key={t} className="rounded-full bg-accent-soft px-3 py-1 text-xs text-fg/85">
+                    <span key={t} className="rounded-full bg-fg/[0.06] px-3 py-1 text-xs font-medium text-fg/80">
                       {t}
                     </span>
                   ))}
@@ -67,31 +82,153 @@ export default async function ProjectPage({ params }: Props) {
               </div>
             </dl>
           </div>
+          )}
         </div>
-        {p.cover?.src && (
+        {hero?.src && (
           <div className="container-x mt-14 md:mt-20">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
-              <Cover p={p} priority />
+            {/* The title card shrinks into this when the project opens. */}
+            <div
+              data-hero={p.slug}
+              className="relative overflow-hidden rounded-[1.75rem] md:rounded-panel bg-raised"
+              style={{ aspectRatio: `${hero.w} / ${hero.h}` }}
+            >
+              <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
+              {p.play && <HeroPrototype play={p.play} image={hero} title={p.title} />}
             </div>
+            {p.scrollCue && (
+              <a
+                href="#story"
+                className="group mx-auto mt-10 flex w-fit flex-col items-center gap-3 text-muted transition-colors hover:text-fg md:mt-14"
+              >
+                <span className="text-lg md:text-xl">{p.scrollCue}</span>
+                <span
+                  aria-hidden
+                  className="flex size-11 items-center justify-center rounded-full border border-line text-lg transition-colors group-hover:border-fg/30"
+                >
+                  ↓
+                </span>
+              </a>
+            )}
           </div>
         )}
       </header>
 
-      <div className="mt-20 md:mt-28">
+      <div
+        id="story"
+        className={`scroll-mt-16 ${leadsWithClips ? "mt-5 md:mt-6" : p.scrollCue ? "mt-10 md:mt-14" : "mt-20 md:mt-28"}`}
+      >
         <Blocks blocks={p.blocks} name={p.title} />
       </div>
 
       <nav aria-label="Next project" className="border-t border-line py-20 md:py-28">
-        <div className="container-x">
-          <p className="eyebrow">Next project</p>
-          <Link href={projectHref(next)} className="group mt-4 inline-block">
-            <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent">
-              {next.title} <span aria-hidden>→</span>
-            </span>
-            <span className="mt-3 block text-muted">{next.summary}</span>
-          </Link>
+        <div className="container-x grid items-center gap-8 md:grid-cols-12 md:gap-12">
+          <div className="md:col-span-7">
+            <p className="eyebrow">Next project</p>
+            {nextImage?.src ? (
+              <p className={nextTitle}>
+                {next.title} <span aria-hidden>→</span>
+              </p>
+            ) : (
+              <ProjectLink card={cardInfo(next)} href={projectHref(next)} className={`block ${nextTitle} transition-colors hover:text-accent-ink`}>
+                {next.title} <span aria-hidden>→</span>
+              </ProjectLink>
+            )}
+            <p className="mt-3 text-lg text-muted">{nextLine}</p>
+          </div>
+          {/* Only the image is the link. It lifts on hover, and the card
+              grows from it when clicked. */}
+          {nextImage?.src && (
+            <ProjectLink
+              card={cardInfo(next)}
+              href={projectHref(next)}
+              aria-label={`Next project: ${next.title}`}
+              data-cover
+              className="relative block max-w-sm overflow-hidden rounded-3xl bg-raised transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-24px_rgba(20,20,60,0.45)] md:col-span-5 md:max-w-none"
+              style={{ aspectRatio: `${nextImage.w} / ${nextImage.h}` }}
+            >
+              <Image src={nextImage.src} alt="" fill sizes="(min-width: 768px) 480px, 384px" className="object-cover object-top" />
+            </ProjectLink>
+          )}
         </div>
       </nav>
+      <SectionNav links={sectionLinks(p)} />
     </article>
+  );
+}
+
+/**
+ * The opening of a case study told as a story: the problem as one big
+ * statement, my role, where the work sat, and what it achieved.
+ */
+function StoryHeader({ p }: { p: Project }) {
+  const role = p.roleStatement ?? p.intro;
+  return (
+    <>
+      <p className="mt-10 max-w-5xl text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
+        {p.statement}
+      </p>
+      {(role || p.actions) && (
+        <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-12">
+          {role && <p className="max-w-3xl text-lg leading-relaxed text-fg/75 md:text-xl">{role}</p>}
+          {p.actions && (
+            <div className="flex shrink-0 flex-col gap-3 sm:flex-row md:flex-col">
+              {p.actions.map((a, i) => {
+                const external = !a.href.startsWith("#");
+                const className = `group inline-flex h-12 items-center gap-2.5 rounded-full pr-5 pl-4 font-medium transition-colors ${
+                  i === 0 ? "bg-fg text-bg hover:bg-fg/85" : "border border-line hover:border-fg/30"
+                }`;
+                const label = (
+                  <>
+                    <Icon name={a.icon} className="size-5" />
+                    {a.label}
+                  </>
+                );
+                if (a.play && p.play)
+                  return (
+                    <PlayLink key={a.href} href={a.href} className={className}>
+                      {label}
+                    </PlayLink>
+                  );
+                return (
+                  <a
+                    key={a.href}
+                    href={a.href}
+                    {...(external && { target: "_blank", rel: "noreferrer" })}
+                    className={className}
+                  >
+                    {label}
+                    {external && <ArrowUpRightIcon aria-hidden className="ml-auto size-4 opacity-60" />}
+                    {external && <span className="sr-only">(opens in a new tab)</span>}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+      {p.context && (
+        <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 md:grid-cols-4">
+          {p.context.map((c) => (
+            <div key={c.label}>
+              <dt className="eyebrow">{c.label}</dt>
+              <dd className="mt-2 text-lg leading-snug font-semibold tracking-[-0.01em] md:text-xl">{c.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {p.impact && (
+        <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+          {p.impact.map((s) => (
+            // The number reads first, but the label comes first in the markup.
+            <div key={s.label} className="flex flex-col-reverse justify-end gap-3 rounded-3xl bg-accent-soft p-6 md:p-7">
+              <dt className="text-sm leading-snug text-fg/75 md:text-base">{s.label}</dt>
+              <dd className="text-[clamp(2.5rem,5vw,4rem)] leading-none font-bold tracking-[-0.04em] text-accent-ink tabular-nums">
+                {s.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </>
   );
 }

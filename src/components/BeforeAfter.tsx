@@ -91,7 +91,7 @@ function Slider({ c }: { c: Item }) {
   if (!c.before && !c.after) {
     return (
       <figure>
-        <div className="relative aspect-[1440/900] overflow-hidden rounded-3xl border border-line">
+        <div className="relative aspect-[2400/1337] overflow-hidden rounded-3xl border border-line">
           <Pending label="Before & after" />
         </div>
         <figcaption className="mt-4 text-sm text-muted">
@@ -103,7 +103,7 @@ function Slider({ c }: { c: Item }) {
 
   return (
     <figure className="select-none">
-      <div className="relative aspect-[1440/900] overflow-hidden rounded-3xl border border-line bg-raised">
+      <div className="relative aspect-[2400/1337] overflow-hidden rounded-3xl border border-line bg-raised">
         <Side src={c.after} alt={`${c.label} in Console`} label="Console" />
         <div
           className="absolute inset-0"
@@ -115,8 +115,8 @@ function Slider({ c }: { c: Item }) {
               alt={`${c.label} in the legacy app`}
               label="Before"
             />
-          ) : c.id === "dashboard" ? (
-            <Before />
+          ) : c.missing ? (
+            <Missing {...c.missing} />
           ) : (
             <Pending label="Before" />
           )}
@@ -151,9 +151,6 @@ function Slider({ c }: { c: Item }) {
       </div>
       <figcaption className="mt-4 text-sm text-muted">
         <span className="text-fg">{c.label}.</span> {c.caption}
-        {c.id === "dashboard" && !c.before && (
-          <> The legacy side is an illustrative reconstruction.</>
-        )}
       </figcaption>
     </figure>
   );
@@ -191,54 +188,23 @@ function Pending({ label }: { label: string }) {
   );
 }
 
-function Before() {
+/** The before side of a screen the legacy app never had. */
+function Missing({ title, body }: { title: string; body: string }) {
   return (
-    <div className="absolute inset-0 bg-[#e9e6dc] p-3 font-[Arial,sans-serif] text-[#333] md:p-5">
-      <div className="mb-2 flex items-center gap-2 bg-[#5a6b7a] px-2 py-1.5 text-[10px] text-white md:text-xs">
-        <b>LEGALESIGN</b>
-        <span className="opacity-70">
-          Home | Documents | Templates | Groups | Account | Help
-        </span>
-      </div>
-      <div className="grid h-[calc(100%-2.5rem)] grid-cols-[30%_1fr] gap-2">
-        <div className="space-y-1 border border-[#bbb] bg-white p-2 text-[9px] md:text-[11px]">
-          {[
-            "Send a document",
-            "Bulk send",
-            "Templates",
-            "Drafts",
-            "Signed",
-            "Rejected",
-            "Trash",
-            "Reports",
-            "Settings",
-          ].map((l) => (
-            <div key={l} className="text-[#1a4fa0] underline">
-              {l}
-            </div>
-          ))}
+    <div className="absolute inset-0 bg-raised bg-[radial-gradient(var(--line)_1px,transparent_1px)] [background-size:16px_16px]">
+      {/* Centred in the left half, so the slider's starting position shows all of it. */}
+      <div className="absolute inset-y-0 left-0 flex w-1/2 flex-col items-center justify-center py-4 pr-8 pl-4 text-center">
+        <div className="mx-auto hidden size-16 items-center justify-center rounded-2xl border border-dashed border-muted/50 text-muted sm:flex">
+          <svg viewBox="0 0 24 24" className="size-7" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+            <rect x="3" y="3" width="7" height="9" rx="1.5" />
+            <rect x="14" y="3" width="7" height="5" rx="1.5" />
+            <rect x="14" y="12" width="7" height="9" rx="1.5" />
+            <rect x="3" y="16" width="7" height="5" rx="1.5" />
+            <path d="M2 22 22 2" />
+          </svg>
         </div>
-        <div className="overflow-hidden border border-[#bbb] bg-white text-[9px] md:text-[11px]">
-          <div className="grid grid-cols-4 bg-[#d5d5d5] px-1 py-1 font-bold">
-            <span>Title</span>
-            <span>Recipient</span>
-            <span>Status</span>
-            <span>Sent</span>
-          </div>
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className={`grid grid-cols-4 px-1 py-0.5 ${i % 2 ? "bg-[#f3f3f3]" : ""}`}
-            >
-              <span>Contract_{1040 + i}.pdf</span>
-              <span>user{i}@org.gov</span>
-              <span className="text-[#a33]">
-                {i % 3 ? "Pending" : "Signed"}
-              </span>
-              <span>0{(i % 9) + 1}/03/2021</span>
-            </div>
-          ))}
-        </div>
+        <p className="text-lg font-semibold tracking-tight sm:mt-4 md:text-2xl">{title}</p>
+        <p className="mt-1 text-xs text-muted md:text-sm">{body}</p>
       </div>
     </div>
   );

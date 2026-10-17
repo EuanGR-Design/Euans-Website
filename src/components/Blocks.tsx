@@ -1,24 +1,59 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import Link from "next/link";
+import { Fragment, useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import type { Block, Img } from "@/projects";
+import { sectionAnchor, type Block, type Deeper as DeeperData, type Img } from "@/projects";
 import { Reveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
 import { Prototype } from "./Prototype";
 import { Brand } from "./Brand";
+import { IterationScrubber } from "./IterationScrubber";
+import { Video } from "./Video";
+import { Bento } from "./Bento";
+import { FlowPan } from "./FlowPan";
+import { BrowserFrame } from "./BrowserFrame";
+import { BriefPreview } from "./Brief";
+import { Deeper, useInPanel } from "./Deeper";
+import { Icon, IconTile } from "./Icon";
+import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
-/** Renders blocks top to bottom. `name` is the project they belong to. */
+/**
+ * Renders blocks top to bottom. `name` is the project they belong to. On the
+ * page itself, a block without its own id gets one from its eyebrow, so the
+ * section nav can jump to it.
+ */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
   const hasPrototype = blocks.some((b) => b.type === "prototype");
+  const inPanel = useInPanel();
   return (
     <>
-      {blocks.map((b, i) => (
-        <BlockView key={i} b={b} name={name} hasPrototype={hasPrototype} />
-      ))}
+      {blocks.map((b, i) => {
+        const view = <BlockView b={b} name={name} hasPrototype={hasPrototype} />;
+        const anchor = !inPanel && !("id" in b && b.id) ? sectionAnchor(b) : undefined;
+        return anchor ? (
+          <div key={i} id={anchor} className="scroll-mt-16">
+            {view}
+          </div>
+        ) : (
+          <Fragment key={i}>{view}</Fragment>
+        );
+      })}
     </>
+  );
+}
+
+/** The Dig deeper button for a block that has more behind it. */
+function More({ d, name }: { d?: DeeperData; name: string }) {
+  if (!d) return null;
+  return (
+    <Reveal>
+      <Deeper d={d}>
+        <Blocks blocks={d.blocks} name={name} />
+      </Deeper>
+    </Reveal>
   );
 }
 
@@ -70,12 +105,17 @@ function BlockView({
                 delay={0.08 * (i % 3)}
                 className="rounded-3xl border border-line bg-raised p-7"
               >
-                <span className="font-mono text-sm text-accent">0{i + 1}</span>
+                {p.icon ? (
+                  <IconTile name={p.icon} size="sm" />
+                ) : (
+                  <span className="font-mono text-sm text-accent-ink">0{i + 1}</span>
+                )}
                 <h3 className="mt-6 text-xl font-semibold">{p.title}</h3>
                 <p className="mt-3 leading-relaxed text-muted">{p.body}</p>
               </Reveal>
             ))}
           </div>
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "image":
@@ -105,6 +145,88 @@ function BlockView({
           </div>
         </Section>
       );
+    case "video":
+      return (
+        <Section id={b.id}>
+          <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              {b.eyebrow && <p className="eyebrow">{b.eyebrow}</p>}
+              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">
+                {b.heading}
+              </h2>
+            </div>
+            {b.body && <p className="max-w-sm text-muted">{b.body}</p>}
+          </Reveal>
+          <Reveal className="mt-12">
+            <div className="overflow-hidden rounded-[1.75rem] md:rounded-panel border border-line bg-raised">
+              <Video src={b.src} poster={b.poster} label={b.label} />
+            </div>
+          </Reveal>
+          <More d={b.deeper} name={name} />
+        </Section>
+      );
+    case "bento":
+      return (
+        // With no heading, the clips carry straight on from the hero card.
+        <section id={b.id} className={`scroll-mt-16 ${b.heading ? "border-t border-line py-20 md:py-28" : "pb-20 md:pb-28"}`}>
+          {b.heading && (
+            <div className="container-x">
+              <Heading eyebrow={b.eyebrow} heading={b.heading} />
+              {b.body && (
+                <Reveal>
+                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+                </Reveal>
+              )}
+            </div>
+          )}
+          <div className={b.surface ? `container-x ${b.heading ? "mt-12" : ""}` : "mx-auto mt-12 max-w-[1440px] px-3 md:px-6"}>
+            <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} surface={b.surface} />
+          </div>
+          {b.principle && (
+            <Reveal className="container-x mt-20 grid gap-8 md:mt-28 md:grid-cols-12 md:gap-12">
+              <div className="md:col-span-5">
+                {b.principle.eyebrow && <p className="eyebrow">{b.principle.eyebrow}</p>}
+                <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight text-balance md:text-5xl">
+                  {b.principle.heading}
+                </h2>
+              </div>
+              <div className="space-y-5 md:col-span-7 md:pt-9">
+                {b.principle.body.map((para) => (
+                  <p key={para} className="text-lg leading-relaxed text-fg/80">
+                    {para}
+                  </p>
+                ))}
+                {b.principle.quote && (
+                  <figure className="!mt-10 border-l-2 border-accent pl-5">
+                    <blockquote className="text-xl leading-snug font-semibold tracking-[-0.01em] md:text-2xl">
+                      &ldquo;{b.principle.quote.text}&rdquo;
+                    </blockquote>
+                    <figcaption className="mt-3 text-sm text-muted">
+                      <a href={b.principle.quote.url} target="_blank" rel="noreferrer" className="underline-offset-4 hover:text-fg hover:underline">
+                        {b.principle.quote.by}
+                      </a>
+                    </figcaption>
+                  </figure>
+                )}
+              </div>
+            </Reveal>
+          )}
+          {b.cue && (
+            <a
+              href={b.cue.href}
+              className="group mx-auto mt-12 flex w-fit flex-col items-center gap-3 text-muted transition-colors hover:text-fg md:mt-16"
+            >
+              <span className="text-lg md:text-xl">{b.cue.label}</span>
+              <span
+                aria-hidden
+                className="flex size-11 items-center justify-center rounded-full border border-line transition-colors group-hover:border-fg/30"
+              >
+                <ArrowDownIcon className="size-5" />
+              </span>
+            </a>
+          )}
+        </section>
+      );
     case "comparison":
       return (
         <Section>
@@ -123,12 +245,42 @@ function BlockView({
           </div>
         </Section>
       );
+    case "todo":
+      // A section still to be written, with what goes in it.
+      return (
+        <Section>
+          <Reveal>
+            <p className="eyebrow">{b.eyebrow}</p>
+            <h2
+              className={`mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight text-balance md:text-5xl ${
+                b.heading ? "" : "text-muted italic"
+              }`}
+            >
+              {b.heading ?? b.ask}
+            </h2>
+          </Reveal>
+          <Reveal className="mt-10 flex flex-col gap-6 rounded-3xl border-2 border-dashed border-line p-7 md:mt-12 md:flex-row md:items-center md:justify-between md:gap-10 md:p-9">
+            <div className="max-w-2xl">
+              <p className="eyebrow">To add</p>
+              <p className="mt-3 text-lg leading-relaxed text-fg/75">{b.hint}</p>
+            </div>
+            {b.example && (
+              <Link
+                href={b.example}
+                className="inline-flex h-11 shrink-0 items-center gap-2 self-start rounded-full border border-line px-5 font-medium transition-colors hover:border-fg/30 md:self-auto"
+              >
+                See it in Quick Send <span aria-hidden>→</span>
+              </Link>
+            )}
+          </Reveal>
+        </Section>
+      );
     case "prototype":
       return (
         <Section id="prototype">
           <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
-              <p className="eyebrow">Interactive prototype</p>
+              <p className="eyebrow">{b.eyebrow ?? "Interactive prototype"}</p>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
             </div>
             <p className="max-w-sm text-muted">{b.body}</p>
@@ -253,28 +405,480 @@ function BlockView({
           </Reveal>
         </Section>
       );
-    case "insights":
+    case "insights": {
+      // Without labels: the original two columns, found and so.
+      if (!b.labels) {
+        return (
+          <Section>
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            <ol className="mt-12 space-y-4">
+              {b.items.map((it, i) => (
+                <Reveal key={i} delay={0.06 * i}>
+                  <li className={`grid gap-4 md:grid-cols-2 ${draftText(b.draft)}`}>
+                    <div className="rounded-3xl border border-line bg-raised p-6">
+                      <span className="eyebrow not-italic">We found</span>
+                      <p className="mt-3 text-lg leading-snug">{it.found}</p>
+                    </div>
+                    <div className="rounded-3xl border border-line bg-fg/[0.04] p-6">
+                      <span className="eyebrow not-italic">So the design had to</span>
+                      <p className="mt-3 text-lg leading-snug">{it.so}</p>
+                    </div>
+                  </li>
+                </Reveal>
+              ))}
+            </ol>
+          </Section>
+        );
+      }
+      // With labels: one card per finding, read top to bottom, side by side.
+      const labels = b.labels;
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
-          <ol className="mt-12 space-y-4">
+          <ol className={`mt-12 grid gap-4 sm:grid-cols-2 ${b.items.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+            {b.items.map((it, i) => {
+              const parts = [it.found, it.so, it.then].slice(0, labels.length);
+              const last = parts.length - 1;
+              return (
+                <Reveal key={i} delay={0.06 * i} className="h-full">
+                  <li className={`flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised ${draftText(b.draft)}`}>
+                    {parts.map((text, j) =>
+                      j === last ? (
+                        <div key={j} className="mt-auto bg-accent-soft p-6">
+                          <span className="eyebrow not-italic">{labels[j]}</span>
+                          <p className="mt-2 leading-snug font-medium">{text}</p>
+                        </div>
+                      ) : (
+                        <div key={j} className={`p-6 ${j > 0 ? "border-t border-line" : ""}`}>
+                          <span className="eyebrow not-italic">{labels[j]}</span>
+                          {j === 0 && b.quotes ? (
+                            <blockquote className="mt-3 text-xl leading-snug font-semibold tracking-[-0.01em]">
+                              <span aria-hidden className="text-accent-ink">“</span>
+                              {text}
+                              <span aria-hidden className="text-accent-ink">”</span>
+                            </blockquote>
+                          ) : (
+                            <p className={`mt-2 leading-snug ${j === 0 ? "text-lg font-semibold" : "text-fg/80"}`}>{text}</p>
+                          )}
+                        </div>
+                      ),
+                    )}
+                  </li>
+                </Reveal>
+              );
+            })}
+          </ol>
+        </Section>
+      );
+    }
+    case "callouts": {
+      const withImages = b.items.some((it) => it.image?.src);
+      const intro = (
+        <>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+        </>
+      );
+      // Big statements, one per row, each with a line beside it.
+      if (b.look === "statements") {
+        return (
+          <Section id={b.id}>
+            {intro}
+            <ul className="mt-12 border-b border-line md:mt-16">
+              {b.items.map((it, i) => (
+                <Reveal key={it.title} delay={0.05 * i}>
+                  <li className="grid gap-2 border-t border-line py-6 md:grid-cols-12 md:items-baseline md:gap-10 md:py-8">
+                    <h3 className="flex items-center gap-4 text-[clamp(1.75rem,3.4vw,3rem)] leading-[1.02] font-bold tracking-[-0.035em] md:col-span-7 md:gap-6">
+                      {it.icon && <IconTile name={it.icon} />}
+                      {it.title}
+                    </h3>
+                    <p className="text-lg leading-relaxed text-fg/75 md:col-span-5">{it.body}</p>
+                  </li>
+                </Reveal>
+              ))}
+            </ul>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      // Goals ticked off in one tinted panel.
+      if (b.look === "goals") {
+        return (
+          <Section id={b.id}>
+            {intro}
+            <Reveal className="mt-12">
+              <ul className="grid gap-x-8 gap-y-8 rounded-3xl bg-accent-soft p-7 sm:grid-cols-2 md:p-10 lg:grid-cols-4">
+                {b.items.map((it) => (
+                  <li key={it.title}>
+                    <span
+                      aria-hidden
+                      className="flex size-9 items-center justify-center rounded-full bg-accent text-on-accent"
+                    >
+                      <svg viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 8.5 6.5 12 13 4.5" />
+                      </svg>
+                    </span>
+                    <h3 className="mt-5 text-xl leading-snug font-semibold">{it.title}</h3>
+                    <p className="mt-2 leading-relaxed text-fg/75">{it.body}</p>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      // What was wrong beside its fix, as a two-column table.
+      if (b.look === "fixes") {
+        return (
+          <Section id={b.id}>
+            {intro}
+            <div className="mt-12 md:mt-16">
+              <div aria-hidden className="hidden grid-cols-12 gap-10 pb-4 md:grid">
+                <p className="eyebrow col-span-7">What was wrong</p>
+                <p className="eyebrow col-span-5">The fix</p>
+              </div>
+              <ul className="border-b border-line">
+                {b.items.map((it, i) => (
+                  <Reveal key={it.title} delay={0.05 * i}>
+                    <li className="grid gap-4 border-t border-line py-7 md:grid-cols-12 md:gap-10 md:py-9">
+                      <div className="flex gap-5 md:col-span-7">
+                        {it.icon && <IconTile name={it.icon} size="sm" />}
+                        <div>
+                          <h3 className="text-2xl leading-tight font-bold tracking-[-0.02em] text-balance md:text-3xl">{it.title}</h3>
+                          <p className="mt-2 max-w-xl leading-relaxed text-fg/75">{it.body}</p>
+                        </div>
+                      </div>
+                      {it.fix && (
+                        <p className="flex items-start gap-3 md:col-span-5">
+                          <Icon name="ArrowLongRight" className="mt-0.5 size-7 shrink-0 text-accent-ink" />
+                          <span className="text-xl leading-snug font-semibold text-accent-ink md:text-2xl">
+                            <span className="sr-only">The fix: </span>
+                            {it.fix}
+                          </span>
+                        </p>
+                      )}
+                    </li>
+                  </Reveal>
+                ))}
+              </ul>
+            </div>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      // The heading held on the left while a plain list runs down the right.
+      if (b.look === "split") {
+        return (
+          <Section id={b.id}>
+            <div className="grid gap-10 md:grid-cols-12 md:gap-12">
+              <div className="md:col-span-5">
+                <div className="md:sticky md:top-28">{intro}</div>
+              </div>
+              <ul className="md:col-span-7">
+                {b.items.map((it, i) => (
+                  <Reveal key={it.title} delay={0.05 * i}>
+                    <li className={`flex gap-5 py-6 md:py-7 ${i ? "border-t border-line" : "md:pt-0"}`}>
+                      {it.icon && <IconTile name={it.icon} size="sm" />}
+                      <div>
+                        <h3 className="text-xl leading-snug font-semibold md:text-2xl">{it.title}</h3>
+                        <p className="mt-2 text-lg leading-relaxed text-fg/75">{it.body}</p>
+                      </div>
+                    </li>
+                  </Reveal>
+                ))}
+              </ul>
+            </div>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      // Words only: one row of short, bold cards that read at a glance.
+      if (!withImages) {
+        const cols = b.items.length === 4 ? "lg:grid-cols-4" : b.items.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
+        return (
+          <Section id={b.id}>
+            {intro}
+            <ol className={`mt-12 grid gap-4 sm:grid-cols-2 ${cols}`}>
+              {b.items.map((it, i) => (
+                <Reveal key={it.title} delay={0.06 * i} className="h-full">
+                  <li className="flex h-full flex-col rounded-3xl border border-line bg-raised p-6 md:p-7">
+                    <span className="font-mono text-sm text-accent-ink">{String(i + 1).padStart(2, "0")}</span>
+                    <h3 className="mt-5 text-2xl leading-[1.05] font-bold tracking-[-0.03em] text-balance md:text-[1.75rem]">{it.title}</h3>
+                    <p className="mt-3 leading-relaxed text-fg/75">{it.body}</p>
+                    {it.fix && (
+                      <p className="mt-auto pt-6">
+                        <span className="block border-t border-line pt-4">
+                          <span className="eyebrow block">The fix</span>
+                          <span className="mt-1 block text-lg leading-snug font-semibold text-accent-ink">{it.fix}</span>
+                        </span>
+                      </p>
+                    )}
+                  </li>
+                </Reveal>
+              ))}
+            </ol>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      return (
+        <Section id={b.id}>
+          {intro}
+          <ol className="mt-14 md:mt-20">
+            {b.items.map((it, i) => {
+              const words = (
+                <>
+                  <p className="text-lg leading-relaxed text-fg/75 md:text-xl">{it.body}</p>
+                  {it.fix && (
+                    <p className="mt-5">
+                      <span className="eyebrow block">The fix</span>
+                      <span className="mt-1 block text-lg font-semibold text-accent-ink">{it.fix}</span>
+                    </p>
+                  )}
+                </>
+              );
+              return (
+                <Reveal key={it.title}>
+                  <li className="grid gap-6 border-t border-line py-10 md:grid-cols-12 md:gap-10 md:py-14">
+                    <div className="md:col-span-6">
+                      <span className="font-mono text-sm text-accent-ink">{String(i + 1).padStart(2, "0")}</span>
+                      <h3 className="mt-4 text-[clamp(2rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] text-balance">
+                        {it.title}
+                      </h3>
+                      {it.image && <div className="mt-6 max-w-md">{words}</div>}
+                    </div>
+                    <div className={`md:col-span-6 ${it.image ? "" : "self-end md:pb-1"}`}>
+                      {it.image?.src ? (
+                        <div className="overflow-hidden rounded-2xl border border-line bg-raised">
+                          <Image
+                            src={it.image.src}
+                            alt={it.image.alt}
+                            width={it.image.w}
+                            height={it.image.h}
+                            sizes="(min-width: 768px) 640px, 100vw"
+                            className="h-auto w-full"
+                          />
+                        </div>
+                      ) : (
+                        words
+                      )}
+                    </div>
+                  </li>
+                </Reveal>
+              );
+            })}
+          </ol>
+          <More d={b.deeper} name={name} />
+        </Section>
+      );
+    }
+    case "brief":
+      // One line on the page, and the brief itself a click away.
+      return (
+        <Section id={b.id}>
+          <div className="grid items-center gap-10 md:grid-cols-12 md:gap-12">
+            <div className="md:col-span-6">
+              <Heading eyebrow={b.eyebrow} heading={b.heading} />
+              {b.body && (
+                <Reveal>
+                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+                </Reveal>
+              )}
+            </div>
+            <Reveal className="md:col-span-6">
+              <BriefPreview b={b} />
+            </Reveal>
+          </div>
+          <More d={b.deeper} name={name} />
+        </Section>
+      );
+    case "prototypes":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {b.items.map((it, i) => (
-              <Reveal key={i} delay={0.06 * i}>
-                <li className={`grid gap-4 md:grid-cols-2 ${draftText(b.draft)}`}>
-                  <div className="rounded-3xl border border-line bg-raised p-6">
-                    <span className="eyebrow not-italic">We found</span>
-                    <p className="mt-3 text-lg leading-snug">{it.found}</p>
-                  </div>
-                  <div className="rounded-3xl border border-accent/40 bg-accent-soft p-6">
-                    <span className="eyebrow not-italic">So the design had to</span>
-                    <p className="mt-3 text-lg leading-snug">{it.so}</p>
+              <Reveal key={it.version} delay={0.06 * i} className="h-full">
+                <li className="flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised">
+                  {it.image.src && (
+                    <div className="relative aspect-[2000/1425] border-b border-line bg-bg">
+                      <Image
+                        src={it.image.src}
+                        alt={it.image.alt}
+                        fill
+                        sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover object-top"
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-1 flex-col p-6">
+                    <span className="font-mono text-sm text-accent-ink">Version {it.version}</span>
+                    <h3 className="mt-3 text-xl leading-snug font-semibold">{it.title}</h3>
+                    <p className="mt-2 leading-relaxed text-muted">{it.body}</p>
+                    <div className="mt-auto flex flex-wrap gap-2 pt-6">
+                      {it.links.map((l) => (
+                        <a
+                          key={l.url}
+                          href={l.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]"
+                        >
+                          {it.links.length > 1 ? l.label : "Open the prototype"}
+                          <ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 </li>
               </Reveal>
             ))}
           </ol>
+          {b.note && (
+            <Reveal>
+              <p className="mt-6 text-sm text-muted">{b.note}</p>
+            </Reveal>
+          )}
         </Section>
       );
+    case "overview":
+      return (
+        <Section>
+          <div className="grid gap-12 lg:grid-cols-12">
+            <Reveal className="lg:col-span-7">
+              {b.eyebrow && <p className="eyebrow">{b.eyebrow}</p>}
+              <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
+              <p className="mt-6 text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+            <Reveal delay={0.08} className="lg:col-span-4 lg:col-start-9">
+              <p className="eyebrow">What I did</p>
+              <ol className="mt-4 border-t border-line">
+                {b.did.map((d, i) => (
+                  <li key={d} className="flex gap-4 border-b border-line py-4 text-lg leading-snug font-medium">
+                    <span className="font-mono text-sm leading-7 text-accent-ink">{String(i + 1).padStart(2, "0")}</span>
+                    {d}
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+          </div>
+        </Section>
+      );
+    case "screens":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          {/* A grid of steps. An odd one out sits centred on its own row. */}
+          <ol className="mt-12 grid gap-x-6 gap-y-12 md:mt-16 md:grid-cols-2 md:gap-y-16">
+            {b.items.map((it, i) => (
+              <li
+                key={it.title}
+                className={b.items.length % 2 && i === b.items.length - 1 ? "md:col-span-2 md:mx-auto md:w-[calc(50%-0.75rem)]" : ""}
+              >
+                <Reveal>
+                  <BrowserFrame video={it.video} compact button={false} />
+                </Reveal>
+                <Reveal className="mt-5">
+                  <h3 className="flex items-baseline gap-3 text-2xl font-bold tracking-[-0.02em] md:text-3xl">
+                    <span className="font-mono text-sm font-normal tracking-normal text-accent-ink">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {it.title}
+                  </h3>
+                  <p className="mt-2 max-w-md leading-relaxed text-muted">{it.body}</p>
+                </Reveal>
+              </li>
+            ))}
+          </ol>
+        </Section>
+      );
+    case "flow":
+      return <FlowPan b={b} />;
+    case "outcome": {
+      // On a surface it's a card in the page, so it reads as part of the
+      // story rather than the band that closes it.
+      const card = !!b.surface;
+      const ink = card ? "text-white" : "text-on-tertiary";
+      const soft = card ? "text-white/70" : "text-on-tertiary/60";
+      const body = card ? "text-white/85" : "text-on-tertiary/75";
+      const rule = card ? "border-white/25" : "border-on-tertiary/20";
+      const inner = (
+        <>
+          <Reveal>
+            {b.eyebrow && <p className={`eyebrow ${card ? "!text-white/75" : "!text-on-tertiary/70"}`}>{b.eyebrow}</p>}
+            <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
+          </Reveal>
+          {/* Side by side: an icon, the change in a few words, then the detail. */}
+          <ol
+            className={`mt-10 grid gap-x-10 gap-y-10 md:mt-14 ${
+              b.items.length % 3 === 0 ? "md:grid-cols-3" : "md:grid-cols-2"
+            }`}
+          >
+            {b.items.map((it, i) => (
+              <Reveal key={it.title} delay={0.06 * (i % 3)}>
+                <li className={`h-full border-t ${rule} pt-8`}>
+                  {it.icon ? (
+                    <span
+                      className={`flex size-12 items-center justify-center rounded-2xl ${card ? "bg-white/15" : "bg-on-tertiary/10"}`}
+                    >
+                      <Icon name={it.icon} className="size-6" />
+                    </span>
+                  ) : (
+                    <span className={`font-mono text-sm ${soft}`}>{String(i + 1).padStart(2, "0")}</span>
+                  )}
+                  <p className="mt-6 text-2xl leading-[1.2] font-semibold tracking-tight text-balance md:text-[1.75rem]">
+                    {it.title}
+                  </p>
+                  <p className={`mt-4 text-lg leading-relaxed ${body}`}>{it.body}</p>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+          {b.stats && (
+            <dl className="mt-6 grid gap-4 sm:grid-cols-3">
+              {b.stats.map((st) => (
+                <div key={st.label} className={`flex flex-col-reverse justify-end gap-3 rounded-3xl p-7 ${card ? "bg-white/10" : "bg-on-tertiary/[0.08]"}`}>
+                  <dt className={body}>{st.label}</dt>
+                  <dd className="text-[clamp(2.5rem,5vw,4.5rem)] leading-none font-bold tracking-[-0.04em] tabular-nums">{st.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {b.todo && <p className={`mt-12 border-t ${rule} pt-6 ${soft} italic`}>{b.todo}</p>}
+        </>
+      );
+      if (card) {
+        return (
+          <section className="border-t border-line py-20 md:py-28">
+            <div className="container-x">
+              <div className={`rounded-[1.75rem] px-6 py-12 sm:px-10 md:rounded-panel md:px-16 md:py-20 ${ink}`} style={{ background: b.surface }}>
+                {inner}
+              </div>
+            </div>
+          </section>
+        );
+      }
+      return (
+        <section className={`bg-tertiary py-24 md:py-36 ${ink}`}>
+          <div className="container-x">{inner}</div>
+        </section>
+      );
+    }
     case "options":
       return (
         <Section>
@@ -291,7 +895,7 @@ function BlockView({
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-lg font-semibold">{o.title}</h3>
                     {o.chosen && (
-                      <span className="rounded-full bg-accent px-3 py-1 text-xs text-white">Chosen</span>
+                      <span className="rounded-full bg-accent px-3 py-1 text-xs text-on-accent">Chosen</span>
                     )}
                   </div>
                   <p className={`mt-3 text-sm leading-relaxed text-fg/75 ${draftText(b.draft)}`}>{o.body}</p>
@@ -309,8 +913,11 @@ function BlockView({
             {b.items.map((r, i) => (
               <Reveal key={i} delay={0.06 * i}>
                 <li className="grid gap-6 rounded-3xl border border-line bg-raised p-6 md:grid-cols-12 md:p-8">
-                  <span className="font-mono text-sm text-accent md:col-span-2">Round {i + 1}</span>
-                  <div className={`space-y-5 md:col-span-4 ${draftText(b.draft)}`}>
+                  <div className="md:col-span-2">
+                    <span className="font-mono text-sm text-accent-ink">Round {i + 1}</span>
+                    {r.title && <p className="mt-2 text-sm leading-snug text-muted">{r.title}</p>}
+                  </div>
+                  <div className={`space-y-5 md:col-span-5 ${draftText(b.draft)}`}>
                     <div>
                       <p className="eyebrow not-italic">Testers struggled with</p>
                       <p className="mt-2 leading-relaxed">{r.heard}</p>
@@ -320,7 +927,7 @@ function BlockView({
                       <p className="mt-2 leading-relaxed">{r.changed}</p>
                     </div>
                   </div>
-                  <div className="overflow-hidden rounded-2xl border border-line md:col-span-6">
+                  <div className="self-start overflow-hidden rounded-2xl border border-line md:col-span-5">
                     <Shot img={r.image} label={`Round ${i + 1}, before and after`} />
                   </div>
                 </li>
@@ -328,6 +935,28 @@ function BlockView({
             ))}
           </ol>
         </Section>
+      );
+    case "iterations":
+      return (
+        <section className="border-t border-line py-20 md:py-28">
+          <div className="container-x">
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
+          </div>
+          {/* Wider than the page column, so the screens get all the room they can. */}
+          <div className="mx-auto mt-12 max-w-[1720px] px-3 md:px-6">
+            <IterationScrubber items={b.items} />
+          </div>
+          {b.deeper && (
+            <div className="container-x">
+              <More d={b.deeper} name={name} />
+            </div>
+          )}
+        </section>
       );
     case "stats":
       return (
@@ -338,7 +967,7 @@ function BlockView({
               <Reveal key={st.label} delay={0.08 * i} className="rounded-3xl border border-line bg-raised p-7">
                 <dt className="text-sm text-muted">{st.label}</dt>
                 <dd
-                  className={`mt-4 text-5xl font-semibold tracking-tight tabular-nums ${b.draft ? "text-muted" : "text-accent"}`}
+                  className={`mt-4 text-5xl font-semibold tracking-tight tabular-nums ${b.draft ? "text-muted" : "text-accent-ink"}`}
                 >
                   {st.value}
                 </dd>
@@ -372,18 +1001,23 @@ function Shot({ img, label }: { img: Img | null; label: string }) {
 }
 
 function Section({ children, id }: { children: React.ReactNode; id?: string }) {
+  const inPanel = useInPanel();
   return (
-    <section id={id} className="border-t border-line py-20 md:py-28">
+    <section
+      id={id}
+      className={`scroll-mt-16 border-t border-line ${inPanel ? "py-10 first:border-t-0 md:py-14" : "py-20 md:py-28"}`}
+    >
       <div className="container-x">{children}</div>
     </section>
   );
 }
 
 function Heading({ eyebrow, heading }: { eyebrow?: string; heading: string }) {
+  const inPanel = useInPanel();
   return (
     <Reveal>
       {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-      <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">
+      <h2 className={`mt-4 max-w-3xl leading-tight font-semibold tracking-tight ${inPanel ? "text-2xl md:text-4xl" : "text-3xl md:text-5xl"}`}>
         {heading}
       </h2>
     </Reveal>
@@ -394,7 +1028,7 @@ function Figure({ img, sizes = "(min-width: 1280px) 1200px, 100vw" }: { img: Img
   return (
     <Reveal>
       <figure>
-        <div className="overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl">
+        <div className="overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
           {img.src ? (
             <Image
               src={img.src}
@@ -449,7 +1083,7 @@ function Timeline({ b }: { b: Extract<Block, { type: "timeline" }> }) {
                 className="absolute top-1 left-[9px] h-3.5 w-3.5 rounded-full border-2 border-accent bg-bg"
               />
               <Reveal className="md:col-span-3">
-                <span className="font-mono text-sm text-accent">{t.when}</span>
+                <span className="font-mono text-sm text-accent-ink">{t.when}</span>
               </Reveal>
               <Reveal delay={0.08} className="md:col-span-9">
                 <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{t.title}</h3>

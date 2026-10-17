@@ -1,13 +1,59 @@
 @import "tailwindcss";
 
+/*
+ * Three colour themes, set as data-theme on <html>. Orange is the one in
+ * use; the others stay here to try again. Each sets the same tokens:
+ *   accent      the primary colour: fills, the cursor, focus rings
+ *   accent-ink  the primary dark enough to read as text on the page
+ *   on-accent   text that sits on an accent fill
+ *   secondary   highlights such as text selection
+ *   tertiary    the dark block at the foot of every page
+ */
+:root,
+[data-theme="orange"] {
+  --bg: #efebe4;
+  --bg-raised: #f8f6f1;
+  --fg: #2a211c;
+  --muted: #74675d;
+  --line: rgba(42, 33, 28, 0.12);
+  --accent: #ff5c34;
+  --accent-ink: #b8381a;
+  --on-accent: #2a211c;
+  --secondary: #d9cbb6;
+  --tertiary: #2a211c;
+  --on-tertiary: #efebe4;
+}
+
+[data-theme="tangerine"] {
+  --bg: #d7efff;
+  --bg-raised: #f2f9ff;
+  --fg: #351e28;
+  --muted: #5e4a54;
+  --line: rgba(53, 30, 40, 0.13);
+  --accent: #f28500;
+  --accent-ink: #9a4700;
+  --on-accent: #351e28;
+  --secondary: #ffd19a;
+  --tertiary: #351e28;
+  --on-tertiary: #d7efff;
+}
+
+[data-theme="cornflower"] {
+  --bg: #f3f1ea;
+  --bg-raised: #fbfaf6;
+  --fg: #26201a;
+  --muted: #6c645b;
+  --line: rgba(38, 32, 26, 0.12);
+  --accent: #94b6ef;
+  --accent-ink: #924b12;
+  --on-accent: #26201a;
+  --secondary: #e6e279;
+  --tertiary: #924b12;
+  --on-tertiary: #f3f1ea;
+}
+
 :root {
-  --bg: #0a0a0b;
-  --bg-raised: #141416;
-  --fg: #f4f2ee;
-  --muted: #9a9894;
-  --line: rgba(244, 242, 238, 0.1);
-  --accent: #3d5bff;
-  --accent-soft: rgba(61, 91, 255, 0.16);
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 @theme inline {
@@ -17,10 +63,20 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
   --color-accent-soft: var(--accent-soft);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-serif);
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  /* One typeface throughout, Awwwards-style; "mono" text keeps even figures. */
+  --font-sans: var(--font-inter-tight);
+  --font-mono: var(--font-inter-tight);
+  /* A little tighter than Tailwind's defaults. `panel` is for the big blue
+     panels and screens, rounded to suit how far their contents sit inside. */
+  --radius-2xl: 0.875rem;
+  --radius-3xl: 1.25rem;
+  --radius-panel: 2.25rem;
 }
 
 html {
@@ -31,29 +87,20 @@ html {
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
   overflow-x: hidden;
 }
 
 ::selection {
-  background: var(--accent);
-  color: #fff;
+  background: var(--secondary);
+  color: var(--fg);
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-ink);
   outline-offset: 3px;
   border-radius: 6px;
-}
-
-.grain::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.05;
-  z-index: 60;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .container-x {
@@ -69,11 +116,23 @@ body {
 }
 
 .eyebrow {
-  font-family: var(--font-geist-mono), monospace;
   font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bold, tightly set headings, as on Awwwards. Unlayered, so it wins over
+   the font-semibold utilities the components already carry. */
+h1,
+h2 {
+  font-weight: 700;
+  letter-spacing: -0.035em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -92,5 +151,111 @@ body {
 @keyframes marquee {
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* The scrubber bar on the Iteration page. --p is how far along it is. */
+.scrubber {
+  appearance: none;
+  height: 24px;
+  background: transparent;
+  cursor: grab;
+}
+.scrubber:active {
+  cursor: grabbing;
+}
+.scrubber::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-accent) var(--p), var(--color-line) var(--p));
+}
+.scrubber::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-accent) var(--p), var(--color-line) var(--p));
+}
+.scrubber::-webkit-slider-thumb {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: -9px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  border: 4px solid var(--color-bg);
+  box-shadow: 0 0 0 1px var(--color-accent), 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.scrubber::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  border: 4px solid var(--color-bg);
+  box-shadow: 0 0 0 1px var(--color-accent), 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.scrubber:focus-visible {
+  outline: none;
+}
+.scrubber:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.scrubber:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 1px var(--color-accent), 0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Comment pins on the scrubber screens fade in with each version. */
+.pin-layer {
+  animation: pin-in 0.3s ease-out 0.15s both;
+}
+@keyframes pin-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* The full-screen scrubber modal and the final "Try the prototype" card. */
+.modal-in {
+  animation: modal-in 0.2s ease-out both;
+}
+@keyframes modal-in {
+  from {
+    opacity: 0;
+  }
+}
+.prompt-in {
+  animation: prompt-in 0.4s ease-out 0.3s both;
+}
+@keyframes prompt-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* The custom cursor (Cursor.tsx) replaces the pointer on mouse devices. */
+.has-cursor,
+.has-cursor * {
+  cursor: none !important;
+}
+.has-cursor iframe {
+  cursor: auto !important;
+}
+/* A modal panel sits in the top layer, above the custom cursor, so it gets
+   the normal pointer back. */
+.has-cursor dialog[open],
+.has-cursor dialog[open] * {
+  cursor: auto !important;
+}
+.has-cursor dialog[open] :is(a, button) {
+  cursor: pointer !important;
+}
+
+/* The ring on the scrubber's play button, filling until the next version. */
+.autoplay-ring {
+  stroke-dashoffset: 1;
+  animation: autoplay-ring linear forwards;
+}
+@keyframes autoplay-ring {
+  to {
+    stroke-dashoffset: 0;
   }
 }
