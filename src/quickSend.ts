@@ -275,24 +275,6 @@ const quickSendPrototypes: Record<number, { title?: string; body: string; links:
   },
 };
 
-// The prototypes again, as their own section, so they aren't only found by
-// landing on the right version in the scrubber.
-export const quickSendPrototypeCards: Extract<Block, { type: "prototypes" }>["items"] = [
-  { version: 15, title: "The first prototype", body: "The first version users could click through, when Quick Send joined up with Compose." },
-  { version: 16, title: "The next round", body: "The flow refined and put back in front of users." },
-  { version: 19, title: "One screen, or the whole flow", body: "Try the editing screen alone, or the full flow from choosing Quick Send to pressing Send." },
-  { version: 24, title: "The final prototype", body: "The version the developers built from, alongside the annotated user flows." },
-].map((p) => ({
-  ...p,
-  image: {
-    src: `/work/quick-send/iterations/${String(p.version).padStart(2, "0")}.webp`,
-    w: 2000,
-    h: 1425,
-    alt: `Quick Send, version ${p.version}`,
-  },
-  links: quickSendPrototypes[p.version].links,
-}));
-
 // Versions whose screen hasn't been added yet. They show a placeholder.
 const quickSendMissingScreens = new Set<number>();
 

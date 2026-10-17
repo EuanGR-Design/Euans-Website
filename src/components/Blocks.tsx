@@ -14,6 +14,7 @@ import { Video } from "./Video";
 import { Bento } from "./Bento";
 import { FlowPan } from "./FlowPan";
 import { BrowserFrame } from "./BrowserFrame";
+import { BriefPreview } from "./Brief";
 import { Deeper, useInPanel } from "./Deeper";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
@@ -160,6 +161,7 @@ function BlockView({
               <Video src={b.src} poster={b.poster} label={b.label} />
             </div>
           </Reveal>
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "bento":
@@ -179,6 +181,35 @@ function BlockView({
           <div className={b.surface ? `container-x ${b.heading ? "mt-12" : ""}` : "mx-auto mt-12 max-w-[1440px] px-3 md:px-6"}>
             <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} surface={b.surface} />
           </div>
+          {b.principle && (
+            <Reveal className="container-x mt-20 grid gap-8 md:mt-28 md:grid-cols-12 md:gap-12">
+              <div className="md:col-span-5">
+                {b.principle.eyebrow && <p className="eyebrow">{b.principle.eyebrow}</p>}
+                <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight text-balance md:text-5xl">
+                  {b.principle.heading}
+                </h2>
+              </div>
+              <div className="space-y-5 md:col-span-7 md:pt-9">
+                {b.principle.body.map((para) => (
+                  <p key={para} className="text-lg leading-relaxed text-fg/80">
+                    {para}
+                  </p>
+                ))}
+                {b.principle.quote && (
+                  <figure className="!mt-10 border-l-2 border-accent pl-5">
+                    <blockquote className="text-xl leading-snug font-semibold tracking-[-0.01em] md:text-2xl">
+                      &ldquo;{b.principle.quote.text}&rdquo;
+                    </blockquote>
+                    <figcaption className="mt-3 text-sm text-muted">
+                      <a href={b.principle.quote.url} target="_blank" rel="noreferrer" className="underline-offset-4 hover:text-fg hover:underline">
+                        {b.principle.quote.by}
+                      </a>
+                    </figcaption>
+                  </figure>
+                )}
+              </div>
+            </Reveal>
+          )}
           {b.cue && (
             <a
               href={b.cue.href}
@@ -484,9 +515,12 @@ function BlockView({
                 {b.items.map((it, i) => (
                   <Reveal key={it.title} delay={0.05 * i}>
                     <li className="grid gap-4 border-t border-line py-7 md:grid-cols-12 md:gap-10 md:py-9">
-                      <div className="md:col-span-7">
-                        <h3 className="text-2xl leading-tight font-bold tracking-[-0.02em] md:text-3xl">{it.title}</h3>
-                        <p className="mt-2 max-w-xl leading-relaxed text-fg/75">{it.body}</p>
+                      <div className="flex gap-5 md:col-span-7">
+                        {it.icon && <IconTile name={it.icon} size="sm" />}
+                        <div>
+                          <h3 className="text-2xl leading-tight font-bold tracking-[-0.02em] text-balance md:text-3xl">{it.title}</h3>
+                          <p className="mt-2 max-w-xl leading-relaxed text-fg/75">{it.body}</p>
+                        </div>
                       </div>
                       {it.fix && (
                         <p className="flex items-start gap-3 md:col-span-5">
@@ -613,55 +647,22 @@ function BlockView({
       );
     }
     case "brief":
+      // One line on the page, and the brief itself a click away.
       return (
         <Section id={b.id}>
-          <Heading eyebrow={b.eyebrow} heading={b.heading} />
-          {b.body && (
-            <Reveal>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
-            </Reveal>
-          )}
-          <Reveal className="mt-12 md:mt-16">
-            {/* A sheet of paper, with a second one peeking out from under it. */}
-            <div className="relative mx-auto max-w-4xl">
-              <div aria-hidden className="absolute inset-0 hidden rotate-[1.6deg] rounded-md bg-white/70 shadow-lg ring-1 ring-black/5 sm:block" />
-              <article className="relative rounded-md bg-white px-6 py-8 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_30px_60px_-30px_rgba(0,0,0,0.35)] ring-1 ring-black/5 sm:px-10 md:px-14 md:py-14">
-                <header className="border-b-2 border-fg pb-6">
-                  <p className="font-mono text-xs tracking-[0.2em] text-muted uppercase">Product brief</p>
-                  <h3 className="mt-3 text-3xl font-bold tracking-[-0.03em] md:text-5xl">{b.title}</h3>
-                  <dl className="mt-6 grid gap-4 sm:grid-cols-3">
-                    {b.meta.map((m) => (
-                      <div key={m.label}>
-                        <dt className="font-mono text-[0.7rem] tracking-[0.16em] text-muted uppercase">{m.label}</dt>
-                        <dd className="mt-1 text-sm leading-snug font-medium">{m.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </header>
-                {b.sections.map((sec) => (
-                  <div key={sec.label} className="grid gap-3 border-b border-line py-6 last:border-b-0 last:pb-0 md:grid-cols-[10rem_1fr] md:gap-8 md:py-8">
-                    <h4 className="font-mono text-xs leading-6 tracking-[0.16em] text-accent-ink uppercase md:leading-7">{sec.label}</h4>
-                    <div>
-                      {sec.body && <p className="text-lg leading-relaxed text-fg/85">{sec.body}</p>}
-                      {sec.items && (
-                        <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
-                          {sec.items.map((it) => (
-                            <li key={it.title} className="flex gap-4">
-                              {it.icon && <IconTile name={it.icon} size="sm" />}
-                              <div>
-                                <p className="text-lg leading-snug font-semibold">{it.title}</p>
-                                <p className="mt-1 leading-relaxed text-fg/70">{it.body}</p>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </article>
+          <div className="grid items-center gap-10 md:grid-cols-12 md:gap-12">
+            <div className="md:col-span-6">
+              <Heading eyebrow={b.eyebrow} heading={b.heading} />
+              {b.body && (
+                <Reveal>
+                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+                </Reveal>
+              )}
             </div>
-          </Reveal>
+            <Reveal className="md:col-span-6">
+              <BriefPreview b={b} />
+            </Reveal>
+          </div>
           <More d={b.deeper} name={name} />
         </Section>
       );
@@ -744,17 +745,15 @@ function BlockView({
       );
     case "screens":
       return (
-        <section className="border-t border-line py-20 md:py-28">
-          <div className="container-x">
-            <Heading eyebrow={b.eyebrow} heading={b.heading} />
-            {b.body && (
-              <Reveal>
-                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
-              </Reveal>
-            )}
-          </div>
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
           {/* A grid of steps. An odd one out sits centred on its own row. */}
-          <ol className="container-x mt-12 grid gap-x-6 gap-y-12 md:mt-16 md:grid-cols-2 md:gap-y-16">
+          <ol className="mt-12 grid gap-x-6 gap-y-12 md:mt-16 md:grid-cols-2 md:gap-y-16">
             {b.items.map((it, i) => (
               <li
                 key={it.title}
@@ -775,7 +774,7 @@ function BlockView({
               </li>
             ))}
           </ol>
-        </section>
+        </Section>
       );
     case "flow":
       return <FlowPan b={b} />;

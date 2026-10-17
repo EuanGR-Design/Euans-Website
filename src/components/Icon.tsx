@@ -1,4 +1,5 @@
 import {
+  AdjustmentsHorizontalIcon,
   ArrowLongRightIcon,
   ArrowTrendingDownIcon,
   ArrowUturnLeftIcon,
@@ -6,9 +7,12 @@ import {
   BoltIcon,
   ChatBubbleLeftRightIcon,
   CursorArrowRaysIcon,
+  DocumentDuplicateIcon,
   DocumentTextIcon,
   EyeIcon,
   FlagIcon,
+  HandRaisedIcon,
+  InboxStackIcon,
   ListBulletIcon,
   LockOpenIcon,
   MagnifyingGlassIcon,
@@ -43,6 +47,7 @@ function ArrowsSplitIcon(props: React.ComponentProps<"svg">) {
 // Heroicons (outline) that content can ask for by name, without the "Icon"
 // suffix. Add one here to use it in projects.ts.
 const icons = {
+  AdjustmentsHorizontal: AdjustmentsHorizontalIcon,
   ArrowLongRight: ArrowLongRightIcon,
   ArrowsSplit: ArrowsSplitIcon,
   ArrowTrendingDown: ArrowTrendingDownIcon,
@@ -51,9 +56,12 @@ const icons = {
   Bolt: BoltIcon,
   ChatBubbleLeftRight: ChatBubbleLeftRightIcon,
   CursorArrowRays: CursorArrowRaysIcon,
+  DocumentDuplicate: DocumentDuplicateIcon,
   DocumentText: DocumentTextIcon,
   Eye: EyeIcon,
   Flag: FlagIcon,
+  HandRaised: HandRaisedIcon,
+  InboxStack: InboxStackIcon,
   ListBullet: ListBulletIcon,
   LockOpen: LockOpenIcon,
   MagnifyingGlass: MagnifyingGlassIcon,
