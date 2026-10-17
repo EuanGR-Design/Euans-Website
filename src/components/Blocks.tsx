@@ -465,6 +465,59 @@ function BlockView({
         </Section>
       );
     }
+    case "prototypes":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {b.items.map((it, i) => (
+              <Reveal key={it.version} delay={0.06 * i} className="h-full">
+                <li className="flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised">
+                  {it.image.src && (
+                    <div className="relative aspect-[2000/1425] border-b border-line bg-bg">
+                      <Image
+                        src={it.image.src}
+                        alt={it.image.alt}
+                        fill
+                        sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover object-top"
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-1 flex-col p-6">
+                    <span className="font-mono text-sm text-accent-ink">Version {it.version}</span>
+                    <h3 className="mt-3 text-xl leading-snug font-semibold">{it.title}</h3>
+                    <p className="mt-2 leading-relaxed text-muted">{it.body}</p>
+                    <div className="mt-auto flex flex-wrap gap-2 pt-6">
+                      {it.links.map((l) => (
+                        <a
+                          key={l.url}
+                          href={l.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]"
+                        >
+                          {it.links.length > 1 ? l.label : "Open the prototype"} <span aria-hidden>↗</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+          {b.note && (
+            <Reveal>
+              <p className="mt-6 text-sm text-muted">{b.note}</p>
+            </Reveal>
+          )}
+        </Section>
+      );
     case "overview":
       return (
         <Section>

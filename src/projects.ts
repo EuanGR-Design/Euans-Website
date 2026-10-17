@@ -3,7 +3,7 @@ import type { CardInfo } from "./components/ProjectTransition";
 // Pages are built from `blocks`, top to bottom. Images live in public/.
 
 import { oldDims } from "./oldImageSizes";
-import { quickSendInProduction, quickSendIterations, quickSendTesting } from "./quickSend";
+import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -174,6 +174,16 @@ export type Block =
       body?: string;
       items: { title: string; body: string; fix?: string; image?: Img }[];
       deeper?: Deeper;
+    }
+  // Clickable prototypes side by side, each with a screen of its version
+  // and links to open it.
+  | {
+      type: "prototypes";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      note?: string;
+      items: { version: number; title: string; body: string; image: Img; links: { label: string; url: string }[] }[];
     }
   // A few lines on the project and a list of what I did on it.
   | { type: "overview"; eyebrow?: string; heading: string; body: string; did: string[] }
@@ -430,8 +440,8 @@ export const projects: Project[] = [
         eyebrow: "The problem",
         heading: "Sending a document was harder than it should be.",
         items: [
-          { title: "A cluttered UI", body: "Screens packed with controls new users didn't need yet." },
-          { title: "A broken send flow", body: "No clear path from a document to sent." },
+          { title: "A cluttered UI", body: "Information overload. Screens were full of features that got in the way of the one thing users came to do: send." },
+          { title: "A broken send flow", body: "A murky call to action. Sending meant jumping through other steps first, with no clear start or end." },
           { title: "A high trial bounce rate", body: "Most trials ended before a first send, the moment a trial succeeds." },
           { title: "U-turns before success", body: "Session recordings showed people doubling back, hitting dead ends and rage-clicking." },
         ],
@@ -548,6 +558,14 @@ export const projects: Project[] = [
         },
       },
       {
+        type: "prototypes",
+        eyebrow: "Prototypes",
+        heading: "Prototypes close enough to build from.",
+        body: "From version 15, users tested high-fidelity prototypes that worked like the real thing. They matched the final design so closely that the developers built from them, alongside the annotated user flows. Front-end developers found them especially useful.",
+        note: "Best on a laptop or desktop. They're prototypes, so not every path is wired up.",
+        items: quickSendPrototypeCards,
+      },
+      {
         type: "points",
         eyebrow: "Key decisions",
         heading: "The decisions that shaped it.",
@@ -558,6 +576,18 @@ export const projects: Project[] = [
           { title: "A panel that follows you", body: "Select a field and the sidebar becomes its editor." },
           { title: "Modals for occasional tasks", body: "Recipients and settings stay out of the way until needed." },
           { title: "A Send you can't hit by accident", body: "Bold, explains what's missing, and counts down before sending." },
+        ],
+      },
+      {
+        type: "callouts",
+        eyebrow: "Design and product",
+        heading: "Bringing design into product decisions.",
+        body: "As the designer and the product owner, I could see across the backlog, the roadmap and the build at once, and connect dots others couldn't. That made the work quicker and cheaper, and what shipped matched what we intended.",
+        items: [
+          { title: "Opportunities in the backlog", body: "I worked through the backlog of tickets to find where one piece of work could solve several problems." },
+          { title: "Scope and the brief", body: "I defined what Quick Send would and wouldn't do, and wrote the brief." },
+          { title: "The right order", body: "I knew what was coming on the roadmap, so I sequenced the work: build Compose, test it through Quick Send, then take it to the editors." },
+          { title: "Design and engineering aligned", body: "Regular sessions with the developers settled dependencies and trade-offs early, so we stayed on the same page throughout." },
         ],
       },
       {
