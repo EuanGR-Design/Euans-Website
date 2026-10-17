@@ -72,9 +72,11 @@
   /* One typeface throughout, Awwwards-style; "mono" text keeps even figures. */
   --font-sans: var(--font-inter-tight);
   --font-mono: var(--font-inter-tight);
-  /* Tighter corners than Tailwind's defaults: calmer, more product-like. */
-  --radius-2xl: 0.625rem;
-  --radius-3xl: 0.75rem;
+  /* A little tighter than Tailwind's defaults. `panel` is for the big blue
+     panels and screens, rounded to suit how far their contents sit inside. */
+  --radius-2xl: 0.875rem;
+  --radius-3xl: 1.25rem;
+  --radius-panel: 2.25rem;
 }
 
 html {

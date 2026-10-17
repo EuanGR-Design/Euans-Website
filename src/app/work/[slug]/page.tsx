@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { cardInfo, eras, getProject, pageProjects, projectHref, projectImage, type Project } from "@/projects";
+import { cardInfo, eras, getProject, pageProjects, projectHref, projectImage, sectionLinks, type Project } from "@/projects";
 import { Blocks } from "@/components/Blocks";
 import { ProjectLink } from "@/components/ProjectTransition";
+import { SectionNav } from "@/components/SectionNav";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -27,6 +28,7 @@ export default async function ProjectPage({ params }: Props) {
   const next = (p.next && getProject(p.next.slug)) || pageProjects[(i + 1) % pageProjects.length];
   const nextLine = p.next && next.slug === p.next.slug ? p.next.label : next.summary;
   const hero = projectImage(p);
+  const nextImage = projectImage(next);
   // A headless grid of clips sits tight under the hero, as one run of images.
   const first = p.blocks[0];
   const leadsWithClips = first?.type === "bento" && !first.heading;
@@ -83,7 +85,7 @@ export default async function ProjectPage({ params }: Props) {
             {/* The title card shrinks into this when the project opens. */}
             <div
               data-hero={p.slug}
-              className="relative overflow-hidden rounded-3xl bg-raised"
+              className="relative overflow-hidden rounded-[1.75rem] md:rounded-panel bg-raised"
               style={{ aspectRatio: `${hero.w} / ${hero.h}` }}
             >
               <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
@@ -96,7 +98,7 @@ export default async function ProjectPage({ params }: Props) {
                 <span className="text-lg md:text-xl">{p.scrollCue}</span>
                 <span
                   aria-hidden
-                  className="flex size-11 animate-bounce items-center justify-center rounded-full border border-line text-lg group-hover:border-fg/30 motion-reduce:animate-none"
+                  className="flex size-11 items-center justify-center rounded-full border border-line text-lg transition-colors group-hover:border-fg/30"
                 >
                   ↓
                 </span>
@@ -116,14 +118,37 @@ export default async function ProjectPage({ params }: Props) {
       <nav aria-label="Next project" className="border-t border-line py-20 md:py-28">
         <div className="container-x">
           <p className="eyebrow">Next project</p>
-          <ProjectLink card={cardInfo(next)} href={projectHref(next)} className="group mt-4 inline-block">
-            <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent-ink">
-              {next.title} <span aria-hidden>→</span>
+          <ProjectLink
+            card={cardInfo(next)}
+            href={projectHref(next)}
+            className="group mt-4 grid items-center gap-8 md:grid-cols-12 md:gap-12"
+          >
+            <span className="md:col-span-7">
+              <span className="block text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent-ink">
+                {next.title} <span aria-hidden>→</span>
+              </span>
+              <span className="mt-3 block text-lg text-muted">{nextLine}</span>
             </span>
-            <span className="mt-3 block text-lg text-muted">{nextLine}</span>
+            {/* A glimpse of the next hero. The card grows from it when clicked. */}
+            {nextImage?.src && (
+              <span
+                data-cover
+                className="relative block max-w-sm overflow-hidden rounded-3xl bg-raised md:col-span-5 md:max-w-none"
+                style={{ aspectRatio: `${nextImage.w} / ${nextImage.h}` }}
+              >
+                <Image
+                  src={nextImage.src}
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 480px, 384px"
+                  className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+                />
+              </span>
+            )}
           </ProjectLink>
         </div>
       </nav>
+      <SectionNav links={sectionLinks(p)} />
     </article>
   );
 }

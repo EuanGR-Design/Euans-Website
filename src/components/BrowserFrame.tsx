@@ -11,7 +11,7 @@ import { LoopVideo } from "./LoopVideo";
 export function BrowserFrame({ video, compact }: { video: { src: string; poster: string; label: string }; compact?: boolean }) {
   return (
     <div
-      className="relative flex aspect-[2143/1507] items-center justify-center overflow-hidden rounded-3xl"
+      className="relative flex aspect-[2143/1507] items-center justify-center overflow-hidden rounded-[1.75rem] md:rounded-panel"
       style={{ background: "linear-gradient(135deg, #5185ff, #4456f6)" }}
     >
       <div className={`w-[88%] overflow-hidden rounded-[clamp(8px,1.6vw,20px)] bg-[#f4f5f8] shadow-[0_18px_40px_-10px_rgba(0,0,0,0.3)] ring-2 ring-[#79adfc] ${compact ? "" : "md:w-[67.2%]"}`}>

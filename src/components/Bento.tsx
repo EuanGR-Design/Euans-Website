@@ -46,8 +46,8 @@ export function Bento({
           <Reveal
             key={t.title}
             delay={0.05 * (i % 3)}
-            className={`group/tile relative flex flex-col overflow-hidden rounded-3xl ${
-              surface ? "p-4 md:p-6" : "border border-line bg-raised"
+            className={`group/tile relative flex flex-col overflow-hidden ${
+              surface ? "rounded-[1.75rem] p-4 md:rounded-panel md:p-6" : "rounded-3xl border border-line bg-raised"
             } ${spans[t.span]}`}
             style={surface ? { background: surface } : undefined}
           >

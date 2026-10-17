@@ -1057,6 +1057,22 @@ export const liveProjects = projects.filter((p) => !p.comingSoon);
 export const pageProjects = liveProjects.filter((p) => !p.href);
 export const getProject = (slug: string) => pageProjects.find((p) => p.slug === slug);
 export const projectHref = (p: Project) => p.href ?? `/work/${p.slug}`;
+// Where the section nav jumps to for a block: its own id, or one made from
+// its eyebrow. Blocks with neither aren't listed.
+export const sectionAnchor = (b: Block) => {
+  if ("id" in b && b.id) return b.id;
+  const label = "eyebrow" in b ? b.eyebrow : undefined;
+  return label ? label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : undefined;
+};
+
+// The sections a case study lists in its jump-to nav, in page order.
+export const sectionLinks = (p: Project) =>
+  p.blocks.flatMap((b) => {
+    const label = "eyebrow" in b ? b.eyebrow : undefined;
+    const id = sectionAnchor(b);
+    return label && id ? [{ id, label }] : [];
+  });
+
 export const projectImage = (p: Project) => (p.hero?.src ? p.hero : p.cover?.src ? p.cover : null);
 // What the full-screen title card shows when a project opens.
 export const cardInfo = (p: Project): CardInfo => {

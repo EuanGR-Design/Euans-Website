@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import type { Block, Deeper as DeeperData, Img } from "@/projects";
+import { sectionAnchor, type Block, type Deeper as DeeperData, type Img } from "@/projects";
 import { Reveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
@@ -18,14 +18,27 @@ import { Deeper, useInPanel } from "./Deeper";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
-/** Renders blocks top to bottom. `name` is the project they belong to. */
+/**
+ * Renders blocks top to bottom. `name` is the project they belong to. On the
+ * page itself, a block without its own id gets one from its eyebrow, so the
+ * section nav can jump to it.
+ */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
   const hasPrototype = blocks.some((b) => b.type === "prototype");
+  const inPanel = useInPanel();
   return (
     <>
-      {blocks.map((b, i) => (
-        <BlockView key={i} b={b} name={name} hasPrototype={hasPrototype} />
-      ))}
+      {blocks.map((b, i) => {
+        const view = <BlockView b={b} name={name} hasPrototype={hasPrototype} />;
+        const anchor = !inPanel && !("id" in b && b.id) ? sectionAnchor(b) : undefined;
+        return anchor ? (
+          <div key={i} id={anchor} className="scroll-mt-16">
+            {view}
+          </div>
+        ) : (
+          <Fragment key={i}>{view}</Fragment>
+        );
+      })}
     </>
   );
 }
@@ -143,7 +156,7 @@ function BlockView({
             {b.body && <p className="max-w-sm text-muted">{b.body}</p>}
           </Reveal>
           <Reveal className="mt-12">
-            <div className="overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
+            <div className="overflow-hidden rounded-[1.75rem] md:rounded-panel border border-line bg-raised">
               <Video src={b.src} poster={b.poster} label={b.label} />
             </div>
           </Reveal>
@@ -174,7 +187,7 @@ function BlockView({
               <span className="text-lg md:text-xl">{b.cue.label}</span>
               <span
                 aria-hidden
-                className="flex size-11 animate-bounce items-center justify-center rounded-full border border-line group-hover:border-fg/30 motion-reduce:animate-none"
+                className="flex size-11 items-center justify-center rounded-full border border-line transition-colors group-hover:border-fg/30"
               >
                 <ArrowDownIcon className="size-5" />
               </span>
@@ -780,19 +793,28 @@ function BlockView({
             {b.eyebrow && <p className={`eyebrow ${card ? "!text-white/75" : "!text-on-tertiary/70"}`}>{b.eyebrow}</p>}
             <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
           </Reveal>
-          <ol className={card ? "mt-10 md:mt-14" : "mt-14 md:mt-20"}>
+          {/* Side by side: an icon, the change in a few words, then the detail. */}
+          <ol
+            className={`mt-10 grid gap-x-10 gap-y-10 md:mt-14 ${
+              b.items.length % 3 === 0 ? "md:grid-cols-3" : "md:grid-cols-2"
+            }`}
+          >
             {b.items.map((it, i) => (
-              <Reveal key={it.title}>
-                <li className={`grid gap-4 border-t ${rule} py-10 md:grid-cols-12 md:gap-10 md:py-14 ${card ? "last:pb-0" : ""}`}>
+              <Reveal key={it.title} delay={0.06 * (i % 3)}>
+                <li className={`h-full border-t ${rule} pt-8`}>
                   {it.icon ? (
-                    <Icon name={it.icon} className={`size-8 ${soft} md:col-span-1 md:mt-2`} />
+                    <span
+                      className={`flex size-12 items-center justify-center rounded-2xl ${card ? "bg-white/15" : "bg-on-tertiary/10"}`}
+                    >
+                      <Icon name={it.icon} className="size-6" />
+                    </span>
                   ) : (
-                    <span className={`font-mono text-sm ${soft} md:col-span-1`}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className={`font-mono text-sm ${soft}`}>{String(i + 1).padStart(2, "0")}</span>
                   )}
-                  <p className="text-[clamp(2.25rem,5.6vw,5rem)] leading-[0.98] font-bold tracking-[-0.04em] text-balance md:col-span-7">
+                  <p className="mt-6 text-2xl leading-[1.2] font-semibold tracking-tight text-balance md:text-[1.75rem]">
                     {it.title}
                   </p>
-                  <p className={`self-end text-lg leading-relaxed ${body} md:col-span-4`}>{it.body}</p>
+                  <p className={`mt-4 text-lg leading-relaxed ${body}`}>{it.body}</p>
                 </li>
               </Reveal>
             ))}
@@ -807,14 +829,14 @@ function BlockView({
               ))}
             </dl>
           )}
-          {b.todo && <p className={`mt-6 border-t ${rule} pt-6 ${soft} italic`}>{b.todo}</p>}
+          {b.todo && <p className={`mt-12 border-t ${rule} pt-6 ${soft} italic`}>{b.todo}</p>}
         </>
       );
       if (card) {
         return (
           <section className="border-t border-line py-20 md:py-28">
             <div className="container-x">
-              <div className={`rounded-3xl px-6 py-12 sm:px-10 md:px-16 md:py-20 ${ink}`} style={{ background: b.surface }}>
+              <div className={`rounded-[1.75rem] px-6 py-12 sm:px-10 md:rounded-panel md:px-16 md:py-20 ${ink}`} style={{ background: b.surface }}>
                 {inner}
               </div>
             </div>

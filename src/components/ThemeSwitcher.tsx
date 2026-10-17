@@ -39,7 +39,7 @@ export function ThemeSwitcher() {
     <div
       role="group"
       aria-label="Colour theme"
-      className="fixed bottom-3 left-3 z-[90] flex items-center gap-1 rounded-full border border-line bg-raised/90 p-1 text-xs backdrop-blur-md md:bottom-4 md:left-4"
+      className="fixed right-3 bottom-3 z-[90] flex items-center gap-1 rounded-full border border-line bg-raised/90 p-1 text-xs backdrop-blur-md md:right-4 md:bottom-4"
     >
       <span className="eyebrow hidden px-2 !text-[10px] sm:inline">Theme</span>
       {themes.map((t) => (

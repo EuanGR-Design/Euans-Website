@@ -117,7 +117,7 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
 
   return (
     <>
-      <div className="relative h-[min(78vh,760px)] overflow-hidden rounded-2xl border border-line bg-raised max-md:h-auto max-md:aspect-[4/3] md:rounded-3xl">
+      <div className="relative h-[min(78vh,760px)] overflow-hidden rounded-[1.75rem] md:rounded-panel border border-line bg-raised max-md:h-auto max-md:aspect-[4/3]">
         <AnimatePresence initial={false}>
           {launched ? (
             <motion.iframe
