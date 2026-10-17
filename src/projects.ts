@@ -309,7 +309,11 @@ export type Project = {
   roleStatement?: string;
   // Buttons beside the role line, such as a prototype to try or a video to
   // watch. A link starting with # jumps down the page; others open a new tab.
-  actions?: { label: string; href: string; icon: IconName }[];
+  // `play` marks the prototype link, which plays it in the hero on desktop.
+  actions?: { label: string; href: string; icon: IconName; play?: boolean }[];
+  // A prototype to play inside the hero image's browser window. `screen` is
+  // the window's content area in the image's pixels: x, y, width, height.
+  play?: { url: string; width: number; screen: [number, number, number, number] };
   context?: { label: string; value: string }[];
   impact?: { value: string; label: string }[];
   // Which project to suggest next, and why. Defaults to the next in the list.
@@ -460,9 +464,10 @@ export const projects: Project[] = [
     roleStatement:
       "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
     actions: [
-      { label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays" },
+      { label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays", play: true },
       { label: "Watch the production demo", href: "#in-production", icon: "Play" },
     ],
+    play: { url: "https://peach-comma-28912996.figma.site", width: 1440, screen: [398, 359, 1603, 1057] },
     context: [
       { label: "Company", value: "Legalesign, in-house" },
       { label: "Product", value: "B2B SaaS e-signature web app" },

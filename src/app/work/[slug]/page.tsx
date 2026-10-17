@@ -7,6 +7,7 @@ import { Blocks } from "@/components/Blocks";
 import { ProjectLink } from "@/components/ProjectTransition";
 import { SectionNav } from "@/components/SectionNav";
 import { Icon } from "@/components/Icon";
+import { HeroPrototype, PlayLink } from "@/components/HeroPrototype";
 import { ArrowUpRightIcon } from "@heroicons/react/20/solid";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -92,6 +93,7 @@ export default async function ProjectPage({ params }: Props) {
               style={{ aspectRatio: `${hero.w} / ${hero.h}` }}
             >
               <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
+              {p.play && <HeroPrototype play={p.play} image={hero} title={p.title} />}
             </div>
             {p.scrollCue && (
               <a
@@ -171,17 +173,29 @@ function StoryHeader({ p }: { p: Project }) {
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row md:flex-col">
               {p.actions.map((a, i) => {
                 const external = !a.href.startsWith("#");
+                const className = `group inline-flex h-12 items-center gap-2.5 rounded-full pr-5 pl-4 font-medium transition-colors ${
+                  i === 0 ? "bg-fg text-bg hover:bg-fg/85" : "border border-line hover:border-fg/30"
+                }`;
+                const label = (
+                  <>
+                    <Icon name={a.icon} className="size-5" />
+                    {a.label}
+                  </>
+                );
+                if (a.play && p.play)
+                  return (
+                    <PlayLink key={a.href} href={a.href} className={className}>
+                      {label}
+                    </PlayLink>
+                  );
                 return (
                   <a
                     key={a.href}
                     href={a.href}
                     {...(external && { target: "_blank", rel: "noreferrer" })}
-                    className={`group inline-flex h-12 items-center gap-2.5 rounded-full pr-5 pl-4 font-medium transition-colors ${
-                      i === 0 ? "bg-fg text-bg hover:bg-fg/85" : "border border-line hover:border-fg/30"
-                    }`}
+                    className={className}
                   >
-                    <Icon name={a.icon} className="size-5" />
-                    {a.label}
+                    {label}
                     {external && <ArrowUpRightIcon aria-hidden className="ml-auto size-4 opacity-60" />}
                     {external && <span className="sr-only">(opens in a new tab)</span>}
                   </a>

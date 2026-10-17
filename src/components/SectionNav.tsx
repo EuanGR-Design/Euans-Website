@@ -20,6 +20,8 @@ const short = (label: string) => {
 export function SectionNav({ links }: { links: Link[] }) {
   const [shown, setShown] = useState(true);
   const [active, setActive] = useState<string | null>(null);
+  // Which ends of the row have more sections scrolled out of view.
+  const [more, setMore] = useState({ left: false, right: false });
   const root = useRef<HTMLElement>(null);
   const list = useRef<HTMLUListElement>(null);
 
@@ -51,6 +53,20 @@ export function SectionNav({ links }: { links: Link[] }) {
     };
   }, [links]);
 
+  useEffect(() => {
+    const ul = list.current;
+    if (!ul) return;
+    const measure = () =>
+      setMore({ left: ul.scrollLeft > 2, right: ul.scrollLeft + ul.clientWidth < ul.scrollWidth - 2 });
+    measure();
+    ul.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => {
+      ul.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
   // Keep the current section in view when the row scrolls.
   useEffect(() => {
     const ul = list.current;
@@ -74,6 +90,10 @@ export function SectionNav({ links }: { links: Link[] }) {
         <ul
           ref={list}
           className="relative flex min-w-0 gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          // Fade whichever end has more to scroll to.
+          style={{
+            maskImage: `linear-gradient(to right, ${more.left ? "transparent" : "black"}, black 2rem, black calc(100% - 2rem), ${more.right ? "transparent" : "black"})`,
+          }}
         >
           {links.map((l) => (
             <li key={l.id} className="shrink-0">

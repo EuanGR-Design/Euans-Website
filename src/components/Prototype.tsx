@@ -71,7 +71,7 @@ function BrowserFrame({ p }: { p: P }) {
  * Renders the prototype at the size it was designed for, then scales it down
  * to fit, so the layout matches what was designed instead of reflowing.
  */
-function ScaledFrame({ p }: { p: P }) {
+export function ScaledFrame({ p }: { p: P }) {
   const ref = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
