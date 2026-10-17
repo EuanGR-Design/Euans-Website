@@ -16,7 +16,7 @@ import { FlowPan } from "./FlowPan";
 import { BrowserFrame } from "./BrowserFrame";
 import { Deeper, useInPanel } from "./Deeper";
 import { Icon, IconTile } from "./Icon";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
+import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -151,17 +151,20 @@ function BlockView({
       );
     case "bento":
       return (
-        <section id={b.id} className="scroll-mt-16 border-t border-line py-20 md:py-28">
-          <div className="container-x">
-            <Heading eyebrow={b.eyebrow} heading={b.heading} />
-            {b.body && (
-              <Reveal>
-                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
-              </Reveal>
-            )}
-          </div>
-          <div className="mx-auto mt-12 max-w-[1440px] px-3 md:px-6">
-            <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} />
+        // With no heading, the clips carry straight on from the hero card.
+        <section id={b.id} className={`scroll-mt-16 ${b.heading ? "border-t border-line py-20 md:py-28" : "pb-20 md:pb-28"}`}>
+          {b.heading && (
+            <div className="container-x">
+              <Heading eyebrow={b.eyebrow} heading={b.heading} />
+              {b.body && (
+                <Reveal>
+                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+                </Reveal>
+              )}
+            </div>
+          )}
+          <div className={b.surface ? `container-x ${b.heading ? "mt-12" : ""}` : "mx-auto mt-12 max-w-[1440px] px-3 md:px-6"}>
+            <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} surface={b.surface} />
           </div>
           {b.cue && (
             <a
@@ -171,9 +174,9 @@ function BlockView({
               <span className="text-lg md:text-xl">{b.cue.label}</span>
               <span
                 aria-hidden
-                className="flex size-11 animate-bounce items-center justify-center rounded-full border border-line text-lg group-hover:border-fg/30 motion-reduce:animate-none"
+                className="flex size-11 animate-bounce items-center justify-center rounded-full border border-line group-hover:border-fg/30 motion-reduce:animate-none"
               >
-                ↓
+                <ArrowDownIcon className="size-5" />
               </span>
             </a>
           )}
@@ -763,45 +766,67 @@ function BlockView({
       );
     case "flow":
       return <FlowPan b={b} />;
-    case "outcome":
-      return (
-        <section className="bg-tertiary py-24 text-on-tertiary md:py-36">
-          <div className="container-x">
-            <Reveal>
-              {b.eyebrow && <p className="eyebrow !text-on-tertiary/70">{b.eyebrow}</p>}
-              <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
-            </Reveal>
-            <ol className="mt-14 md:mt-20">
-              {b.items.map((it, i) => (
-                <Reveal key={it.title}>
-                  <li className="grid gap-4 border-t border-on-tertiary/20 py-10 md:grid-cols-12 md:gap-10 md:py-14">
-                    {it.icon ? (
-                      <Icon name={it.icon} className="size-8 text-on-tertiary/60 md:col-span-1 md:mt-2" />
-                    ) : (
-                      <span className="font-mono text-sm text-on-tertiary/60 md:col-span-1">{String(i + 1).padStart(2, "0")}</span>
-                    )}
-                    <p className="text-[clamp(2.25rem,5.6vw,5rem)] leading-[0.98] font-bold tracking-[-0.04em] text-balance md:col-span-7">
-                      {it.title}
-                    </p>
-                    <p className="self-end text-lg leading-relaxed text-on-tertiary/75 md:col-span-4">{it.body}</p>
-                  </li>
-                </Reveal>
+    case "outcome": {
+      // On a surface it's a card in the page, so it reads as part of the
+      // story rather than the band that closes it.
+      const card = !!b.surface;
+      const ink = card ? "text-white" : "text-on-tertiary";
+      const soft = card ? "text-white/70" : "text-on-tertiary/60";
+      const body = card ? "text-white/85" : "text-on-tertiary/75";
+      const rule = card ? "border-white/25" : "border-on-tertiary/20";
+      const inner = (
+        <>
+          <Reveal>
+            {b.eyebrow && <p className={`eyebrow ${card ? "!text-white/75" : "!text-on-tertiary/70"}`}>{b.eyebrow}</p>}
+            <h2 className="mt-4 text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
+          </Reveal>
+          <ol className={card ? "mt-10 md:mt-14" : "mt-14 md:mt-20"}>
+            {b.items.map((it, i) => (
+              <Reveal key={it.title}>
+                <li className={`grid gap-4 border-t ${rule} py-10 md:grid-cols-12 md:gap-10 md:py-14 ${card ? "last:pb-0" : ""}`}>
+                  {it.icon ? (
+                    <Icon name={it.icon} className={`size-8 ${soft} md:col-span-1 md:mt-2`} />
+                  ) : (
+                    <span className={`font-mono text-sm ${soft} md:col-span-1`}>{String(i + 1).padStart(2, "0")}</span>
+                  )}
+                  <p className="text-[clamp(2.25rem,5.6vw,5rem)] leading-[0.98] font-bold tracking-[-0.04em] text-balance md:col-span-7">
+                    {it.title}
+                  </p>
+                  <p className={`self-end text-lg leading-relaxed ${body} md:col-span-4`}>{it.body}</p>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+          {b.stats && (
+            <dl className="mt-6 grid gap-4 sm:grid-cols-3">
+              {b.stats.map((st) => (
+                <div key={st.label} className={`flex flex-col-reverse justify-end gap-3 rounded-3xl p-7 ${card ? "bg-white/10" : "bg-on-tertiary/[0.08]"}`}>
+                  <dt className={body}>{st.label}</dt>
+                  <dd className="text-[clamp(2.5rem,5vw,4.5rem)] leading-none font-bold tracking-[-0.04em] tabular-nums">{st.value}</dd>
+                </div>
               ))}
-            </ol>
-            {b.stats && (
-              <dl className="mt-6 grid gap-4 sm:grid-cols-3">
-                {b.stats.map((st) => (
-                  <div key={st.label} className="flex flex-col-reverse justify-end gap-3 rounded-3xl bg-on-tertiary/[0.08] p-7">
-                    <dt className="text-on-tertiary/75">{st.label}</dt>
-                    <dd className="text-[clamp(2.5rem,5vw,4.5rem)] leading-none font-bold tracking-[-0.04em] tabular-nums">{st.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-            {b.todo && <p className="mt-6 border-t border-on-tertiary/20 pt-6 text-on-tertiary/60 italic">{b.todo}</p>}
-          </div>
+            </dl>
+          )}
+          {b.todo && <p className={`mt-6 border-t ${rule} pt-6 ${soft} italic`}>{b.todo}</p>}
+        </>
+      );
+      if (card) {
+        return (
+          <section className="border-t border-line py-20 md:py-28">
+            <div className="container-x">
+              <div className={`rounded-3xl px-6 py-12 sm:px-10 md:px-16 md:py-20 ${ink}`} style={{ background: b.surface }}>
+                {inner}
+              </div>
+            </div>
+          </section>
+        );
+      }
+      return (
+        <section className={`bg-tertiary py-24 md:py-36 ${ink}`}>
+          <div className="container-x">{inner}</div>
         </section>
       );
+    }
     case "options":
       return (
         <Section>

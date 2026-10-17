@@ -17,9 +17,20 @@ const spans: Record<BentoTile["span"], string> = {
 
 /**
  * One long recording, then a grid of short looping clips. `bare` shows the
- * clips alone, with no captions or play buttons.
+ * clips alone, with no captions or play buttons. `surface` paints every tile
+ * with the same background and insets its clip on it, like the hero card.
  */
-export function Bento({ feature, tiles, bare }: { feature?: Feature; tiles: BentoTile[]; bare?: boolean }) {
+export function Bento({
+  feature,
+  tiles,
+  bare,
+  surface,
+}: {
+  feature?: Feature;
+  tiles: BentoTile[];
+  bare?: boolean;
+  surface?: string;
+}) {
   return (
     <div className="space-y-4">
       {feature && (
@@ -30,18 +41,21 @@ export function Bento({ feature, tiles, bare }: { feature?: Feature; tiles: Bent
           <Caption title={feature.title} caption={feature.caption} />
         </Reveal>
       )}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className={`grid md:grid-cols-2 lg:grid-cols-3 ${surface ? "gap-5 md:gap-6" : "gap-4"}`}>
         {tiles.map((t, i) => (
           <Reveal
             key={t.title}
             delay={0.05 * (i % 3)}
-            className={`group/tile relative flex flex-col overflow-hidden rounded-3xl border border-line bg-raised ${spans[t.span]}`}
+            className={`group/tile relative flex flex-col overflow-hidden rounded-3xl ${
+              surface ? "p-4 md:p-6" : "border border-line bg-raised"
+            } ${spans[t.span]}`}
+            style={surface ? { background: surface } : undefined}
           >
             {t.kind === "note" ? (
               <Caption title={t.title} caption={t.caption} compare={t.compare} grow />
             ) : (
               <>
-                <Media tile={t} bare={bare} />
+                <Media tile={t} bare={bare} inset={!!surface} />
                 {!bare && <Overlay title={t.title} caption={t.caption} compare={t.compare} />}
               </>
             )}
@@ -52,7 +66,7 @@ export function Bento({ feature, tiles, bare }: { feature?: Feature; tiles: Bent
   );
 }
 
-function Media({ tile, bare }: { tile: BentoTile; bare?: boolean }) {
+function Media({ tile, bare, inset }: { tile: BentoTile; bare?: boolean; inset?: boolean }) {
   if (tile.kind === "note") return null;
   // Stretching tiles keep their aspect ratio on phones, where there's no row
   // to fill. `fill` waits for three columns, where the rows are planned; in
@@ -63,7 +77,9 @@ function Media({ tile, bare }: { tile: BentoTile; bare?: boolean }) {
       : tile.fill
         ? "lg:min-h-0 lg:flex-1 lg:!aspect-auto"
         : "";
-  const frame = `relative w-full ${stretch}`;
+  const frame = `relative w-full ${stretch} ${
+    inset ? "overflow-hidden rounded-xl bg-white shadow-[0_18px_40px_-18px_rgba(15,25,90,0.55)] md:rounded-2xl" : ""
+  }`;
 
   const fit = tile.fit ?? "cover";
   return (

@@ -96,12 +96,16 @@ export type Block =
       type: "bento";
       id?: string;
       eyebrow?: string;
-      heading: string;
+      // Leave out to run the clips straight on from the hero.
+      heading?: string;
       body?: string;
       feature?: { src: string; poster: string; label: string; w: number; h: number; title: string; caption: string };
       tiles: BentoTile[];
       // Clips only: no captions or play buttons.
       bare?: boolean;
+      // A CSS background for every tile, with the clip inset on it like the
+      // hero card.
+      surface?: string;
       // A prompt under the grid to scroll on into the story.
       cue?: { label: string; href: string };
     }
@@ -235,6 +239,9 @@ export type Block =
       heading: string;
       items: { title: string; body: string; icon?: IconName }[];
       stats?: { value: string; label: string }[];
+      // A CSS background that sets it apart as a card, in place of the
+      // closing band.
+      surface?: string;
       // A prompt for numbers that haven't been added yet.
       todo?: string;
     }
@@ -348,6 +355,9 @@ const editorHero: Img = {
   alt: "The Template Editor in a browser: participant fields on the left and a signature field being placed on a tenancy agreement",
 };
 
+// The blue behind the Quick Send hero, for the sections that echo it.
+const quickSendBlue = "linear-gradient(135deg, #5285ff, #4556f6)";
+
 const quickSendHero: Img = {
   src: "/work/heroes/quick-send.webp",
   w: 2400,
@@ -443,7 +453,7 @@ export const projects: Project[] = [
     intro:
       "A send flow built around trial users, with an editor customers can embed in their own products at its centre.",
     statement:
-      "Quick Send is a new, faster way to send a document for signature, with no template needed.",
+      "A simpler, faster way to send a document for signature. One focused flow that cuts trial bounce and gets new users to a successful send, first time.",
     roleStatement:
       "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
     context: [
@@ -457,9 +467,10 @@ export const projects: Project[] = [
       {
         ...quickSendInProduction,
         id: "up-close",
-        eyebrow: "Up close",
-        heading: "What it became.",
+        eyebrow: undefined,
+        heading: undefined,
         bare: true,
+        surface: quickSendBlue,
         cue: { label: "See how we got here", href: "#problem" },
         body: undefined,
         feature: undefined,
@@ -473,7 +484,7 @@ export const projects: Project[] = [
         heading: "Sending a document was harder than it should be.",
         items: [
           { icon: "Squares2X2", title: "A cluttered UI", body: "Information overload. Screens were full of features that got in the way of the one thing users came to do: send." },
-          { icon: "LinkSlash", title: "A broken send flow", body: "A murky call to action. Sending meant jumping through other steps first, with no clear start or end." },
+          { icon: "ArrowsSplit", title: "A broken send flow", body: "A murky call to action. Sending meant jumping through other steps first, with no clear start or end." },
           { icon: "ArrowTrendingDown", title: "A high trial bounce rate", body: "Most trials ended before a first send, the moment a trial succeeds." },
           { icon: "ArrowUturnLeft", title: "U-turns before success", body: "Session recordings showed people doubling back, hitting dead ends and rage-clicking." },
         ],
@@ -503,7 +514,7 @@ export const projects: Project[] = [
             items: [
               { icon: "LockOpen", title: "No barriers", body: "A first send in the first session, with nothing to set up first." },
               { icon: "ArrowLongRight", title: "One clean flow", body: "Upload, recipients, fields, sent." },
-              { icon: "CursorArrowRays", title: "A clear next step", body: "Nothing left to guess at any point." },
+              { icon: "Eye", title: "A clear next step", body: "Nothing left to guess at any point." },
               { icon: "Bolt", title: "Power when needed", body: "The full editor, revealed only on demand." },
             ],
           },
@@ -629,8 +640,8 @@ export const projects: Project[] = [
         items: [
           { icon: "Users", title: "Recipients before fields", body: "Add people first, and it's obvious who each field is for." },
           { icon: "ViewColumns", title: "One sidebar", body: "More room for the document, and narrow enough to embed." },
-          { icon: "PencilSquare", title: "Three fields by default", body: "Signature, text and date. Admins can change the set." },
-          { icon: "AdjustmentsVertical", title: "A panel that follows you", body: "Select a field and the sidebar becomes its editor." },
+          { icon: "ListBullet", title: "Three fields by default", body: "Signature, text and date. Admins can change the set." },
+          { icon: "CursorArrowRays", title: "A panel that follows you", body: "Select a field and the sidebar becomes its editor." },
           { icon: "Window", title: "Modals for occasional tasks", body: "Recipients and settings stay out of the way until needed." },
           { icon: "ShieldCheck", title: "A Send you can't hit by accident", body: "Bold, explains what's missing, and counts down before sending." },
         ],
@@ -688,6 +699,7 @@ export const projects: Project[] = [
         type: "outcome",
         eyebrow: "The outcome",
         heading: "What changed.",
+        surface: quickSendBlue,
         items: [
           { icon: "PaperAirplane", title: "First sends stopped being a problem.", body: "Trial users went from struggling to reach a first send to sending without trouble. Quick Send was the main driver." },
           { icon: "Beaker", title: "Tested live, without the risk.", body: "Quick Send launched as a beta, so the new editor got real feedback without touching anyone's everyday sending." },

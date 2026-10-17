@@ -27,6 +27,9 @@ export default async function ProjectPage({ params }: Props) {
   const next = (p.next && getProject(p.next.slug)) || pageProjects[(i + 1) % pageProjects.length];
   const nextLine = p.next && next.slug === p.next.slug ? p.next.label : next.summary;
   const hero = projectImage(p);
+  // A headless grid of clips sits tight under the hero, as one run of images.
+  const first = p.blocks[0];
+  const leadsWithClips = first?.type === "bento" && !first.heading;
 
   return (
     <article>
@@ -103,7 +106,10 @@ export default async function ProjectPage({ params }: Props) {
         )}
       </header>
 
-      <div id="story" className={`scroll-mt-16 ${p.scrollCue ? "mt-10 md:mt-14" : "mt-20 md:mt-28"}`}>
+      <div
+        id="story"
+        className={`scroll-mt-16 ${leadsWithClips ? "mt-5 md:mt-6" : p.scrollCue ? "mt-10 md:mt-14" : "mt-20 md:mt-28"}`}
+      >
         <Blocks blocks={p.blocks} name={p.title} />
       </div>
 

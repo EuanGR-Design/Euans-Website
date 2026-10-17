@@ -1,5 +1,4 @@
 import {
-  AdjustmentsVerticalIcon,
   ArrowLongRightIcon,
   ArrowTrendingDownIcon,
   ArrowUturnLeftIcon,
@@ -8,13 +7,13 @@ import {
   ChatBubbleLeftRightIcon,
   CursorArrowRaysIcon,
   DocumentTextIcon,
+  EyeIcon,
   FlagIcon,
-  LinkSlashIcon,
+  ListBulletIcon,
   LockOpenIcon,
   MagnifyingGlassIcon,
   NumberedListIcon,
   PaperAirplaneIcon,
-  PencilSquareIcon,
   PuzzlePieceIcon,
   QueueListIcon,
   ShieldCheckIcon,
@@ -26,11 +25,25 @@ import {
   WindowIcon,
 } from "@heroicons/react/24/outline";
 
+// Heroicons has no arrow that forks, so this one is drawn in its outline
+// style: one arrow splitting two ways.
+function ArrowsSplitIcon(props: React.ComponentProps<"svg">) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.25 12h5.25c2.5 0 3.5-6 6-6h7.5m0 0-3-3m3 3-3 3M7.5 12c2.5 0 3.5 6 6 6h7.5m0 0-3-3m3 3-3 3"
+      />
+    </svg>
+  );
+}
+
 // Heroicons (outline) that content can ask for by name, without the "Icon"
 // suffix. Add one here to use it in projects.ts.
 const icons = {
-  AdjustmentsVertical: AdjustmentsVerticalIcon,
   ArrowLongRight: ArrowLongRightIcon,
+  ArrowsSplit: ArrowsSplitIcon,
   ArrowTrendingDown: ArrowTrendingDownIcon,
   ArrowUturnLeft: ArrowUturnLeftIcon,
   Beaker: BeakerIcon,
@@ -38,13 +51,13 @@ const icons = {
   ChatBubbleLeftRight: ChatBubbleLeftRightIcon,
   CursorArrowRays: CursorArrowRaysIcon,
   DocumentText: DocumentTextIcon,
+  Eye: EyeIcon,
   Flag: FlagIcon,
-  LinkSlash: LinkSlashIcon,
+  ListBullet: ListBulletIcon,
   LockOpen: LockOpenIcon,
   MagnifyingGlass: MagnifyingGlassIcon,
   NumberedList: NumberedListIcon,
   PaperAirplane: PaperAirplaneIcon,
-  PencilSquare: PencilSquareIcon,
   PuzzlePiece: PuzzlePieceIcon,
   QueueList: QueueListIcon,
   ShieldCheck: ShieldCheckIcon,
