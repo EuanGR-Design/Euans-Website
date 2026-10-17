@@ -161,14 +161,15 @@ export default async function ProjectPage({ params }: Props) {
  * statement, my role, where the work sat, and what it achieved.
  */
 function StoryHeader({ p }: { p: Project }) {
+  const role = p.roleStatement ?? p.intro;
   return (
     <>
       <p className="mt-10 max-w-5xl text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
         {p.statement}
       </p>
-      {(p.roleStatement || p.actions) && (
+      {(role || p.actions) && (
         <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-12">
-          {p.roleStatement && <p className="max-w-3xl text-lg leading-relaxed text-fg/75 md:text-xl">{p.roleStatement}</p>}
+          {role && <p className="max-w-3xl text-lg leading-relaxed text-fg/75 md:text-xl">{role}</p>}
           {p.actions && (
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row md:flex-col">
               {p.actions.map((a, i) => {

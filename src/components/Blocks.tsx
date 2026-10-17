@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Fragment, useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { sectionAnchor, type Block, type Deeper as DeeperData, type Img } from "@/projects";
@@ -244,12 +245,42 @@ function BlockView({
           </div>
         </Section>
       );
+    case "todo":
+      // A section still to be written, with what goes in it.
+      return (
+        <Section>
+          <Reveal>
+            <p className="eyebrow">{b.eyebrow}</p>
+            <h2
+              className={`mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight text-balance md:text-5xl ${
+                b.heading ? "" : "text-muted italic"
+              }`}
+            >
+              {b.heading ?? b.ask}
+            </h2>
+          </Reveal>
+          <Reveal className="mt-10 flex flex-col gap-6 rounded-3xl border-2 border-dashed border-line p-7 md:mt-12 md:flex-row md:items-center md:justify-between md:gap-10 md:p-9">
+            <div className="max-w-2xl">
+              <p className="eyebrow">To add</p>
+              <p className="mt-3 text-lg leading-relaxed text-fg/75">{b.hint}</p>
+            </div>
+            {b.example && (
+              <Link
+                href={b.example}
+                className="inline-flex h-11 shrink-0 items-center gap-2 self-start rounded-full border border-line px-5 font-medium transition-colors hover:border-fg/30 md:self-auto"
+              >
+                See it in Quick Send <span aria-hidden>→</span>
+              </Link>
+            )}
+          </Reveal>
+        </Section>
+      );
     case "prototype":
       return (
         <Section id="prototype">
           <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
-              <p className="eyebrow">Interactive prototype</p>
+              <p className="eyebrow">{b.eyebrow ?? "Interactive prototype"}</p>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
             </div>
             <p className="max-w-sm text-muted">{b.body}</p>

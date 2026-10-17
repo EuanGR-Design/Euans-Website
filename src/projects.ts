@@ -5,6 +5,7 @@ import type { IconName } from "./components/Icon";
 
 import { oldDims } from "./oldImageSizes";
 import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
+import { caseStudy, todo } from "./caseStudy";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -135,12 +136,16 @@ export type Block =
     }
   | {
       type: "prototype";
+      eyebrow?: string;
       url: string;
       heading: string;
       body: string;
       width: number;
       height: number;
     }
+  // A section of the case study format that's still to be written: what
+  // goes there, and a link to where Quick Send does it (src/caseStudy.ts).
+  | { type: "todo"; id?: string; eyebrow: string; heading?: string; ask: string; hint: string; example?: string }
   | { type: "timeline"; eyebrow?: string; heading: string; items: { when: string; title: string; body: string; tags: string[] }[] }
   | { type: "brand" }
   // A video player (Vimeo, Adobe) or another embeddable page, shown 16:9.
@@ -309,7 +314,8 @@ export type Project = {
   intro: string;
   // A case study told as a story opens with the problem in one big
   // statement, then a line on my role, where the work sat and what it
-  // achieved. Projects without a statement show `intro` instead.
+  // achieved. Projects without a statement show `intro` instead, and ones
+  // without a role line show `intro` under the statement.
   statement?: string;
   roleStatement?: string;
   // Buttons beside the role line, such as a prototype to try or a video to
@@ -328,22 +334,6 @@ export type Project = {
   blocks: Block[];
 };
 
-const step = (stage: JourneyStep["stage"], title: string, hint: string): JourneyStep => ({
-  stage,
-  title,
-  decision: hint,
-  image: null,
-  written: false,
-});
-
-const journeySteps = (shipped: string) => [
-  step("Research", "What we heard", "What the research showed, and what it pointed you towards."),
-  step("Ideation", "Early directions", "The directions you explored, and why you dropped the ones you did."),
-  step("Iteration", "What testing changed", "What testers struggled with, and the change you made because of it."),
-  step("Handoff", "Ready for build", "How the handoff was structured, and anything developers needed to know."),
-  step("Shipped", "In production", shipped),
-];
-
 // An image from the old portfolio export (images/<ref>), served from
 // public/work/old/<ref>.
 const shot = (ref: string, alt: string, caption?: string): Img => {
@@ -351,7 +341,13 @@ const shot = (ref: string, alt: string, caption?: string): Img => {
   return { src: `/work/old/${ref}`, w, h, alt, caption, ref };
 };
 
-const evidenceHint = "Add the evidence: a support-ticket theme, a Hotjar finding or a user quote.";
+// Where every Legalesign case study sits, in the hero's facts.
+const legalesignContext = (forWhom: string, role: string) => [
+  { label: "Company", value: "Legalesign, in-house" },
+  { label: "Product", value: "B2B SaaS e-signature web app" },
+  { label: "For", value: forWhom },
+  { label: "My role", value: role },
+];
 
 const dashboard: Img = {
   src: "/work/dashboard.png",
@@ -411,9 +407,37 @@ export const projects: Project[] = [
     cover: null,
     intro:
       "A customer support and ticketing hub serving both Legalesign users and the internal support team.",
-    blocks: [
-      { type: "journey", problem: "Customers couldn't find answers on their own, so simple questions turned into support tickets.", evidence: evidenceHint, steps: journeySteps("What shipped, and what changed for customers and the support team.") },
-    ],
+    statement: "One place for customers and the support team to find answers and track tickets.",
+    context: legalesignContext("Customers and the support team", "Design lead"),
+    // The Quick Send format, with the research stage this project had.
+    blocks: caseStudy({
+      problem: [
+        todo("problem", "Customers couldn't find answers on their own, so simple questions turned into support tickets."),
+        {
+          type: "personas",
+          eyebrow: "Personas",
+          heading: "Who we were designing for.",
+          items: [
+            { name: "Org admin", role: "Runs Legalesign for their organisation", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
+            { name: "Everyday sender", role: "Sends documents for signing", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
+            { name: "Support agent", role: "Answers customer questions", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
+          ],
+          draft: true,
+        },
+        {
+          type: "journey-map",
+          eyebrow: "Journey map",
+          heading: "Getting help, step by step.",
+          stages: ["Hits a problem", "Looks for help", "Raises a ticket", "Gets an answer"],
+          lanes: [
+            { label: "Doing", cells: ["What they do here.", "What they do here.", "What they do here.", "What they do here."] },
+            { label: "Thinking", cells: ["What they're thinking.", "What they're thinking.", "What they're thinking.", "What they're thinking."] },
+            { label: "Pain point", cells: ["What goes wrong.", "What goes wrong.", "What goes wrong.", "What goes wrong."] },
+          ],
+          draft: true,
+        },
+      ],
+    }),
   },
   {
     slug: "template-editor",
@@ -427,17 +451,25 @@ export const projects: Project[] = [
     featured: true,
     intro:
       "A redesigned document editing page: the step where senders place fields on a document and assign them to recipients before it goes out for signing.",
-    blocks: [
-      { type: "journey", problem: "Adding fields to a document before sending was slow and easy to get wrong, so people sent documents that couldn't be completed.", evidence: evidenceHint, steps: journeySteps("What shipped, and what changed for users.") },
-      {
+    statement: "Placing and assigning fields, made faster and harder to get wrong.",
+    actions: [{ label: "Try the prototype", href: "https://love-model-19724475.figma.site/", icon: "CursorArrowRays", play: true }],
+    // The hero uses the same browser frame as Quick Send's.
+    play: { url: "https://love-model-19724475.figma.site/", width: 1440, screen: [398, 359, 1603, 1057] },
+    context: legalesignContext("Senders preparing documents", "Design lead, product owner"),
+    blocks: caseStudy({
+      problem: {
+        heading: "Adding fields to a document before sending was slow and easy to get wrong, so people sent documents that couldn't be completed.",
+      },
+      prototypes: {
         type: "prototype",
+        eyebrow: "Prototypes",
         url: "https://love-model-19724475.figma.site/",
         heading: "Try the new editor.",
         body: "The redesigned editing page as a clickable prototype, the kind I put in front of users before a line of production code was written.",
         width: 1440,
         height: 900,
       },
-    ],
+    }),
   },
   {
     slug: "drafts",
@@ -449,9 +481,11 @@ export const projects: Project[] = [
     cover: { src: "/work/drafts-v2-cover.png", w: 800, h: 566, alt: "Drafts V2 Figma file cover" },
     intro:
       "A send-flow configurer. Admins set up drafts with sections pre-filled and settings locked, so when everyday users send from them there's less to fill in, in a controlled environment.",
-    blocks: [
-      { type: "journey", problem: "Admins needed control over what their teams sent, while everyday senders needed less to fill in.", evidence: evidenceHint, steps: journeySteps("What shipped, and what changed for users.") },
-    ],
+    statement: "Controlled, pre-filled sending that admins set up for their teams.",
+    context: legalesignContext("Admins and everyday senders", "Design lead, product owner"),
+    blocks: caseStudy({
+      problem: { heading: "Admins needed control over what their teams sent, while everyday senders needed less to fill in." },
+    }),
   },
   {
     slug: "quick-send",
@@ -465,7 +499,7 @@ export const projects: Project[] = [
     intro:
       "A send flow built around trial users, with an editor customers can embed in their own products at its centre.",
     statement:
-      "A streamlined way to send a document for signature. One focused flow that cuts trial bounce and gets new users to a successful send, first time.",
+      "A streamlined way to send a document for signature, built to cut trial bounce and get new users to a successful first send.",
     roleStatement:
       "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
     actions: [
@@ -749,10 +783,12 @@ export const projects: Project[] = [
     cover: { src: "/work/lobby-batch.png", w: 1516, h: 1100, alt: "The Signer Lobby showing a multi-document signing session" },
     intro:
       "The lobby is where recipients land to sign. It handles multi-document, multi-recipient sessions with sequential ordering, approvals and identity checks, built for government-grade security without the friction.",
-    blocks: [
-      {
+    statement: "Controlling the signing flow for every recipient of a document.",
+    context: legalesignContext("Recipients signing documents", "Design lead"),
+    blocks: caseStudy({
+      result: {
         type: "gallery",
-        eyebrow: "Final designs",
+        eyebrow: "The result",
         heading: "Clear progress, secure by default.",
         images: [
           {
@@ -771,7 +807,7 @@ export const projects: Project[] = [
           },
         ],
       },
-    ],
+    }),
   },
   {
     slug: "rebrand",
