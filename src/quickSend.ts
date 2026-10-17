@@ -39,7 +39,7 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
   },
   6: {
     stage: signatureOnly,
-    change: "Smaller thumbnails put the focus on placing the one signature field, and Go Straight to Send lights up once it's on the page.",
+    change: "A hierarchy change: the signature field moved up to the top left, so the main action leads from the left, and smaller thumbnails moved aside.",
     feedback: "Refining the same one-field shortcut as version 5.",
   },
   7: {
@@ -163,8 +163,7 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
     { x: 95, y: 6, note: "Or press Next for full preparation with more fields." },
   ],
   6: [
-    { x: 10, y: 30, note: "Go Straight to Send lights up once the field is placed." },
-    { x: 45, y: 51, note: "The placed signature field." },
+    { x: 10, y: 20, note: "The signature field moved up to the top left, so the main action leads from the left." },
     { x: 93, y: 70, note: "Thumbnails shrunk and moved aside." },
   ],
   7: [
