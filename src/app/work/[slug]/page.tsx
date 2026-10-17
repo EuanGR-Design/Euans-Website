@@ -85,11 +85,25 @@ export default async function ProjectPage({ params }: Props) {
             >
               <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
             </div>
+            {p.scrollCue && (
+              <a
+                href="#story"
+                className="group mx-auto mt-10 flex w-fit flex-col items-center gap-3 text-muted transition-colors hover:text-fg md:mt-14"
+              >
+                <span className="text-lg md:text-xl">{p.scrollCue}</span>
+                <span
+                  aria-hidden
+                  className="flex size-11 animate-bounce items-center justify-center rounded-full border border-line text-lg group-hover:border-fg/30 motion-reduce:animate-none"
+                >
+                  ↓
+                </span>
+              </a>
+            )}
           </div>
         )}
       </header>
 
-      <div className="mt-20 md:mt-28">
+      <div id="story" className={`scroll-mt-16 ${p.scrollCue ? "mt-10 md:mt-14" : "mt-20 md:mt-28"}`}>
         <Blocks blocks={p.blocks} name={p.title} />
       </div>
 

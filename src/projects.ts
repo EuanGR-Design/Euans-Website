@@ -79,9 +79,12 @@ export type BentoTile = {
 );
 
 // `draft: true` shows the copy as a muted prompt until the real words are in.
+// More detail behind a section, opened in a panel so the page stays short.
+export type Deeper = { label: string; heading: string; body?: string; blocks: Block[] };
+
 export type Block =
   | { type: "text"; eyebrow?: string; heading: string; body: string[]; draft?: boolean }
-  | { type: "points"; eyebrow?: string; heading: string; items: { title: string; body: string }[] }
+  | { type: "points"; eyebrow?: string; heading: string; items: { title: string; body: string }[]; deeper?: Deeper }
   | { type: "image"; image: Img }
   // A silent screen recording from public/, with a still from it as the poster.
   // `id` lets other parts of the page link to it, as #id.
@@ -165,10 +168,12 @@ export type Block =
   // the fix it led to and a screenshot beside it.
   | {
       type: "callouts";
+      id?: string;
       eyebrow?: string;
       heading: string;
       body?: string;
       items: { title: string; body: string; fix?: string; image?: Img }[];
+      deeper?: Deeper;
     }
   // A few lines on the project and a list of what I did on it.
   | { type: "overview"; eyebrow?: string; heading: string; body: string; did: string[] }
@@ -236,6 +241,7 @@ export type Block =
         pins?: { x: number; y: number; note: string }[];
         prototype?: { title?: string; body: string; links: { label: string; url: string }[] };
       }[];
+      deeper?: Deeper;
     };
 
 export type Project = {
@@ -267,6 +273,8 @@ export type Project = {
   impact?: { value: string; label: string }[];
   // Which project to suggest next, and why. Defaults to the next in the list.
   next?: { slug: string; label: string };
+  // A prompt under the hero to scroll on into the story.
+  scrollCue?: string;
   blocks: Block[];
 };
 
@@ -404,7 +412,7 @@ export const projects: Project[] = [
     intro:
       "A send flow built around trial users, with an editor customers can embed in their own products at its centre.",
     statement:
-      "New users just wanted to send a document. We made them build a template first, so most trials ended before anything was sent.",
+      "Quick Send is how anyone sends a document for signature in Legalesign. I redesigned it because the UI was cluttered, the send flow was broken and most trial users left before their first send.",
     roleStatement:
       "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
     context: [
@@ -413,164 +421,131 @@ export const projects: Project[] = [
       { label: "For", value: "Trial and new users" },
       { label: "My role", value: "Sole designer, product owner" },
     ],
-    impact: [
-      { value: "4 → 1", label: "Four steps in four places became one flow" },
-      { value: "25", label: "Versions tested with users, four as clickable prototypes" },
-      { value: "3", label: "Products built on the one editor component" },
-    ],
+    scrollCue: "See how we got here",
     next: { slug: "template-editor", label: "See how Compose powers the Template Editor too." },
     blocks: [
       {
-        type: "video",
-        id: "in-production",
-        eyebrow: "In production",
-        heading: "Upload, add recipients, place fields, send.",
-        body: "The live flow, start to finish, with no template in sight.",
-        src: "/work/quick-send/send-flow.mp4",
-        poster: "/work/quick-send/send-flow-poster.jpg",
-        label: "Screen recording of sending a document with Quick Send, from upload to sent",
-      },
-      {
-        type: "overview",
-        eyebrow: "Overview",
-        heading: "One place to send a document, built around the people trying us out.",
-        body: "Quick Send lets anyone upload a document, add who's signing, place their fields and send it, all in one flow. It's built on Compose, an editor customers embed in their own products, so one piece of work served trial users, embedded customers and the main editor.",
-        did: [
-          "Found the problem in feedback and session recordings",
-          "Shaped the brief as product owner",
-          "Designed 25 versions and tested them with users",
-          "Handed off annotated flows to development",
-          "Launched it as a beta and kept iterating",
+        type: "callouts",
+        id: "problem",
+        eyebrow: "The problem",
+        heading: "Sending a document was harder than it should be.",
+        items: [
+          { title: "A cluttered UI", body: "Screens packed with controls new users didn't need yet." },
+          { title: "A broken send flow", body: "No clear path from a document to sent." },
+          { title: "A high trial bounce rate", body: "Most trials ended before a first send, the moment a trial succeeds." },
+          { title: "U-turns before success", body: "Session recordings showed people doubling back, hitting dead ends and rage-clicking." },
         ],
       },
       {
         type: "callouts",
-        eyebrow: "The problem",
-        heading: "Trials were ending before the first send.",
+        eyebrow: "The brief",
+        heading: "Get a new user from sign-up to a sent document in their first session.",
+        body: "As product owner, I wrote the brief. Quick Send had to give people:",
         items: [
-          {
-            title: "A high bounce rate",
-            body: "Few trial users ever reached a first send, the moment a trial succeeds.",
-          },
+          { title: "No barriers", body: "A first send in the first session, with nothing to set up first." },
+          { title: "One clean flow", body: "Upload, recipients, fields, sent." },
+          { title: "A clear next step", body: "Nothing left to guess at any point." },
+          { title: "Power when needed", body: "The full editor, revealed only on demand." },
+        ],
+      },
+      {
+        type: "callouts",
+        eyebrow: "What we found",
+        heading: "Why it was broken.",
+        body: "I grouped in-app feedback into themes and watched session recordings of people getting stuck. Nearly every clip was in the send flow, and nearly every one was a trial or new user.",
+        items: [
           {
             title: "Template first, send second",
-            body: "To send a document, you first had to turn it into a template.",
+            body: "To send anything, you first had to make a template. Clicking Send led to an empty template picker.",
+            fix: "Send straight from an upload",
           },
           {
-            title: "Four steps in four places",
-            body: "Upload, find it in the library, make a template, then pick that template to send.",
-          },
-          {
-            title: "A Send button that led nowhere",
-            body: "New users clicked Send and landed on an empty template picker.",
-          },
-        ],
-      },
-      {
-        type: "points",
-        eyebrow: "My approach",
-        heading: "How I led the research.",
-        items: [
-          { title: "Feedback into themes", body: "In-app feedback landed in a Jira channel. I grouped it into shared pain points." },
-          { title: "Goals before features", body: "Most feedback wasn't about bits of UI. It showed goals going unmet, so I defined those first." },
-          { title: "Watching real sessions", body: "I clipped Hotjar recordings where people hit dead ends, made U-turns or rage-clicked." },
-          { title: "Following the pattern", body: "Nearly every clip was in the send flow, and nearly every one was a trial or new user." },
-        ],
-      },
-      {
-        type: "insights",
-        eyebrow: "What we heard",
-        heading: "What they said, and what they needed.",
-        labels: ["They said", "They needed"],
-        quotes: true,
-        items: [
-          { found: "I just want to send this document.", so: "One flow from upload to Send, with a clear start and end." },
-          { found: "I clicked Send and there was nothing there.", so: "Send to be the start of the flow, not a dead end." },
-          { found: "Why do I have to make a template?", so: "To send without one, then send again with the same document or people." },
-          { found: "I don't want the whole team seeing this.", so: "One-off sends kept out of the shared library." },
-        ],
-      },
-      {
-        type: "insights",
-        eyebrow: "Dead ends",
-        heading: "What we assumed, and what we found.",
-        labels: ["We assumed", "We found", "They needed"],
-        items: [
-          {
-            found: "One-off senders were occasional, low-value users.",
-            so: "Many were lawyers and other professionals: high-value customers our workflow didn't fit.",
-            then: "Software that fits them: send it, then have it done and out of mind.",
-          },
-          {
-            found: "Quick Send only needed a signature field.",
-            so: "Most people place more than one field. A one-field shortcut just added a step.",
-            then: "Signature, text and date by default, with more in team settings.",
-          },
-          {
-            found: "People could skip placing fields altogether.",
-            so: "Senders need signers to sign in specific places.",
-            then: "Placing fields made quick, not removed.",
-          },
-          {
-            found: "A quick send went to one person.",
-            so: "People wanted to send to several at once.",
-            then: "Recipients first, up to 12, each in their own colour.",
-          },
-        ],
-      },
-      {
-        type: "callouts",
-        eyebrow: "What it exposed",
-        heading: "Three things to fix.",
-        items: [
-          {
-            title: "A cluttered UI",
-            body: "Two sidebars showed every recipient, field and control at once.",
-            fix: "Simplify every screen",
-          },
-          {
-            title: "Navigation that lost people",
-            body: "Sending was spread across the app, with no clear start or end.",
+            title: "No clear start or end",
+            body: "Sending was four steps in four places: upload, find it, make a template, then send.",
             fix: "One flow, with one clear next step",
           },
           {
-            title: "Features forced on everyone",
-            body: "Everything the power users needed sat in front of people who just wanted to send.",
+            title: "Everything at once",
+            body: "Two sidebars showed every recipient, field and control at the same time.",
+            fix: "Simplify every screen",
+          },
+          {
+            title: "Power features for everyone",
+            body: "Everything power users needed sat in front of people who just wanted to send.",
             fix: "Reveal features when and where they're needed",
           },
         ],
+        deeper: {
+          label: "the research",
+          heading: "The research behind it.",
+          body: "How I found the problem, what users told us, and the assumptions that turned out wrong.",
+          blocks: [
+            {
+              type: "points",
+              eyebrow: "My approach",
+              heading: "How I led the research.",
+              items: [
+                { title: "Feedback into themes", body: "In-app feedback landed in a Jira channel. I grouped it into shared pain points." },
+                { title: "Goals before features", body: "Most feedback wasn't about bits of UI. It showed goals going unmet, so I defined those first." },
+                { title: "Watching real sessions", body: "I clipped Hotjar recordings where people hit dead ends, made U-turns or rage-clicked." },
+                { title: "Following the pattern", body: "Nearly every clip was in the send flow, and nearly every one was a trial or new user." },
+              ],
+            },
+            {
+              type: "insights",
+              eyebrow: "What we heard",
+              heading: "What they said, and what they needed.",
+              labels: ["They said", "They needed"],
+              quotes: true,
+              items: [
+                { found: "I just want to send this document.", so: "One flow from upload to Send, with a clear start and end." },
+                { found: "I clicked Send and there was nothing there.", so: "Send to be the start of the flow, not a dead end." },
+                { found: "Why do I have to make a template?", so: "To send without one, then send again with the same document or people." },
+                { found: "I don't want the whole team seeing this.", so: "One-off sends kept out of the shared library." },
+              ],
+            },
+            {
+              type: "insights",
+              eyebrow: "Dead ends",
+              heading: "What we assumed, and what we found.",
+              labels: ["We assumed", "We found", "They needed"],
+              items: [
+                {
+                  found: "One-off senders were occasional, low-value users.",
+                  so: "Many were lawyers and other professionals: high-value customers our workflow didn't fit.",
+                  then: "Software that fits them: send it, then have it done and out of mind.",
+                },
+                {
+                  found: "Quick Send only needed a signature field.",
+                  so: "Most people place more than one field. A one-field shortcut just added a step.",
+                  then: "Signature, text and date by default, with more in team settings.",
+                },
+                {
+                  found: "People could skip placing fields altogether.",
+                  so: "Senders need signers to sign in specific places.",
+                  then: "Placing fields made quick, not removed.",
+                },
+                {
+                  found: "A quick send went to one person.",
+                  so: "People wanted to send to several at once.",
+                  then: "Recipients first, up to 12, each in their own colour.",
+                },
+              ],
+            },
+          ],
+        },
       },
-      {
-        type: "callouts",
-        eyebrow: "The opportunity",
-        heading: "Designer and product owner, so I could see across the company.",
-        body: "Working in both roles, I could see three needs that one piece of work could answer. Quick Send would be built on Compose, so the same build paid off three times.",
-        items: [
-          { title: "Trial users", body: "A first send with no barriers, in their first session." },
-          { title: "Embedded customers", body: "Compose, an editor they could put inside their own products." },
-          { title: "The main editor", body: "A beta where the redesign could be tested live, without risking anyone's daily sending." },
-        ],
-      },
-      {
-        type: "points",
-        eyebrow: "Goals",
-        heading: "What Quick Send had to do.",
-        items: [
-          { title: "No barriers", body: "Send within the first session." },
-          { title: "One clean flow", body: "Send, upload, recipients, fields, sent." },
-          { title: "A clear next step", body: "Nothing left to guess at any point." },
-          { title: "Power when needed", body: "The full editor, revealed only on demand." },
-          { title: "Works embedded", body: "Fits inside a customer's product, at a narrow width." },
-          { title: "Safe to test", body: "A beta for the new editor, away from daily work." },
-        ],
-      },
-      quickSendTesting,
       {
         type: "iterations",
         eyebrow: "25 versions",
         heading: "From Figma screens to prototypes to the final design.",
         body: "Versions 1 to 14 were screens I shared for feedback. From version 15, users tried clickable prototypes. Nothing was built until the design settled. It plays through on its own; drag the bar or click a numbered pin to take over.",
         items: quickSendIterations,
+        deeper: {
+          label: "how I tested",
+          heading: "How each version was tested.",
+          blocks: [quickSendTesting],
+        },
       },
       {
         type: "points",
@@ -586,15 +561,14 @@ export const projects: Project[] = [
         ],
       },
       {
-        type: "flow",
-        eyebrow: "User flow",
-        heading: "From Send to sent.",
-        body: "The whole flow in Figma, screen by screen, from the dashboard to the success screen.",
-        image: { src: null, w: 54268, h: 4623, alt: "The annotated Quick Send user flow, screen by screen" },
-        figma: {
-          embed: "https://embed.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1&embed-host=share",
-          url: "https://www.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1",
-        },
+        type: "video",
+        id: "in-production",
+        eyebrow: "The result",
+        heading: "Upload, add recipients, place fields, send.",
+        body: "Quick Send in production, start to finish, with no template in sight.",
+        src: "/work/quick-send/send-flow.mp4",
+        poster: "/work/quick-send/send-flow-poster.jpg",
+        label: "Screen recording of sending a document with Quick Send, from upload to sent",
       },
       {
         type: "screens",
@@ -611,6 +585,17 @@ export const projects: Project[] = [
         ],
       },
       {
+        type: "flow",
+        eyebrow: "User flow",
+        heading: "From Send to sent.",
+        body: "The whole flow in Figma, screen by screen, from the dashboard to the success screen.",
+        image: { src: null, w: 54268, h: 4623, alt: "The annotated Quick Send user flow, screen by screen" },
+        figma: {
+          embed: "https://embed.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1&embed-host=share",
+          url: "https://www.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1",
+        },
+      },
+      {
         ...quickSendInProduction,
         id: "up-close",
         eyebrow: "Up close",
@@ -625,8 +610,8 @@ export const projects: Project[] = [
         heading: "What changed.",
         items: [
           { title: "First sends stopped being a problem.", body: "Trial users went from struggling to reach a first send to sending without trouble. Quick Send was the main driver." },
-          { title: "One component, three products.", body: "The same editor powers Quick Send, embedded Compose for several customers, and the redesigned main editor." },
-          { title: "Tested live, without the risk.", body: "The beta gave the new editor real feedback without touching anyone's everyday sending." },
+          { title: "Tested live, without the risk.", body: "Quick Send launched as a beta, so the new editor got real feedback without touching anyone's everyday sending." },
+          { title: "It also led to Compose.", body: "A by-product, not the brief: the same editor now powers Compose, which customers embed in their own products, and the redesigned main editor." },
         ],
         todo: "Add the numbers: trial first-send rate and bounce, before and after.",
       },

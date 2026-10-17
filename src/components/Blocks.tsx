@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import type { Block, Img } from "@/projects";
+import type { Block, Deeper as DeeperData, Img } from "@/projects";
 import { Reveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
@@ -14,6 +14,7 @@ import { Video } from "./Video";
 import { Bento } from "./Bento";
 import { FlowPan } from "./FlowPan";
 import { BrowserFrame } from "./BrowserFrame";
+import { Deeper, useInPanel } from "./Deeper";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -24,6 +25,18 @@ export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
         <BlockView key={i} b={b} name={name} hasPrototype={hasPrototype} />
       ))}
     </>
+  );
+}
+
+/** The Dig deeper button for a block that has more behind it. */
+function More({ d, name }: { d?: DeeperData; name: string }) {
+  if (!d) return null;
+  return (
+    <Reveal>
+      <Deeper d={d}>
+        <Blocks blocks={d.blocks} name={name} />
+      </Deeper>
+    </Reveal>
   );
 }
 
@@ -81,6 +94,7 @@ function BlockView({
               </Reveal>
             ))}
           </div>
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "image":
@@ -375,7 +389,7 @@ function BlockView({
       if (!withImages) {
         const cols = b.items.length === 4 ? "lg:grid-cols-4" : b.items.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
         return (
-          <Section>
+          <Section id={b.id}>
             {intro}
             <ol className={`mt-12 grid gap-4 sm:grid-cols-2 ${cols}`}>
               {b.items.map((it, i) => (
@@ -396,11 +410,12 @@ function BlockView({
                 </Reveal>
               ))}
             </ol>
+            <More d={b.deeper} name={name} />
           </Section>
         );
       }
       return (
-        <Section>
+        <Section id={b.id}>
           {intro}
           <ol className="mt-14 md:mt-20">
             {b.items.map((it, i) => {
@@ -446,6 +461,7 @@ function BlockView({
               );
             })}
           </ol>
+          <More d={b.deeper} name={name} />
         </Section>
       );
     }
@@ -612,6 +628,11 @@ function BlockView({
           <div className="mx-auto mt-12 max-w-[1720px] px-3 md:px-6">
             <IterationScrubber items={b.items} />
           </div>
+          {b.deeper && (
+            <div className="container-x">
+              <More d={b.deeper} name={name} />
+            </div>
+          )}
         </section>
       );
     case "stats":
@@ -657,18 +678,23 @@ function Shot({ img, label }: { img: Img | null; label: string }) {
 }
 
 function Section({ children, id }: { children: React.ReactNode; id?: string }) {
+  const inPanel = useInPanel();
   return (
-    <section id={id} className="border-t border-line py-20 md:py-28">
+    <section
+      id={id}
+      className={`scroll-mt-16 border-t border-line ${inPanel ? "py-10 first:border-t-0 md:py-14" : "py-20 md:py-28"}`}
+    >
       <div className="container-x">{children}</div>
     </section>
   );
 }
 
 function Heading({ eyebrow, heading }: { eyebrow?: string; heading: string }) {
+  const inPanel = useInPanel();
   return (
     <Reveal>
       {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-      <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">
+      <h2 className={`mt-4 max-w-3xl leading-tight font-semibold tracking-tight ${inPanel ? "text-2xl md:text-4xl" : "text-3xl md:text-5xl"}`}>
         {heading}
       </h2>
     </Reveal>
