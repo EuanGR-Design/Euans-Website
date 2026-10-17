@@ -15,8 +15,11 @@ const spans: Record<BentoTile["span"], string> = {
   one: "",
 };
 
-/** One long recording, then a grid of short looping clips. */
-export function Bento({ feature, tiles }: { feature?: Feature; tiles: BentoTile[] }) {
+/**
+ * One long recording, then a grid of short looping clips. `bare` shows the
+ * clips alone, with no captions or play buttons.
+ */
+export function Bento({ feature, tiles, bare }: { feature?: Feature; tiles: BentoTile[]; bare?: boolean }) {
   return (
     <div className="space-y-4">
       {feature && (
@@ -38,8 +41,8 @@ export function Bento({ feature, tiles }: { feature?: Feature; tiles: BentoTile[
               <Caption title={t.title} caption={t.caption} compare={t.compare} grow />
             ) : (
               <>
-                <Media tile={t} />
-                <Overlay title={t.title} caption={t.caption} compare={t.compare} />
+                <Media tile={t} bare={bare} />
+                {!bare && <Overlay title={t.title} caption={t.caption} compare={t.compare} />}
               </>
             )}
           </Reveal>
@@ -49,7 +52,7 @@ export function Bento({ feature, tiles }: { feature?: Feature; tiles: BentoTile[
   );
 }
 
-function Media({ tile }: { tile: BentoTile }) {
+function Media({ tile, bare }: { tile: BentoTile; bare?: boolean }) {
   if (tile.kind === "note") return null;
   // Stretching tiles keep their aspect ratio on phones, where there's no row
   // to fill. `fill` waits for three columns, where the rows are planned; in
@@ -71,6 +74,7 @@ function Media({ tile }: { tile: BentoTile }) {
         label={tile.label}
         className={`absolute inset-0 h-full w-full ${fit === "cover" ? "object-cover" : "object-contain"}`}
         objectPosition={tile.position}
+        button={!bare}
       />
     </div>
   );

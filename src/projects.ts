@@ -99,6 +99,10 @@ export type Block =
       body?: string;
       feature?: { src: string; poster: string; label: string; w: number; h: number; title: string; caption: string };
       tiles: BentoTile[];
+      // Clips only: no captions or play buttons.
+      bare?: boolean;
+      // A prompt under the grid to scroll on into the story.
+      cue?: { label: string; href: string };
     }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
   | {
@@ -173,6 +177,8 @@ export type Block =
       heading: string;
       body?: string;
       items: { title: string; body: string; fix?: string; image?: Img }[];
+      // How the items are laid out. Cards by default.
+      look?: "cards" | "statements" | "goals" | "fixes" | "split";
       deeper?: Deeper;
     }
   // Clickable prototypes side by side, each with a screen of its version
@@ -431,12 +437,23 @@ export const projects: Project[] = [
       { label: "For", value: "Trial and new users" },
       { label: "My role", value: "Sole designer, product owner" },
     ],
-    scrollCue: "See how we got here",
     next: { slug: "template-editor", label: "See how Compose powers the Template Editor too." },
     blocks: [
       {
+        ...quickSendInProduction,
+        id: "up-close",
+        eyebrow: "Up close",
+        heading: "What it became.",
+        bare: true,
+        cue: { label: "See how we got here", href: "#problem" },
+        body: undefined,
+        feature: undefined,
+        tiles: quickSendInProduction.tiles.filter((t) => t.kind !== "note"),
+      },
+      {
         type: "callouts",
         id: "problem",
+        look: "statements",
         eyebrow: "The problem",
         heading: "Sending a document was harder than it should be.",
         items: [
@@ -449,6 +466,7 @@ export const projects: Project[] = [
       {
         type: "callouts",
         eyebrow: "The brief",
+        look: "goals",
         heading: "Get a new user from sign-up to a sent document in their first session.",
         body: "As product owner, I wrote the brief. Quick Send had to give people:",
         items: [
@@ -461,6 +479,7 @@ export const projects: Project[] = [
       {
         type: "callouts",
         eyebrow: "What we found",
+        look: "fixes",
         heading: "Why it was broken.",
         body: "I grouped in-app feedback into themes and watched session recordings of people getting stuck. Nearly every clip was in the send flow, and nearly every one was a trial or new user.",
         items: [
@@ -579,8 +598,20 @@ export const projects: Project[] = [
         ],
       },
       {
+        type: "flow",
+        eyebrow: "Design-to-dev handoff",
+        heading: "Every route mapped, and annotated for the build.",
+        body: "The full user flow, from the dashboard to sent, with every route and contingency mapped. Annotations throughout explain how each function should be built, and anything that isn't obvious from the screens alone. The developers built from it alongside the prototypes.",
+        image: { src: null, w: 54268, h: 4623, alt: "The annotated Quick Send user flow, screen by screen" },
+        figma: {
+          embed: "https://embed.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1&embed-host=share",
+          url: "https://www.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1",
+        },
+      },
+      {
         type: "callouts",
         eyebrow: "Design and product",
+        look: "split",
         heading: "Bringing design into product decisions.",
         body: "As the designer and the product owner, I could see across the backlog, the roadmap and the build at once, and connect dots others couldn't. That made the work quicker and cheaper, and what shipped matched what we intended.",
         items: [
@@ -613,26 +644,6 @@ export const projects: Project[] = [
           { title: "Sending", body: "See who it went to and where it's up to.", video: qsStep("06-sending", "The Sending screen animating into Example Doc Sent") },
           { title: "What next", body: "Send another with the same document or people, or track it on the dashboard.", video: qsStep("07-track", "Opening Send Another, then Track on Listings, which opens the Sent page") },
         ],
-      },
-      {
-        type: "flow",
-        eyebrow: "User flow",
-        heading: "From Send to sent.",
-        body: "The whole flow in Figma, screen by screen, from the dashboard to the success screen.",
-        image: { src: null, w: 54268, h: 4623, alt: "The annotated Quick Send user flow, screen by screen" },
-        figma: {
-          embed: "https://embed.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1&embed-host=share",
-          url: "https://www.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1",
-        },
-      },
-      {
-        ...quickSendInProduction,
-        id: "up-close",
-        eyebrow: "Up close",
-        heading: "The details, live.",
-        body: undefined,
-        feature: undefined,
-        tiles: quickSendInProduction.tiles.filter((t) => t.kind !== "note"),
       },
       {
         type: "outcome",

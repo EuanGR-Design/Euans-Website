@@ -17,6 +17,7 @@ export function LoopVideo({
   objectPosition,
   wrapperClassName = "relative h-full w-full",
   buttonClassName = "top-3 right-3",
+  button = true,
 }: {
   src: string;
   poster: string;
@@ -26,6 +27,8 @@ export function LoopVideo({
   // Leave the wrapper unpositioned to anchor the play button to a parent.
   wrapperClassName?: string;
   buttonClassName?: string;
+  // Off for clips that are only there to be watched, with nothing to control.
+  button?: boolean;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
@@ -80,23 +83,25 @@ export function LoopVideo({
           </>
         )}
       </video>
-      <button
-        type="button"
-        onClick={() => setWantsPlay(!playing)}
-        aria-label={playing ? "Pause clip" : "Play clip"}
-        className={`absolute ${buttonClassName} z-20 flex size-9 items-center justify-center rounded-full bg-black/55 text-white opacity-70 backdrop-blur transition-opacity group-hover/video:opacity-100 hover:bg-black/75 focus-visible:opacity-100`}
-      >
-        {playing ? (
-          <svg viewBox="0 0 16 16" className="size-3.5" fill="currentColor" aria-hidden>
-            <rect x="3" y="2" width="3.5" height="12" rx="1" />
-            <rect x="9.5" y="2" width="3.5" height="12" rx="1" />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 16 16" className="ml-0.5 size-3.5" fill="currentColor" aria-hidden>
-            <path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5Z" />
-          </svg>
-        )}
-      </button>
+      {button && (
+        <button
+          type="button"
+          onClick={() => setWantsPlay(!playing)}
+          aria-label={playing ? "Pause clip" : "Play clip"}
+          className={`absolute ${buttonClassName} z-20 flex size-9 items-center justify-center rounded-full bg-black/55 text-white opacity-70 backdrop-blur transition-opacity group-hover/video:opacity-100 hover:bg-black/75 focus-visible:opacity-100`}
+        >
+          {playing ? (
+            <svg viewBox="0 0 16 16" className="size-3.5" fill="currentColor" aria-hidden>
+              <rect x="3" y="2" width="3.5" height="12" rx="1" />
+              <rect x="9.5" y="2" width="3.5" height="12" rx="1" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 16 16" className="ml-0.5 size-3.5" fill="currentColor" aria-hidden>
+              <path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5Z" />
+            </svg>
+          )}
+        </button>
+      )}
     </div>
   );
 }

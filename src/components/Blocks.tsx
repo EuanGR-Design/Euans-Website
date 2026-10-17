@@ -155,8 +155,22 @@ function BlockView({
             )}
           </div>
           <div className="mx-auto mt-12 max-w-[1440px] px-3 md:px-6">
-            <Bento feature={b.feature} tiles={b.tiles} />
+            <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} />
           </div>
+          {b.cue && (
+            <a
+              href={b.cue.href}
+              className="group mx-auto mt-12 flex w-fit flex-col items-center gap-3 text-muted transition-colors hover:text-fg md:mt-16"
+            >
+              <span className="text-lg md:text-xl">{b.cue.label}</span>
+              <span
+                aria-hidden
+                className="flex size-11 animate-bounce items-center justify-center rounded-full border border-line text-lg group-hover:border-fg/30 motion-reduce:animate-none"
+              >
+                ↓
+              </span>
+            </a>
+          )}
         </section>
       );
     case "comparison":
@@ -385,6 +399,113 @@ function BlockView({
           )}
         </>
       );
+      // Big statements, one per row, each with a line beside it.
+      if (b.look === "statements") {
+        return (
+          <Section id={b.id}>
+            {intro}
+            <ul className="mt-12 border-b border-line md:mt-16">
+              {b.items.map((it, i) => (
+                <Reveal key={it.title} delay={0.05 * i}>
+                  <li className="grid gap-2 border-t border-line py-6 md:grid-cols-12 md:items-baseline md:gap-10 md:py-8">
+                    <h3 className="text-[clamp(1.75rem,3.4vw,3rem)] leading-[1.02] font-bold tracking-[-0.035em] md:col-span-7">
+                      {it.title}
+                    </h3>
+                    <p className="text-lg leading-relaxed text-fg/75 md:col-span-5">{it.body}</p>
+                  </li>
+                </Reveal>
+              ))}
+            </ul>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      // Goals ticked off in one tinted panel.
+      if (b.look === "goals") {
+        return (
+          <Section id={b.id}>
+            {intro}
+            <Reveal className="mt-12">
+              <ul className="grid gap-x-8 gap-y-8 rounded-3xl bg-accent-soft p-7 sm:grid-cols-2 md:p-10 lg:grid-cols-4">
+                {b.items.map((it) => (
+                  <li key={it.title}>
+                    <span
+                      aria-hidden
+                      className="flex size-9 items-center justify-center rounded-full bg-accent text-on-accent"
+                    >
+                      <svg viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 8.5 6.5 12 13 4.5" />
+                      </svg>
+                    </span>
+                    <h3 className="mt-5 text-xl leading-snug font-semibold">{it.title}</h3>
+                    <p className="mt-2 leading-relaxed text-fg/75">{it.body}</p>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      // What was wrong beside its fix, as a two-column table.
+      if (b.look === "fixes") {
+        return (
+          <Section id={b.id}>
+            {intro}
+            <div className="mt-12 md:mt-16">
+              <div aria-hidden className="hidden grid-cols-12 gap-10 pb-4 md:grid">
+                <p className="eyebrow col-span-7">What was wrong</p>
+                <p className="eyebrow col-span-5">The fix</p>
+              </div>
+              <ul className="border-b border-line">
+                {b.items.map((it, i) => (
+                  <Reveal key={it.title} delay={0.05 * i}>
+                    <li className="grid gap-4 border-t border-line py-7 md:grid-cols-12 md:gap-10 md:py-9">
+                      <div className="md:col-span-7">
+                        <h3 className="text-2xl leading-tight font-bold tracking-[-0.02em] md:text-3xl">{it.title}</h3>
+                        <p className="mt-2 max-w-xl leading-relaxed text-fg/75">{it.body}</p>
+                      </div>
+                      {it.fix && (
+                        <p className="flex items-start gap-3 md:col-span-5">
+                          <span aria-hidden className="mt-0.5 text-2xl leading-none text-accent-ink">→</span>
+                          <span className="text-xl leading-snug font-semibold text-accent-ink md:text-2xl">
+                            <span className="sr-only">The fix: </span>
+                            {it.fix}
+                          </span>
+                        </p>
+                      )}
+                    </li>
+                  </Reveal>
+                ))}
+              </ul>
+            </div>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      // The heading held on the left while a plain list runs down the right.
+      if (b.look === "split") {
+        return (
+          <Section id={b.id}>
+            <div className="grid gap-10 md:grid-cols-12 md:gap-12">
+              <div className="md:col-span-5">
+                <div className="md:sticky md:top-28">{intro}</div>
+              </div>
+              <ul className="md:col-span-7">
+                {b.items.map((it, i) => (
+                  <Reveal key={it.title} delay={0.05 * i}>
+                    <li className={`py-6 md:py-7 ${i ? "border-t border-line" : "md:pt-0"}`}>
+                      <h3 className="text-xl leading-snug font-semibold md:text-2xl">{it.title}</h3>
+                      <p className="mt-2 text-lg leading-relaxed text-fg/75">{it.body}</p>
+                    </li>
+                  </Reveal>
+                ))}
+              </ul>
+            </div>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
       // Words only: one row of short, bold cards that read at a glance.
       if (!withImages) {
         const cols = b.items.length === 4 ? "lg:grid-cols-4" : b.items.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
@@ -552,20 +673,24 @@ function BlockView({
               </Reveal>
             )}
           </div>
-          <ol className="container-x mt-14 space-y-16 md:mt-20 md:space-y-24">
+          {/* A grid of steps. An odd one out sits centred on its own row. */}
+          <ol className="container-x mt-12 grid gap-x-6 gap-y-12 md:mt-16 md:grid-cols-2 md:gap-y-16">
             {b.items.map((it, i) => (
-              <li key={it.title}>
-                <Reveal className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between md:gap-10">
-                  <h3 className="flex items-baseline gap-4 text-3xl font-bold tracking-[-0.03em] md:text-5xl">
+              <li
+                key={it.title}
+                className={b.items.length % 2 && i === b.items.length - 1 ? "md:col-span-2 md:mx-auto md:w-[calc(50%-0.75rem)]" : ""}
+              >
+                <Reveal>
+                  <BrowserFrame video={it.video} compact />
+                </Reveal>
+                <Reveal className="mt-5">
+                  <h3 className="flex items-baseline gap-3 text-2xl font-bold tracking-[-0.02em] md:text-3xl">
                     <span className="font-mono text-sm font-normal tracking-normal text-accent-ink">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     {it.title}
                   </h3>
-                  <p className="max-w-md text-lg leading-snug text-muted md:text-right">{it.body}</p>
-                </Reveal>
-                <Reveal className="mt-6 md:mt-8">
-                  <BrowserFrame video={it.video} />
+                  <p className="mt-2 max-w-md leading-relaxed text-muted">{it.body}</p>
                 </Reveal>
               </li>
             ))}

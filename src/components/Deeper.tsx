@@ -9,9 +9,9 @@ export const InPanel = createContext(false);
 export const useInPanel = () => useContext(InPanel);
 
 /**
- * A button under a section that opens the detail behind it in a side panel,
- * so the page itself stays at headline level. `children` is the detail,
- * mounted only while the panel is open.
+ * A button under a section that opens the detail behind it in a sheet that
+ * slides up from the bottom, so the page itself stays at headline level.
+ * `children` is the detail, mounted only while the sheet is open.
  */
 export function Deeper({ d, children }: { d: DeeperData; children: React.ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -53,16 +53,17 @@ export function Deeper({ d, children }: { d: DeeperData; children: React.ReactNo
           // A click on the dimmed backdrop lands on the dialog itself.
           if (e.target === e.currentTarget) setOpen(false);
         }}
-        className="m-0 ml-auto h-dvh max-h-none w-full max-w-[min(1120px,100vw)] overflow-hidden bg-transparent p-0 text-fg backdrop:bg-black/45 md:max-w-[min(1120px,92vw)]"
+        className="inset-x-0 top-auto bottom-0 m-0 mx-auto h-[92dvh] max-h-none w-full max-w-[min(1240px,100vw)] overflow-hidden bg-transparent p-0 text-fg backdrop:bg-black/45 md:h-[88dvh] md:max-w-[min(1240px,94vw)]"
       >
         {open && (
           <motion.div
-            initial={{ x: 48, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="flex h-full flex-col bg-bg shadow-2xl md:rounded-l-3xl"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="flex h-full flex-col rounded-t-3xl bg-bg shadow-2xl"
           >
-            <div className="flex items-start justify-between gap-6 border-b border-line px-5 py-5 md:px-10 md:py-7">
+            <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-fg/15" />
+            <div className="flex items-start justify-between gap-6 border-b border-line px-5 pt-3 pb-5 md:px-10 md:pb-7">
               <div>
                 <p className="eyebrow">Dig deeper</p>
                 <h2 className="mt-2 text-2xl leading-tight font-semibold tracking-tight md:text-4xl">{d.heading}</h2>
