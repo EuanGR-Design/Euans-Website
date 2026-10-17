@@ -22,7 +22,7 @@ function BrowserFrame({ p }: { p: P }) {
   const host = new URL(p.url).host;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-raised shadow-2xl shadow-accent/10 md:rounded-3xl">
+    <div className="overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl">
       <div className="flex items-center gap-3 border-b border-line px-4 py-3">
         <div aria-hidden className="flex gap-1.5">
           <span className="h-3 w-3 rounded-full bg-fg/15" />
@@ -71,7 +71,7 @@ function BrowserFrame({ p }: { p: P }) {
  * Renders the prototype at the size it was designed for, then scales it down
  * to fit, so the layout matches what was designed instead of reflowing.
  */
-function ScaledFrame({ p }: { p: P }) {
+export function ScaledFrame({ p }: { p: P }) {
   const ref = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 

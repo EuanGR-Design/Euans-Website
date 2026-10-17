@@ -89,7 +89,7 @@ export default function LegalesignPage() {
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-muted">{f.body}</p>
                   {stage && (
-                    <p className="mt-4 font-mono text-[11px] tracking-[0.12em] text-accent uppercase">
+                    <p className="mt-4 font-mono text-[11px] tracking-[0.12em] text-accent-ink uppercase">
                       Shows {stage.label.toLowerCase()}
                     </p>
                   )}
@@ -122,7 +122,7 @@ export default function LegalesignPage() {
         <div className="container-x">
           <p className="eyebrow">Start with</p>
           <Link href={`/work/legalesign/${stages[0].id}`} className="group mt-4 inline-block">
-            <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent">
+            <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent-ink">
               {stages[0].headline} <span aria-hidden>→</span>
             </span>
           </Link>

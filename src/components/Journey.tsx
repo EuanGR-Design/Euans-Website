@@ -46,14 +46,14 @@ export function Journey({ j }: { j: JourneyData }) {
         aria-label={`${j.name}, step by step`}
         className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-4 md:-mx-10 md:scroll-px-10 md:px-10 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
       >
-        <li className="flex w-[85%] shrink-0 snap-start flex-col justify-between rounded-3xl bg-accent p-6 text-white sm:w-[60%] md:w-[420px] md:p-8">
+        <li className="flex w-[85%] shrink-0 snap-start flex-col justify-between rounded-3xl bg-accent p-6 text-on-accent sm:w-[60%] md:w-[420px] md:p-8">
           <div>
-            <span className="font-mono text-xs text-white/70">01 · Problem</span>
+            <span className="font-mono text-xs text-on-accent/70">01 · Problem</span>
             <p className="mt-6 text-2xl leading-snug font-semibold tracking-tight md:text-3xl">
               {j.problem}
             </p>
           </div>
-          <p className="mt-8 border-t border-white/25 pt-4 text-sm text-white/80">
+          <p className="mt-8 border-t border-on-accent/25 pt-4 text-sm text-on-accent/80">
             {j.evidence}
           </p>
         </li>
@@ -81,7 +81,7 @@ export function Journey({ j }: { j: JourneyData }) {
               )}
             </div>
             <div className="flex flex-1 flex-col p-6">
-              <span className="font-mono text-xs text-accent">
+              <span className="font-mono text-xs text-accent-ink">
                 0{i + 2} · {s.stage}
               </span>
               <p className="mt-3 text-lg font-semibold">{s.title}</p>
