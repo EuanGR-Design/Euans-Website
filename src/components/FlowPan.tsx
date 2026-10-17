@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import type { Block } from "@/projects";
 import { Reveal } from "./motion";
 
@@ -135,8 +136,24 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
               exit={{ opacity: 0 }}
               className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(var(--line)_1px,transparent_1px)] p-6 text-center [background-size:16px_16px]"
             >
-              <div>
-                <p className="mx-auto max-w-xs text-sm text-muted md:max-w-sm md:text-base">
+              {figma.preview && (
+                <>
+                  <Image
+                    src={figma.preview}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1280px) 1200px, 100vw"
+                    className="scale-105 object-cover"
+                  />
+                  <div aria-hidden className="absolute inset-0 bg-bg/30" />
+                </>
+              )}
+              <div className="relative">
+                <p
+                  className={`mx-auto max-w-xs text-sm md:max-w-sm md:text-base ${
+                    figma.preview ? "rounded-2xl bg-bg/85 px-4 py-2.5 text-fg/80 shadow-sm backdrop-blur" : "text-muted"
+                  }`}
+                >
                   <span className="md:hidden">Every screen, from the dashboard to sent, laid out in Figma.</span>
                   <span className="max-md:hidden">Every screen, from the dashboard to sent. Drag to pan and scroll to zoom.</span>
                 </p>
@@ -155,7 +172,8 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
                   className="mt-5 inline-flex items-center gap-2.5 rounded-full bg-fg px-5 py-3 text-sm font-medium text-bg shadow-xl md:hidden"
                 >
                   <FigmaIcon />
-                  Open in Figma ↗
+                  Open in Figma
+                  <ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
                 </a>
               </div>
             </motion.div>
@@ -166,9 +184,10 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
         href={figma.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-4 hidden text-sm text-muted transition-colors hover:text-fg md:inline-block"
+        className="mt-4 hidden items-center gap-1.5 text-sm text-muted transition-colors hover:text-fg md:inline-flex"
       >
-        Open in Figma ↗
+        Open in Figma
+        <ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
       </a>
     </>
   );

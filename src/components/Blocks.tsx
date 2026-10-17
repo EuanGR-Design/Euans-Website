@@ -15,6 +15,8 @@ import { Bento } from "./Bento";
 import { FlowPan } from "./FlowPan";
 import { BrowserFrame } from "./BrowserFrame";
 import { Deeper, useInPanel } from "./Deeper";
+import { Icon, IconTile } from "./Icon";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
 /** Renders blocks top to bottom. `name` is the project they belong to. */
 export function Blocks({ blocks, name }: { blocks: Block[]; name: string }) {
@@ -88,7 +90,11 @@ function BlockView({
                 delay={0.08 * (i % 3)}
                 className="rounded-3xl border border-line bg-raised p-7"
               >
-                <span className="font-mono text-sm text-accent-ink">0{i + 1}</span>
+                {p.icon ? (
+                  <IconTile name={p.icon} size="sm" />
+                ) : (
+                  <span className="font-mono text-sm text-accent-ink">0{i + 1}</span>
+                )}
                 <h3 className="mt-6 text-xl font-semibold">{p.title}</h3>
                 <p className="mt-3 leading-relaxed text-muted">{p.body}</p>
               </Reveal>
@@ -408,7 +414,8 @@ function BlockView({
               {b.items.map((it, i) => (
                 <Reveal key={it.title} delay={0.05 * i}>
                   <li className="grid gap-2 border-t border-line py-6 md:grid-cols-12 md:items-baseline md:gap-10 md:py-8">
-                    <h3 className="text-[clamp(1.75rem,3.4vw,3rem)] leading-[1.02] font-bold tracking-[-0.035em] md:col-span-7">
+                    <h3 className="flex items-center gap-4 text-[clamp(1.75rem,3.4vw,3rem)] leading-[1.02] font-bold tracking-[-0.035em] md:col-span-7 md:gap-6">
+                      {it.icon && <IconTile name={it.icon} />}
                       {it.title}
                     </h3>
                     <p className="text-lg leading-relaxed text-fg/75 md:col-span-5">{it.body}</p>
@@ -467,7 +474,7 @@ function BlockView({
                       </div>
                       {it.fix && (
                         <p className="flex items-start gap-3 md:col-span-5">
-                          <span aria-hidden className="mt-0.5 text-2xl leading-none text-accent-ink">→</span>
+                          <Icon name="ArrowLongRight" className="mt-0.5 size-7 shrink-0 text-accent-ink" />
                           <span className="text-xl leading-snug font-semibold text-accent-ink md:text-2xl">
                             <span className="sr-only">The fix: </span>
                             {it.fix}
@@ -494,9 +501,12 @@ function BlockView({
               <ul className="md:col-span-7">
                 {b.items.map((it, i) => (
                   <Reveal key={it.title} delay={0.05 * i}>
-                    <li className={`py-6 md:py-7 ${i ? "border-t border-line" : "md:pt-0"}`}>
-                      <h3 className="text-xl leading-snug font-semibold md:text-2xl">{it.title}</h3>
-                      <p className="mt-2 text-lg leading-relaxed text-fg/75">{it.body}</p>
+                    <li className={`flex gap-5 py-6 md:py-7 ${i ? "border-t border-line" : "md:pt-0"}`}>
+                      {it.icon && <IconTile name={it.icon} size="sm" />}
+                      <div>
+                        <h3 className="text-xl leading-snug font-semibold md:text-2xl">{it.title}</h3>
+                        <p className="mt-2 text-lg leading-relaxed text-fg/75">{it.body}</p>
+                      </div>
                     </li>
                   </Reveal>
                 ))}
@@ -586,6 +596,59 @@ function BlockView({
         </Section>
       );
     }
+    case "brief":
+      return (
+        <Section id={b.id}>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <Reveal className="mt-12 md:mt-16">
+            {/* A sheet of paper, with a second one peeking out from under it. */}
+            <div className="relative mx-auto max-w-4xl">
+              <div aria-hidden className="absolute inset-0 hidden rotate-[1.6deg] rounded-md bg-white/70 shadow-lg ring-1 ring-black/5 sm:block" />
+              <article className="relative rounded-md bg-white px-6 py-8 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_30px_60px_-30px_rgba(0,0,0,0.35)] ring-1 ring-black/5 sm:px-10 md:px-14 md:py-14">
+                <header className="border-b-2 border-fg pb-6">
+                  <p className="font-mono text-xs tracking-[0.2em] text-muted uppercase">Product brief</p>
+                  <h3 className="mt-3 text-3xl font-bold tracking-[-0.03em] md:text-5xl">{b.title}</h3>
+                  <dl className="mt-6 grid gap-4 sm:grid-cols-3">
+                    {b.meta.map((m) => (
+                      <div key={m.label}>
+                        <dt className="font-mono text-[0.7rem] tracking-[0.16em] text-muted uppercase">{m.label}</dt>
+                        <dd className="mt-1 text-sm leading-snug font-medium">{m.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </header>
+                {b.sections.map((sec) => (
+                  <div key={sec.label} className="grid gap-3 border-b border-line py-6 last:border-b-0 last:pb-0 md:grid-cols-[10rem_1fr] md:gap-8 md:py-8">
+                    <h4 className="font-mono text-xs leading-6 tracking-[0.16em] text-accent-ink uppercase md:leading-7">{sec.label}</h4>
+                    <div>
+                      {sec.body && <p className="text-lg leading-relaxed text-fg/85">{sec.body}</p>}
+                      {sec.items && (
+                        <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+                          {sec.items.map((it) => (
+                            <li key={it.title} className="flex gap-4">
+                              {it.icon && <IconTile name={it.icon} size="sm" />}
+                              <div>
+                                <p className="text-lg leading-snug font-semibold">{it.title}</p>
+                                <p className="mt-1 leading-relaxed text-fg/70">{it.body}</p>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </article>
+            </div>
+          </Reveal>
+          <More d={b.deeper} name={name} />
+        </Section>
+      );
     case "prototypes":
       return (
         <Section>
@@ -623,7 +686,8 @@ function BlockView({
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 rounded-full bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]"
                         >
-                          {it.links.length > 1 ? l.label : "Open the prototype"} <span aria-hidden>↗</span>
+                          {it.links.length > 1 ? l.label : "Open the prototype"}
+                          <ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
                         </a>
                       ))}
                     </div>
@@ -711,7 +775,11 @@ function BlockView({
               {b.items.map((it, i) => (
                 <Reveal key={it.title}>
                   <li className="grid gap-4 border-t border-on-tertiary/20 py-10 md:grid-cols-12 md:gap-10 md:py-14">
-                    <span className="font-mono text-sm text-on-tertiary/60 md:col-span-1">{String(i + 1).padStart(2, "0")}</span>
+                    {it.icon ? (
+                      <Icon name={it.icon} className="size-8 text-on-tertiary/60 md:col-span-1 md:mt-2" />
+                    ) : (
+                      <span className="font-mono text-sm text-on-tertiary/60 md:col-span-1">{String(i + 1).padStart(2, "0")}</span>
+                    )}
                     <p className="text-[clamp(2.25rem,5.6vw,5rem)] leading-[0.98] font-bold tracking-[-0.04em] text-balance md:col-span-7">
                       {it.title}
                     </p>

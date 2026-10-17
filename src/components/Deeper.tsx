@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { ArrowRightIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import type { Deeper as DeeperData } from "@/projects";
 
 /** True inside a Dig deeper panel, so sections there sit closer together. */
@@ -41,7 +42,7 @@ export function Deeper({ d, children }: { d: DeeperData; children: React.ReactNo
           aria-hidden
           className="flex size-8 items-center justify-center rounded-full bg-fg text-bg transition-transform group-hover:translate-x-0.5"
         >
-          →
+          <ArrowRightIcon className="size-4" />
         </span>
       </button>
 
@@ -53,7 +54,7 @@ export function Deeper({ d, children }: { d: DeeperData; children: React.ReactNo
           // A click on the dimmed backdrop lands on the dialog itself.
           if (e.target === e.currentTarget) setOpen(false);
         }}
-        className="inset-x-0 top-auto bottom-0 m-0 mx-auto h-[92dvh] max-h-none w-full max-w-[min(1240px,100vw)] overflow-hidden bg-transparent p-0 text-fg backdrop:bg-black/45 md:h-[88dvh] md:max-w-[min(1240px,94vw)]"
+        className="inset-x-0 top-auto bottom-0 m-0 h-[92dvh] max-h-none w-full max-w-none overflow-hidden bg-transparent p-0 text-fg backdrop:bg-black/45 md:h-[88dvh]"
       >
         {open && (
           <motion.div
@@ -62,22 +63,25 @@ export function Deeper({ d, children }: { d: DeeperData; children: React.ReactNo
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="flex h-full flex-col rounded-t-3xl bg-bg shadow-2xl"
           >
-            <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-fg/15" />
-            <div className="flex items-start justify-between gap-6 border-b border-line px-5 pt-3 pb-5 md:px-10 md:pb-7">
-              <div>
-                <p className="eyebrow">Dig deeper</p>
-                <h2 className="mt-2 text-2xl leading-tight font-semibold tracking-tight md:text-4xl">{d.heading}</h2>
-                {d.body && <p className="mt-3 max-w-2xl leading-relaxed text-fg/75">{d.body}</p>}
+            {/* A grab handle, a cue on phones that the sheet came up from below. */}
+            <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-fg/15 md:hidden" />
+            <div className="border-b border-line pt-3 pb-5 md:pt-8 md:pb-7">
+              <div className="container-x flex items-start justify-between gap-6">
+                <div>
+                  <p className="eyebrow">Dig deeper</p>
+                  <h2 className="mt-2 text-2xl leading-tight font-semibold tracking-tight md:text-4xl">{d.heading}</h2>
+                  {d.body && <p className="mt-3 max-w-2xl leading-relaxed text-fg/75">{d.body}</p>}
+                </div>
+                <button
+                  type="button"
+                  autoFocus
+                  onClick={() => setOpen(false)}
+                  aria-label="Close"
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors hover:border-fg/30"
+                >
+                  <XMarkIcon aria-hidden className="size-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                autoFocus
-                onClick={() => setOpen(false)}
-                aria-label="Close"
-                className="flex size-11 shrink-0 items-center justify-center rounded-full border border-line text-xl transition-colors hover:border-fg/30"
-              >
-                <span aria-hidden>×</span>
-              </button>
             </div>
             <div className="flex-1 overflow-y-auto overscroll-contain pb-10">
               <InPanel.Provider value={true}>{children}</InPanel.Provider>
