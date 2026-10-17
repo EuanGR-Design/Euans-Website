@@ -499,7 +499,7 @@ export const projects: Project[] = [
     intro:
       "A send flow built around trial users, with an editor customers can embed in their own products at its centre.",
     statement:
-      "A streamlined way to send a document for signature, built to cut trial bounce and get new users to a successful first send.",
+      "One focused flow that cuts trial bounce and gets new users sending, first time.",
     roleStatement:
       "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
     actions: [
