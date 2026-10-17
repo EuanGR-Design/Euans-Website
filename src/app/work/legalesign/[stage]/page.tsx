@@ -43,7 +43,7 @@ export default async function StagePage({ params }: Props) {
             <div className="mt-14">
               <p
                 className={`text-[clamp(4rem,14vw,10rem)] leading-none font-semibold tracking-[-0.05em] tabular-nums ${
-                  s.result.draft ? "text-muted" : "text-accent"
+                  s.result.draft ? "text-muted" : "text-accent-ink"
                 }`}
               >
                 {s.result.value}
@@ -66,7 +66,7 @@ export default async function StagePage({ params }: Props) {
             <div className="md:col-span-3">
               <dt className="eyebrow">Project</dt>
               <dd className="mt-1">
-                <Link href={`/work/${p.slug}`} className="underline underline-offset-4 hover:text-accent">
+                <Link href={`/work/${p.slug}`} className="underline underline-offset-4 hover:text-accent-ink">
                   {p.title}
                 </Link>
               </dd>
@@ -99,13 +99,13 @@ export default async function StagePage({ params }: Props) {
         <div className="container-x">
           <Link
             href={`/work/${p.slug}`}
-            className="group flex flex-col justify-between gap-6 rounded-3xl bg-accent p-8 text-white md:flex-row md:items-center md:p-10"
+            className="group flex flex-col justify-between gap-6 rounded-3xl bg-accent p-8 text-on-accent md:flex-row md:items-center md:p-10"
           >
             <div>
-              <p className="font-mono text-xs tracking-[0.14em] text-white/70 uppercase">See the final outcome</p>
+              <p className="font-mono text-xs tracking-[0.14em] text-on-accent/70 uppercase">See the final outcome</p>
               <p className="mt-3 text-2xl font-semibold tracking-tight md:text-4xl">What {p.title} became</p>
             </div>
-            <span className="inline-flex items-center gap-2 self-start rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black md:self-auto">
+            <span className="inline-flex items-center gap-2 self-start rounded-full bg-on-accent px-5 py-2.5 text-sm font-medium text-accent md:self-auto">
               View project <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
             </span>
           </Link>

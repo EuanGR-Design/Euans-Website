@@ -39,7 +39,7 @@ const quickSendDetails: Record<number, { stage?: string; change?: string; feedba
   },
   6: {
     stage: signatureOnly,
-    change: "Smaller thumbnails put the focus on placing the one signature field, and Go Straight to Send lights up once it's on the page.",
+    change: "A hierarchy change: the signature field moved up to the top left, so the main action leads from the left, and smaller thumbnails moved aside.",
     feedback: "Refining the same one-field shortcut as version 5.",
   },
   7: {
@@ -163,8 +163,7 @@ const quickSendPins: Record<number, { x: number; y: number; note: string }[]> = 
     { x: 95, y: 6, note: "Or press Next for full preparation with more fields." },
   ],
   6: [
-    { x: 10, y: 30, note: "Go Straight to Send lights up once the field is placed." },
-    { x: 45, y: 51, note: "The placed signature field." },
+    { x: 10, y: 20, note: "The signature field moved up to the top left, so the main action leads from the left." },
     { x: 93, y: 70, note: "Thumbnails shrunk and moved aside." },
   ],
   7: [
@@ -275,6 +274,24 @@ const quickSendPrototypes: Record<number, { title?: string; body: string; links:
   },
 };
 
+// The prototypes again, as their own section, so they aren't only found by
+// landing on the right version in the scrubber.
+export const quickSendPrototypeCards: Extract<Block, { type: "prototypes" }>["items"] = [
+  { version: 15, title: "The first prototype", body: "The first version users could click through, when Quick Send joined up with Compose." },
+  { version: 16, title: "The next round", body: "The flow refined and put back in front of users." },
+  { version: 19, title: "One screen, or the whole flow", body: "Try the editing screen alone, or the full flow from choosing Quick Send to pressing Send." },
+  { version: 24, title: "The final prototype", body: "The version the developers built from, alongside the annotated user flows." },
+].map((p) => ({
+  ...p,
+  image: {
+    src: `/work/quick-send/iterations/${String(p.version).padStart(2, "0")}.webp`,
+    w: 2000,
+    h: 1425,
+    alt: `Quick Send, version ${p.version}`,
+  },
+  links: quickSendPrototypes[p.version].links,
+}));
+
 // Versions whose screen hasn't been added yet. They show a placeholder.
 const quickSendMissingScreens = new Set<number>();
 
@@ -301,13 +318,14 @@ export const quickSendIterations: Extract<Block, { type: "iterations" }>["items"
 
 // How the prototypes were tested, and what happened after launch.
 export const quickSendTesting: Block = {
-  type: "text",
+  type: "points",
   eyebrow: "Testing",
-  heading: "How I ran testing.",
-  body: [
-    "Every version on this page was a Figma prototype, not a release. We were a small team and developer time was precious, so I didn't want to commit it until we were confident in the design, and I was careful about when it was ready for handoff. Prototypes let us put something real in front of users using only my time, not the developers'.",
-    "I tested them with users in interviews over video calls, many of them the same people whose feedback started the project, set up by their account managers. I worked from a script of questions I needed answered, then let people explore the prototype freely and say whatever came to mind. Alongside that, I ran internal workshops and feedback rounds where several people went through the user flows and left comments, and I compiled and worked through every one before the next version.",
-    "The final design launched as an MVP with a beta label. Since then it has kept evolving in smaller steps, guided by screen recordings and heatmaps in Hotjar and usage data in PostHog. The beta also became a safe place to test the Compose editor component, so what we learned fed into the main editor without putting anyone's everyday sending at risk.",
+  heading: "How I tested it.",
+  items: [
+    { title: "Designs, not releases", body: "Every version was a Figma design, so testing cost my time, not the developers'. Four became clickable prototypes." },
+    { title: "Interviews with real users", body: "Video calls with the people whose feedback started it, set up by their account managers." },
+    { title: "Internal workshops", body: "Colleagues walked the flows and left comments. I worked through every one before the next version." },
+    { title: "A beta, then the data", body: "Launched as an MVP with a beta label, then refined with Hotjar and PostHog." },
   ],
 };
 
@@ -317,7 +335,7 @@ export const quickSendInProduction: Extract<Block, { type: "bento" }> = {
   id: "in-production",
   eyebrow: "In production",
   heading: "What it became.",
-  body: "These are recordings of Quick Send live today. Set them beside the prototypes above and you can see how closely the build follows the final design.",
+  body: "These are recordings of Quick Send live today. Set them beside the designs above and you can see how closely the build follows the final design.",
   feature: {
     src: "/work/quick-send/send-flow.mp4",
     poster: "/work/quick-send/send-flow-poster.jpg",
@@ -438,7 +456,7 @@ export const quickSendInProduction: Extract<Block, { type: "bento" }> = {
       kind: "note",
       span: "full",
       title: "Built as designed.",
-      caption: "Every version was tested as a prototype first, so by handoff there was little left to guess. The live product follows the final design closely, down to the recipient colours and the countdown on Send.",
+      caption: "Every version was tested in Figma first, so by handoff there was little left to guess. The live product follows the final design closely, down to the recipient colours and the countdown on Send.",
       compare: 25,
     },
   ],

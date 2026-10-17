@@ -12,10 +12,10 @@ export function StagePath() {
         <li key={s.id}>
           <Link
             href={stageHref(s)}
-            className="group flex h-full flex-col justify-between gap-10 rounded-3xl border border-accent/40 bg-accent-soft p-6 transition-colors hover:border-accent"
+            className="group flex h-full flex-col justify-between gap-10 rounded-3xl border border-line bg-raised p-6 transition-colors hover:border-fg/30"
           >
             <div>
-              <span className="font-mono text-xs text-accent">
+              <span className="font-mono text-xs text-accent-ink">
                 0{i + 1} · {s.label}
               </span>
               <p className="mt-5 text-xl leading-snug font-semibold">{s.question}</p>
@@ -46,7 +46,7 @@ export function StageStepper({ current }: { current: Stage["id"] }) {
                 href={stageHref(s)}
                 aria-current={on ? "page" : undefined}
                 className={`inline-flex rounded-full border px-4 py-2 font-mono text-xs transition-colors ${
-                  on ? "border-accent bg-accent text-white" : "border-line text-muted hover:text-fg"
+                  on ? "border-accent bg-accent text-on-accent" : "border-line text-muted hover:text-fg"
                 }`}
               >
                 0{i + 1} {s.label}
@@ -71,7 +71,7 @@ export function StagePager({ current }: { current: Stage["id"] }) {
           <p className="eyebrow">{prev ? "Previous stage" : "Back to"}</p>
           <Link
             href={prev ? stageHref(prev) : "/work/legalesign"}
-            className="mt-3 inline-block text-2xl font-semibold tracking-tight transition-colors hover:text-accent md:text-4xl"
+            className="mt-3 inline-block text-2xl font-semibold tracking-tight transition-colors hover:text-accent-ink md:text-4xl"
           >
             <span aria-hidden>←</span> {prev ? prev.headline : "Console overview"}
           </Link>
@@ -80,7 +80,7 @@ export function StagePager({ current }: { current: Stage["id"] }) {
           <p className="eyebrow">{next ? "Next stage" : "Back to"}</p>
           <Link
             href={next ? stageHref(next) : "/work/legalesign"}
-            className="mt-3 inline-block text-2xl font-semibold tracking-tight transition-colors hover:text-accent md:text-4xl"
+            className="mt-3 inline-block text-2xl font-semibold tracking-tight transition-colors hover:text-accent-ink md:text-4xl"
           >
             {next ? next.headline : "Console overview"} <span aria-hidden>→</span>
           </Link>

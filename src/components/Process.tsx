@@ -25,7 +25,7 @@ export function Process() {
             <Reveal
               key={d.label}
               delay={0.1 * i}
-              className="rounded-3xl border border-accent/40 bg-accent-soft p-5 md:p-6"
+              className="rounded-3xl border border-line bg-fg/[0.04] p-5 md:p-6"
             >
               <div className="flex items-center justify-between gap-4">
                 <p className="flex items-center gap-3 text-sm font-medium">
@@ -39,7 +39,7 @@ export function Process() {
                   n += 1;
                   return (
                     <li key={p.step} className="rounded-2xl border border-line bg-bg p-5">
-                      <span className="font-mono text-xs text-accent">0{n}</span>
+                      <span className="font-mono text-xs text-accent-ink">0{n}</span>
                       <p className="mt-5 text-xl font-semibold">{p.step}</p>
                       <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
                     </li>
@@ -52,7 +52,7 @@ export function Process() {
 
         <Reveal delay={0.2}>
           <p className="mt-6 flex items-center gap-3 text-sm text-muted">
-            <span aria-hidden className="text-accent">↻</span>
+            <span aria-hidden className="text-accent-ink">↻</span>
             {designProcess.pipeline}
           </p>
           <Link
@@ -69,7 +69,7 @@ export function Process() {
 
 function DiamondIcon() {
   return (
-    <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" className="text-accent">
+    <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" className="text-accent-ink">
       <path d="M8 1 15 8 8 15 1 8Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
