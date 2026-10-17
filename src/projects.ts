@@ -4,7 +4,7 @@ import type { IconName } from "./components/Icon";
 // Pages are built from `blocks`, top to bottom. Images live in public/.
 
 import { oldDims } from "./oldImageSizes";
-import { quickSendInProduction, quickSendIterations, quickSendTesting } from "./quickSend";
+import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -640,13 +640,21 @@ export const projects: Project[] = [
         type: "iterations",
         eyebrow: "25 versions",
         heading: "From Figma screens to prototypes to the final design.",
-        body: "Versions 1 to 14 were screens I shared for feedback. From version 15, users tried clickable prototypes, so close to the real thing that the developers built from them. Nothing was built until the design settled. It plays through on its own; drag the bar or click a numbered pin to take over.",
+        body: "Versions 1 to 14 were screens I shared for feedback. From version 15, users tried clickable prototypes. Nothing was built until the design settled. It plays through on its own; drag the bar or click a numbered pin to take over.",
         items: quickSendIterations,
         deeper: {
           label: "how I tested",
           heading: "How each version was tested.",
           blocks: [quickSendTesting],
         },
+      },
+      {
+        type: "prototypes",
+        eyebrow: "Prototypes",
+        heading: "Prototypes close enough to build from.",
+        body: "From version 15, users tested high-fidelity prototypes that worked like the real thing. They matched the final design so closely that the developers built from them, alongside the annotated user flows. Front-end developers found them especially useful.",
+        note: "Best on a laptop or desktop. They're prototypes, so not every path is wired up.",
+        items: quickSendPrototypeCards,
       },
       {
         type: "points",
