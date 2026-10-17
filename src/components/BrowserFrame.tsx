@@ -17,7 +17,7 @@ export function BrowserFrame({ video }: { video: { src: string; poster: string; 
         {/* The browser's tab and address bars, from the template. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`${basePath}/work/quick-send/browser-bar.svg`} alt="" width={1440} height={79} className="block h-auto w-full" />
-        <div className="aspect-video">
+        <div className="aspect-[1280/714]">
           <LoopVideo
             src={video.src}
             poster={video.poster}
