@@ -183,7 +183,15 @@ export type Block =
     }
   // A wide annotated flow that pans sideways as the page scrolls. With no
   // `src` it shows a slot until the image is added.
-  | { type: "flow"; eyebrow?: string; heading: string; body?: string; image: Img }
+  | {
+      type: "flow";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      image: Img;
+      // A Figma file to embed on larger screens, linked on phones.
+      figma?: { embed: string; url: string };
+    }
   // The ending: big statements of what changed, then any numbers.
   | {
       type: "outcome";
@@ -581,7 +589,12 @@ export const projects: Project[] = [
         type: "flow",
         eyebrow: "User flow",
         heading: "From Send to sent.",
-        image: { src: null, w: 6000, h: 1500, alt: "The annotated Quick Send user flow, screen by screen" },
+        body: "The whole flow in Figma, screen by screen, from the dashboard to the success screen.",
+        image: { src: null, w: 54268, h: 4623, alt: "The annotated Quick Send user flow, screen by screen" },
+        figma: {
+          embed: "https://embed.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1&embed-host=share",
+          url: "https://www.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1",
+        },
       },
       {
         type: "screens",

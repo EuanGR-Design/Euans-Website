@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import type { Block } from "@/projects";
 import { Reveal } from "./motion";
 
@@ -43,6 +43,19 @@ export function FlowPan({ b }: { b: Flow }) {
       </Reveal>
     </div>
   );
+
+  if (b.figma) {
+    return (
+      <section className="border-t border-line py-20 md:py-28">
+        {heading}
+        <div className="container-x mt-12">
+          <Reveal>
+            <FigmaFlow figma={b.figma} />
+          </Reveal>
+        </div>
+      </section>
+    );
+  }
 
   if (!img.src) {
     return (
@@ -89,5 +102,86 @@ export function FlowPan({ b }: { b: Flow }) {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * The flow as a live Figma file. It loads on request, so the page doesn't
+ * fetch Figma up front and scrolling past doesn't get caught by its zoom.
+ * Phones get a link to open it in Figma instead, as the canvas is too
+ * fiddly to pan inside a page that small.
+ */
+function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
+  const [launched, setLaunched] = useState(false);
+
+  return (
+    <>
+      <div className="relative h-[min(78vh,760px)] overflow-hidden rounded-2xl border border-line bg-raised max-md:h-auto max-md:aspect-[4/3] md:rounded-3xl">
+        <AnimatePresence initial={false}>
+          {launched ? (
+            <motion.iframe
+              key="frame"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              src={figma.embed}
+              title="The Quick Send user flow in Figma"
+              allow="fullscreen; clipboard-write"
+              allowFullScreen
+              className="absolute inset-0 h-full w-full border-0"
+            />
+          ) : (
+            <motion.div
+              key="poster"
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(var(--line)_1px,transparent_1px)] p-6 text-center [background-size:16px_16px]"
+            >
+              <div>
+                <p className="mx-auto max-w-xs text-sm text-muted md:max-w-sm md:text-base">
+                  <span className="md:hidden">Every screen, from the dashboard to sent, laid out in Figma.</span>
+                  <span className="max-md:hidden">Every screen, from the dashboard to sent. Drag to pan and scroll to zoom.</span>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setLaunched(true)}
+                  className="mt-6 hidden items-center gap-2.5 rounded-full bg-fg px-6 py-3.5 font-medium text-bg shadow-xl transition-transform hover:scale-[1.04] md:inline-flex"
+                >
+                  <FigmaIcon />
+                  Explore the flow
+                </button>
+                <a
+                  href={figma.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center gap-2.5 rounded-full bg-fg px-5 py-3 text-sm font-medium text-bg shadow-xl md:hidden"
+                >
+                  <FigmaIcon />
+                  Open in Figma ↗
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      <a
+        href={figma.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-4 hidden text-sm text-muted transition-colors hover:text-fg md:inline-block"
+      >
+        Open in Figma ↗
+      </a>
+    </>
+  );
+}
+
+function FigmaIcon() {
+  return (
+    <svg aria-hidden width="11" height="16" viewBox="0 0 38 57" fill="currentColor">
+      <path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0Z" />
+      <path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0Z" />
+      <path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19Z" />
+      <path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5Z" />
+      <path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5Z" />
+    </svg>
   );
 }
