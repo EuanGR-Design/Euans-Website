@@ -5,6 +5,9 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 type Link = { id: string; label: string };
 
+// How much each label grows by its distance from the one being hovered.
+const WAVE = [1.3, 1.15, 1.06];
+
 /**
  * Every section of a case study, so readers can jump straight to what
  * interests them. On wide screens it's a plain list in the left margin, like
@@ -17,6 +20,7 @@ export function SectionNav({ links }: { links: Link[] }) {
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(true);
   const [active, setActive] = useState<string | null>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
   const bar = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -93,19 +97,25 @@ export function SectionNav({ links }: { links: Link[] }) {
           Hovering the column (or tabbing into it) brings out every label. */}
       <nav
         aria-label="Sections"
+        onMouseLeave={() => setHovered(null)}
         className={`group/toc fixed top-1/2 left-4 z-40 hidden -translate-y-1/2 py-4 pr-6 transition-opacity duration-300 xl:block ${
           shown ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        <ul className="space-y-0.5">
-          {links.map((l) => {
+        <ul className="space-y-1">
+          {links.map((l, i) => {
             const on = l.id === active;
+            // A wave under the pointer: the hovered label biggest, its
+            // neighbours a little smaller, fading out with distance.
+            const d = hovered === null ? Infinity : Math.abs(i - hovered);
+            const scale = WAVE[d] ?? 1;
             return (
-              <li key={l.id}>
+              <li key={l.id} onMouseEnter={() => setHovered(i)}>
                 <a
                   href={`#${l.id}`}
                   aria-current={on ? "location" : undefined}
-                  className="group/link inline-flex items-center gap-2.5 rounded-full px-2.5 py-1 text-[13px] leading-snug"
+                  style={{ scale, transformOrigin: "13px 50%" }}
+                  className="group/link inline-flex items-center gap-2.5 rounded-full px-2.5 py-1 text-[13px] leading-snug transition-[scale] duration-200 ease-out"
                 >
                   <span
                     aria-hidden
