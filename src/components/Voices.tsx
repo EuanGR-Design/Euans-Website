@@ -35,11 +35,12 @@ function VoiceCard({ v, tilt }: { v: Voice; tilt: number }) {
       type="button"
       aria-pressed={turned}
       onClick={() => setTurned((t) => !t)}
-      className="group block h-full w-full rounded-3xl text-left [perspective:1200px]"
-      style={{ transform: `rotate(${turned ? 0 : tilt}deg)`, transition: "transform 400ms ease" }}
+      // The card lifts as a whole, so the cursor's outline stays even around it.
+      className="group block h-full w-full rounded-3xl text-left [perspective:1200px] hover:-translate-y-1"
+      style={{ transform: `rotate(${turned ? 0 : tilt}deg)`, transition: "transform 400ms ease, translate 500ms ease-out" }}
     >
       <span
-        className="grid h-full min-h-56 transition-transform duration-500 ease-out [transform-style:preserve-3d] group-hover:-translate-y-1"
+        className="grid h-full min-h-56 transition-transform duration-500 ease-out [transform-style:preserve-3d]"
         style={{ transform: turned ? "rotateY(180deg)" : undefined }}
       >
         <span className={`${face} border border-line bg-raised shadow-[0_18px_40px_-28px_rgba(20,20,60,0.45)]`}>

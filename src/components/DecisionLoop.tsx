@@ -492,7 +492,8 @@ function RecipientsAndFields({ missing = false }: { missing?: boolean }) {
 }
 
 // The page every in-product loop shares, and the signature lines on it.
-const PAGE = { left: 152, top: 34, width: 148 };
+// The page fills the canvas beside the sidebar; Send floats over its corner.
+const PAGE = { left: 150, top: 34, width: 272 };
 const SIGN_ROWS = [186, 216, 246];
 
 /** The document, with a signing line for each recipient. */
@@ -1017,14 +1018,15 @@ function PanelScene({ s }: { s: number }) {
 /* 5. Modals for occasional tasks                                            */
 /* ------------------------------------------------------------------------ */
 
-/** The sidebar's resting state: the fields you can place. */
+/** The sidebar's resting state, as shapes: a heading and the fields you can place. */
 function PlaceFields() {
   return (
     <div className="flex h-full flex-col gap-[8px] p-[12px]">
-      <span className="mb-[2px] text-[13px] font-semibold">Place fields</span>
-      {DEFAULT_FIELDS.map((f) => (
-        <div key={f} className="h-[34px]">
-          <Chip field={f} />
+      <Bar w={74} h={7} color="#c9ccd6" className="mt-[3px] mb-[7px]" />
+      {DEFAULT_FIELDS.map((f, i) => (
+        <div key={f} className="flex h-[34px] items-center gap-[8px] rounded-lg bg-white px-[6px] shadow-[0_1px_3px_rgba(30,35,70,0.13)]">
+          <FieldTile field={f} />
+          <Bar w={[54, 34, 40][i]} h={5} />
         </div>
       ))}
     </div>
@@ -1051,7 +1053,7 @@ function ModalsScene({ s }: { s: number }) {
             ].map((b, i) => (
               <motion.span
                 key={b.label}
-                className="absolute inset-x-[12px] flex h-[34px] items-center gap-[7px] rounded-full border px-[11px] text-[13px] font-medium whitespace-nowrap"
+                className="absolute inset-x-[12px] flex h-[34px] items-center justify-center gap-[7px] rounded-full border px-[11px] text-[13px] font-medium whitespace-nowrap"
                 style={{ top: 222 + i * 40 }}
                 initial={false}
                 animate={{

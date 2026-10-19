@@ -184,8 +184,8 @@ function HeroLoop({ loop }: { loop: NonNullable<Project["heroLoop"]> }) {
 
 /**
  * The prototype as a picture of the hero beside the title, set at a playful
- * tilt that straightens on hover, with its label on the card, so the thing
- * to click looks like the thing you'll get.
+ * tilt that straightens on hover, when it asks you to have a play, so the
+ * thing to click looks like the thing you'll get.
  */
 function PrototypeCard({ action, image }: { action: NonNullable<Project["actions"]>[number]; image: { src: string; w: number; h: number } }) {
   return (
@@ -196,13 +196,17 @@ function PrototypeCard({ action, image }: { action: NonNullable<Project["actions
       <span className="block" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
         <Image src={image.src} alt="" fill sizes="352px" className="object-cover object-top" />
       </span>
-      <span className="absolute inset-x-3 bottom-3 flex h-11 items-center gap-2 rounded-full bg-white/95 px-4 font-medium text-[#2b3bd6] shadow-lg backdrop-blur transition-colors group-hover:bg-white">
+      {/* A click mark in the corner; on hover the picture softens and invites a play. */}
+      <span className="absolute top-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/95 text-[#2b3bd6] shadow-lg transition-opacity group-hover:opacity-0">
         <Icon name={action.icon} className="size-5" />
-        {action.label}
-        <span aria-hidden className="ml-auto transition-transform group-hover:translate-x-0.5">
-          →
+      </span>
+      <span className="absolute inset-0 flex items-center justify-center bg-bg/25 opacity-0 backdrop-blur-[1.5px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+        <span className="inline-flex h-11 items-center gap-2 rounded-full bg-fg px-5 font-medium text-bg shadow-lg">
+          <Icon name={action.icon} className="size-5" />
+          Have a play
         </span>
       </span>
+      <span className="sr-only">{action.label}</span>
     </PlayLink>
   );
 }
