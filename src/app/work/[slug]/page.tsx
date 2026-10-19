@@ -183,35 +183,27 @@ function HeroLoop({ loop }: { loop: NonNullable<Project["heroLoop"]> }) {
 }
 
 /**
- * The prototype as a small picture of the hero beside the title, with a
- * drawn arrow from its label, so the thing to click looks like the thing
- * you'll get.
+ * The prototype as a picture of the hero beside the title, set at a playful
+ * tilt that straightens on hover, with its label on the card, so the thing
+ * to click looks like the thing you'll get.
  */
 function PrototypeCard({ action, image }: { action: NonNullable<Project["actions"]>[number]; image: { src: string; w: number; h: number } }) {
   return (
-    <div className="w-60 shrink-0 lg:w-72">
-      <p className="flex items-end gap-1 pl-1 text-base font-medium text-accent-ink lg:text-lg">
+    <PlayLink
+      href={action.href}
+      className="group relative block w-72 shrink-0 rotate-3 overflow-hidden rounded-3xl bg-raised shadow-[0_24px_50px_-20px_rgba(20,20,60,0.5)] transition-[rotate,translate,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:rotate-0 hover:shadow-[0_32px_60px_-22px_rgba(20,20,60,0.55)] max-md:ml-2 md:mb-2 lg:w-[22rem]"
+    >
+      <span className="block" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
+        <Image src={image.src} alt="" fill sizes="352px" className="object-cover object-top" />
+      </span>
+      <span className="absolute inset-x-3 bottom-3 flex h-11 items-center gap-2 rounded-full bg-white/95 px-4 font-medium text-[#2b3bd6] shadow-lg backdrop-blur transition-colors group-hover:bg-white">
+        <Icon name={action.icon} className="size-5" />
         {action.label}
-        {/* A loose, hand-drawn arrow down to the card. */}
-        <svg aria-hidden viewBox="0 0 64 48" className="mb-[-1.25rem] h-12 w-16 shrink-0" fill="none" stroke="currentColor" strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 10 C 26 2, 48 10, 50 40" />
-          <path d="M41 33 L 50 41 L 57 31" />
-        </svg>
-      </p>
-      <PlayLink
-        href={action.href}
-        className="group relative mt-6 block overflow-hidden rounded-2xl bg-raised shadow-[0_18px_40px_-18px_rgba(20,20,60,0.45)] ring-1 ring-line transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_28px_50px_-20px_rgba(20,20,60,0.5)]"
-      >
-        <span className="block" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
-          <Image src={image.src} alt="" fill sizes="288px" className="object-cover object-top" />
+        <span aria-hidden className="ml-auto transition-transform group-hover:translate-x-0.5">
+          →
         </span>
-        <span className="absolute right-3 bottom-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-white/95 px-3.5 text-sm font-medium text-[#2b3bd6] shadow transition-transform group-hover:scale-105">
-          <Icon name={action.icon} className="size-4" />
-          Play
-        </span>
-        <span className="sr-only">{action.label}</span>
-      </PlayLink>
-    </div>
+      </span>
+    </PlayLink>
   );
 }
 

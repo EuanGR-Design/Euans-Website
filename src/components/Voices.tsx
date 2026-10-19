@@ -35,7 +35,7 @@ function VoiceCard({ v, tilt }: { v: Voice; tilt: number }) {
       type="button"
       aria-pressed={turned}
       onClick={() => setTurned((t) => !t)}
-      className="group block h-full w-full text-left [perspective:1200px]"
+      className="group block h-full w-full rounded-3xl text-left [perspective:1200px]"
       style={{ transform: `rotate(${turned ? 0 : tilt}deg)`, transition: "transform 400ms ease" }}
     >
       <span

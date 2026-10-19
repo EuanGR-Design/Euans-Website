@@ -265,6 +265,31 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
   }, [running, index, tick]);
 
   const item = items[index];
+  // Stage names that would run into each other on a short bar are hidden,
+  // keeping the one for the version showing.
+  const stageRow = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const row = stageRow.current;
+    if (!row) return;
+    const fit = () => {
+      const labels = Array.from(row.children) as HTMLElement[];
+      labels.forEach((l) => (l.style.visibility = ""));
+      let prev: HTMLElement | null = null;
+      for (const l of labels) {
+        if (prev && l.getBoundingClientRect().left < prev.getBoundingClientRect().right + 8) {
+          const drop: HTMLElement = prev.dataset.on ? l : prev;
+          drop.style.visibility = "hidden";
+          if (drop === l) continue;
+        }
+        prev = l;
+      }
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(row);
+    return () => ro.disconnect();
+  });
+
   const p = last > 0 ? index / last : 0;
   const version = `Version ${index + 1} of ${items.length}`;
   const label = index === last ? `${version} · Final design` : version;
@@ -394,7 +419,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
         })}
       </div>
       {/* The stages, or the version under the pointer, named below the bar so nothing covers the screen. */}
-      <div className="pointer-events-none absolute inset-x-0 top-full hidden h-5 md:block" aria-hidden>
+      <div ref={stageRow} className="pointer-events-none absolute inset-x-0 top-full hidden h-5 md:block" aria-hidden>
         {named === null &&
           stages.map((st, n) => {
             const at = (st.start + st.end) / 2 / Math.max(1, last);
@@ -404,6 +429,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
             return (
               <p
                 key={st.name}
+                data-on={on || undefined}
                 className={`absolute top-0.5 text-xs whitespace-nowrap transition-colors ${on ? "font-medium text-fg" : "text-muted"}`}
                 style={{
                   left: n === 0 ? THUMB : n === stages.length - 1 ? `calc(100% - ${THUMB}px)` : `calc(${THUMB}px + ${at} * (100% - ${THUMB * 2}px))`,
@@ -506,23 +532,27 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
           <p className="eyebrow">On the screen</p>
           <ol className="mt-2 -mx-2.5 space-y-0.5">
             {pins.map((pin, i) => (
-              <li
-                key={i}
-                onPointerEnter={(e) => e.pointerType === "mouse" && setActivePin(i)}
-                onPointerLeave={(e) => e.pointerType === "mouse" && setActivePin(null)}
-                className={`flex gap-3 rounded-xl px-2.5 py-2 text-sm leading-relaxed transition-colors ${
-                  activePin === i ? "bg-accent-soft" : ""
-                }`}
-              >
-                <span
-                  aria-hidden
-                  className={`mt-px flex size-6 shrink-0 items-center justify-center rounded-full rounded-bl-none bg-accent text-xs font-semibold text-on-accent transition-shadow ${
-                    activePin === i ? "ring-4 ring-accent/30" : ""
+              <li key={i}>
+                <button
+                  type="button"
+                  onClick={() => setActivePin(activePin === i ? null : i)}
+                  onPointerEnter={(e) => e.pointerType === "mouse" && setActivePin(i)}
+                  onPointerLeave={(e) => e.pointerType === "mouse" && setActivePin(null)}
+                  aria-pressed={activePin === i}
+                  className={`flex w-full gap-3 rounded-2xl px-2.5 py-2 text-left text-sm leading-relaxed transition-colors ${
+                    activePin === i ? "bg-accent-soft" : ""
                   }`}
                 >
-                  {i + 1}
-                </span>
-                <span>{pin.note}</span>
+                  <span
+                    aria-hidden
+                    className={`mt-px flex size-6 shrink-0 items-center justify-center rounded-full rounded-bl-none bg-accent text-xs font-semibold text-on-accent transition-shadow ${
+                      activePin === i ? "ring-4 ring-accent/30" : ""
+                    }`}
+                  >
+                    {i + 1}
+                  </span>
+                  <span>{pin.note}</span>
+                </button>
               </li>
             ))}
           </ol>
@@ -612,7 +642,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
       ref={rootRef}
       className={`overscroll-x-contain lg:grid lg:items-start ${
         full
-          ? "lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-10"
+          ? "lg:grid-cols-[minmax(16rem,1fr)_auto] lg:gap-10"
           : // On the left, the words line up with the rest of the page, clear of the section list in the margin.
             "lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:pl-4 xl:gap-14 xl:pl-[calc((100%-1280px)/2+40px)] xl:[.has-toc_&]:pl-[max(200px,calc((100%-1280px)/2+40px))]"
       }`}
@@ -633,7 +663,8 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
       >
         <div
           className="mx-auto max-w-full lg:mx-0"
-          style={{ width: `calc((100dvh - ${full ? "8rem" : "12rem"}) * ${ratio})` }}
+          // Full screen, it's as tall as fits with the controls under it, leaving the rest of the width to the words.
+          style={{ width: full ? `min(calc((100dvh - 10.5rem) * ${ratio}), calc(100vw - 24rem))` : `calc((100dvh - 12rem) * ${ratio})` }}
         >
           {screen}
           {pickedPin !== null && pins[pickedPin] && (
@@ -651,11 +682,19 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
         </div>
       </div>
 
-      <div className={`mt-6 lg:col-start-1 lg:row-start-1 lg:mt-0 ${full ? "lg:max-h-[calc(100dvh-5rem)] lg:overflow-y-auto" : ""}`}>
-        <div className="rounded-3xl border border-line bg-raised p-5 sm:p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-1">
+      {/* Full screen, the words scroll on their own if they're long, under the prototype card held at the bottom,
+          with room either side for the step notes' highlight. */}
+      <div className={`mt-6 lg:col-start-1 lg:row-start-1 lg:mt-0 ${full ? "lg:flex lg:max-h-[calc(100dvh-5rem-2px)] lg:flex-col" : ""}`}>
+        <div
+          className={`rounded-3xl border border-line bg-raised p-5 sm:p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-1 ${
+            full ? "lg:-mx-3 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:px-3 lg:pb-6" : ""
+          }`}
+        >
           {words}
         </div>
-        {prototypeCard && <div className="mt-4 lg:mt-8">{prototypeCard}</div>}
+        {prototypeCard && (
+          <div className={`mt-4 ${full ? "relative lg:mt-0 lg:shrink-0 lg:shadow-[0_-18px_24px_-12px_var(--bg)]" : "lg:mt-8"}`}>{prototypeCard}</div>
+        )}
       </div>
 
       <p className="sr-only" aria-live={auto ? "off" : "polite"}>

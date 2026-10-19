@@ -18,7 +18,27 @@ const INTERACTIVE = [
 const SIZE = 20; // the resting circle's diameter
 const GAP = 6; // space between a hovered element and its outline
 
-type Box = { x: number; y: number; w: number; h: number; r: number };
+type Box = { x: number; y: number; w: number; h: number; r: number; a: number };
+
+/**
+ * How far an element is turned, in degrees, from its own rotate and
+ * transform and those of the few elements around it, so the outline can
+ * turn with a card set at an angle.
+ */
+function angleOf(el: Element) {
+  let deg = 0;
+  let node: Element | null = el;
+  for (let i = 0; node && i < 4; i++, node = node.parentElement) {
+    const style = getComputedStyle(node);
+    if (style.rotate && style.rotate !== "none") deg += parseFloat(style.rotate.split(" ").pop()!) || 0;
+    const m = style.transform.match(/^matrix(?:3d)?\(([^)]+)\)/);
+    if (m) {
+      const [a, b] = m[1].split(",").map(Number);
+      deg += (Math.atan2(b, a) * 180) / Math.PI;
+    }
+  }
+  return Math.abs(deg) < 0.1 ? 0 : deg;
+}
 
 const radiusOf = (el: Element, width: number) => {
   const raw = getComputedStyle(el).borderTopLeftRadius;
@@ -72,7 +92,7 @@ export function Cursor() {
     let shown = false;
     let down = false;
     let target: Element | null = null;
-    const cur: Box = { x: mx, y: my, w: SIZE, h: SIZE, r: SIZE / 2 };
+    const cur: Box = { x: mx, y: my, w: SIZE, h: SIZE, r: SIZE / 2, a: 0 };
 
     const find = (el: Element | null) => {
       if (!el || el.tagName === "IFRAME") return null;
@@ -91,18 +111,24 @@ export function Cursor() {
         const b = target.getBoundingClientRect();
         if (b.width && b.height) {
           const gap = down ? GAP - 3 : GAP;
+          // A turned element is outlined at its own size, turned to match,
+          // around the middle of the box it covers.
+          const a = target instanceof HTMLElement ? angleOf(target) : 0;
+          const w = a && target instanceof HTMLElement ? target.offsetWidth : b.width;
+          const h = a && target instanceof HTMLElement ? target.offsetHeight : b.height;
           // Concentric with the element's corners: its radius plus the gap.
           return {
-            x: b.left - gap,
-            y: b.top - gap,
-            w: b.width + gap * 2,
-            h: b.height + gap * 2,
-            r: Math.min(corner(target, b), b.width / 2, b.height / 2) + gap,
+            x: b.left + b.width / 2 - w / 2 - gap,
+            y: b.top + b.height / 2 - h / 2 - gap,
+            w: w + gap * 2,
+            h: h + gap * 2,
+            r: Math.min(corner(target, b), w / 2, h / 2) + gap,
+            a,
           };
         }
       }
       const s = down ? SIZE * 0.7 : SIZE;
-      return { x: mx - s / 2, y: my - s / 2, w: s, h: s, r: s / 2 };
+      return { x: mx - s / 2, y: my - s / 2, w: s, h: s, r: s / 2, a: 0 };
     };
 
     let raf = 0;
@@ -115,7 +141,7 @@ export function Cursor() {
       const r = ring.current;
       const d = dot.current;
       if (r && d) {
-        r.style.transform = `translate3d(${cur.x}px, ${cur.y}px, 0)`;
+        r.style.transform = `translate3d(${cur.x}px, ${cur.y}px, 0) rotate(${cur.a}deg)`;
         r.style.width = `${cur.w}px`;
         r.style.height = `${cur.h}px`;
         r.style.borderRadius = `${cur.r}px`;

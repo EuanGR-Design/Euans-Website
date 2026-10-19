@@ -99,7 +99,6 @@ export function SectionNav({ links }: { links: Link[] }) {
           shown ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        <p className="eyebrow mb-3">Jump to</p>
         {list(false)}
       </nav>
 

@@ -851,7 +851,7 @@ function BlockView({
                           sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
                           className="object-cover object-top"
                         />
-                        <div className="absolute inset-0 hidden flex-col items-center justify-center gap-2 bg-bg/40 opacity-0 backdrop-blur-md transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:hover)]:flex">
+                        <div className="absolute inset-0 hidden flex-col items-center justify-center gap-2 bg-bg/25 opacity-0 backdrop-blur-[1.5px] transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:hover)]:flex">
                           {links}
                         </div>
                       </div>
