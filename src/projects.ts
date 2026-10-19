@@ -715,7 +715,7 @@ export const projects: Project[] = [
         items: [
           { icon: "Users", loop: "recipients", title: "Recipients before fields", body: "Add people first, and it's obvious who each field is for." },
           { icon: "ViewColumns", loop: "sidebar", title: "One sidebar", body: "Two cluttered sidebars became one, leaving more room for the document and narrow enough to embed." },
-          { icon: "ListBullet", loop: "fields", title: "Three fields by default", body: "Signature, text and date, instead of every field at once. Admins can change the set." },
+          { icon: "ListBullet", loop: "fields", title: "Three fields by default", body: "Signature, text and date, instead of all twelve field types at once. Admins can change the set." },
           { icon: "CursorArrowRays", loop: "panel", title: "A panel that follows you", body: "Select a field and the sidebar becomes its editor, with formatting along the top. Click the page to go back to placing fields." },
           { icon: "Window", loop: "modals", title: "Modals for occasional tasks", body: "Recipients and document options stay out of the way until needed." },
           { icon: "ShieldCheck", loop: "send", title: "A Send you can't hit by accident", body: "Bold, explains what's missing, and counts down before sending." },

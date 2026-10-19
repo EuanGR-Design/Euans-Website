@@ -262,53 +262,45 @@ function Sheet({ style, children }: { style: React.CSSProperties; children?: Rea
 
 /* Field types --------------------------------------------------------------- */
 
-// Only types the product actually has: the three it shows by default, and the
-// others that sit behind More field types.
-type FieldType = "Signature" | "Initials" | "Text" | "Date" | "Auto date" | "Email";
+// Every field type the product has, in the order its Fields panel lists them.
+type FieldType =
+  | "Signature"
+  | "Text"
+  | "Signing Date"
+  | "Date"
+  | "Email"
+  | "Initials"
+  | "Number"
+  | "Dropdown"
+  | "Checkbox"
+  | "Regex"
+  | "File"
+  | "Drawn";
 
-/**
- * Field-type icons. Placeholders for now: each is one glyph in this map, drawn
- * on a 16x16 outline grid, so the real icons can be dropped in here without
- * touching any of the loops.
- */
-const FIELD_ICONS: Record<FieldType, ReactNode> = {
-  Signature: (
-    <>
-      <path d="M2.5 11.5c1.6-1.4 3.2-4.6 3-6.8-.2-1.6-1.6-.6-1.7 1.6-.2 2.6.4 5.2 1.6 5.2 1 0 1.5-2 2.6-2 .9 0 .4 1.6 1.4 1.6.8 0 1.2-.9 1.8-.9.5 0 .7.6 1.3.6" />
-      <path d="M2.5 14h11" />
-    </>
-  ),
-  Initials: (
-    <>
-      <path d="M2.5 11c1.2-1.2 2.2-3.6 2-5.4-.2-1.3-1.3-.3-1.2 1.4.1 2.2.7 4 1.7 4 .9 0 1.3-2.4 2.4-2.4.8 0 .3 2.4 1.3 2.4 1 0 1.4-4.8 2.6-4.8.9 0 .2 4.8 1.3 4.8" />
-      <path d="M2.5 14h11" />
-    </>
-  ),
-  Text: <path d="M3.5 5V3.5h9V5M8 3.5v9M6.25 12.5h3.5" />,
-  Date: (
-    <>
-      <rect x="2.75" y="4" width="10.5" height="9.5" rx="1.5" />
-      <path d="M2.75 7.25h10.5M5.5 2.5v3M10.5 2.5v3" />
-    </>
-  ),
-  "Auto date": (
-    <>
-      <rect x="2.75" y="4" width="10.5" height="9.5" rx="1.5" />
-      <path d="M5.5 2.5v3M10.5 2.5v3M5.75 9.75l1.6 1.5 3-3" />
-    </>
-  ),
-  Email: (
-    <>
-      <circle cx="8" cy="8" r="2.4" />
-      <path d="M10.4 8v.9a1.6 1.6 0 0 0 3.2 0V8A5.6 5.6 0 1 0 11 12.8" />
-    </>
-  ),
+/** The product's own field-type icons, from Euan's outline set, on a 24x24 grid. */
+const FIELD_ICONS: Record<FieldType, string> = {
+  Signature:
+    "M2.96 17.95c.32-.59.62-1.16.9-1.7m0 0C10.77 2.71 4.93 1.39 3.78 4.19c-.72 1.75-.98 7.72.08 12.06Zm0 0c.71 2.88 2 5.04 4.13 4.75.72-.1 1.45-.57 2.1-1.26m0 0c1.37-1.44 2.43-3.83 2.43-5.65 0-3.08-2.6-2.99-3.25-1.23-.69 1.85-.45 5.1.82 6.88Zm0 0c.59.82 1.39 1.34 2.43 1.26 1.92-.14 2.04-2.12 2.04-2.12s.4 2 1.94 2.12c1.53.12 1.99-1.53 1.99-1.53s.49 1.83 2.52 1.53",
+  Text: "M12 6h6v3m-6-3H6v3m6-3v12m3 0h-3m0 0H9",
+  "Signing Date":
+    "M8 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3M8 5h8M8 5v2m0-2V3m8 2h3m-3 0v2m0-2V3M7 11h9m2.59-2.41a2 2 0 1 1 2.82 2.82L14.83 18H12v-2.83l6.59-6.58Z",
+  Date: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z",
+  Email:
+    "M16 12a4 4 0 1 0-8 0 4 4 0 0 0 8 0Zm0 0v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-9 9m4.5-1.21A8.96 8.96 0 0 1 12 21",
+  Initials:
+    "M12.19 5.35l.02-.04c.09-.17.2-.28.09-.12l-.11.16Zm0 0-3.66 6.9C7.68 13.94 8.83 15 9.8 15h3.16s2.81-2.67 4.49-4.49c1.88-2.05 2.98-3.73 2.98-3.73s0 2.17.32 4.35c.24 1.65-1.19 3.87-2.86 3.87h-1.57M12.19 5.35C10.94 7.09 4.81 14.73 3 14.37M21 19H3",
+  Number: "M7 20l1.25-5m0 0 1.5-6m-1.5 6H4m4.25 0h6m-4.5-6L11 4m-1.25 5H6m3.75 0h6M13 20l1.25-5m0 0 1.5-6m-1.5 6H18m-2.25-6L17 4m-1.25 5H20",
+  Dropdown: "M3 18h17M3 12h17m1-8-2 2-2-2M3.03 6h9.98",
+  Checkbox: "M5 13l4 4L19 7",
+  Regex: "M10 20 14 4m4 4 4 4-4 4M6 16l-4-4 4-4",
+  File: "M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1M8 8l4-4 4 4m-4-4v12",
+  Drawn: "M15.23 5.23l3.54 3.54m-2.04-5.04a2.5 2.5 0 1 1 3.54 3.54L6.5 21.04H3v-3.58L16.73 3.73Z",
 };
 
 function FieldIcon({ field, className = "" }: { field: FieldType; className?: string }) {
   return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {FIELD_ICONS[field]}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d={FIELD_ICONS[field]} />
     </svg>
   );
 }
@@ -757,19 +749,28 @@ function Toggle({ on = true }: { on?: boolean }) {
 /* 3. Three fields by default                                                */
 /* ------------------------------------------------------------------------ */
 
-// Every field type the product has, in the order the old panel listed them.
+// Every field type, two to a row as the old panel showed them all at once.
 // `keep` is the slot each of the default three ends up in.
 const ALL_FIELDS: { field: FieldType; keep?: number }[] = [
   { field: "Signature", keep: 0 },
-  { field: "Initials" },
   { field: "Text", keep: 1 },
+  { field: "Signing Date" },
   { field: "Date", keep: 2 },
-  { field: "Auto date" },
   { field: "Email" },
+  { field: "Initials" },
+  { field: "Number" },
+  { field: "Dropdown" },
+  { field: "Checkbox" },
+  { field: "Regex" },
+  { field: "File" },
+  { field: "Drawn" },
 ];
 
-// Field rows sit 36px apart inside the recipient's card.
+// Field rows sit 36px apart inside the recipient's card, two columns wide
+// while every type shows.
 const ROW_AT = (slot: number) => 58 + slot * 36;
+const FIELDS_W = 380;
+const COL_W = (FIELDS_W - 24 - 20 - 10) / 2;
 
 function FieldsScene({ s }: { s: number }) {
   const few = s === 1 || s === 2;
@@ -779,7 +780,7 @@ function FieldsScene({ s }: { s: number }) {
   return (
     <motion.div
       className="absolute overflow-hidden rounded-2xl bg-white"
-      style={{ left: 110, width: 260, boxShadow: SHADOW }}
+      style={{ left: (W - FIELDS_W) / 2, width: FIELDS_W, boxShadow: SHADOW }}
       initial={false}
       animate={{ top: (H - h) / 2, height: h }}
       transition={{ duration: 0.8, ease: EASE, delay: few ? 0.3 : 0 }}
@@ -802,21 +803,22 @@ function FieldsScene({ s }: { s: number }) {
 
         {ALL_FIELDS.map((f, i) => {
           const kept = f.keep !== undefined;
+          const grid = { top: ROW_AT(Math.floor(i / 2)), left: 10 + (i % 2) * (COL_W + 10), width: COL_W };
           const goal = few
             ? kept
-              ? { top: ROW_AT(f.keep!), opacity: 1, scale: 1 }
-              : { top: ROW_AT(i), opacity: 0, scale: 0.9 }
-            : { top: ROW_AT(i), opacity: 1, scale: 1 };
+              ? { top: ROW_AT(f.keep!), left: 10, width: COL_W * 2 + 10, opacity: 1, scale: 1 }
+              : { ...grid, opacity: 0, scale: 0.9 }
+            : { ...grid, opacity: 1, scale: 1 };
           return (
             <motion.div
               key={f.field}
-              className="absolute inset-x-[10px] h-[30px]"
+              className="absolute h-[30px]"
               initial={false}
               animate={goal}
               transition={
                 few && !kept
-                  ? { duration: 0.35, ease: EASE, delay: 0.03 * i }
-                  : { duration: 0.7, ease: EASE, delay: few ? 0.3 : kept ? 0 : 0.25 + 0.03 * i }
+                  ? { duration: 0.35, ease: EASE, delay: 0.02 * i }
+                  : { duration: 0.7, ease: EASE, delay: few ? 0.3 : kept ? 0 : 0.25 + 0.02 * i }
               }
             >
               <Chip field={f.field} />
