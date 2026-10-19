@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 /** Anything you can click or interact with. */
 const INTERACTIVE = [
@@ -78,11 +78,21 @@ function cornerOf(el: Element, b: DOMRect) {
  * screens keep their usual behaviour.
  */
 export function Cursor() {
-  const ring = useRef<HTMLDivElement>(null);
-  const dot = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    // Made here rather than rendered, so they can move into an open modal
+    // dialog: a dialog sits in the top layer, above anything outside it.
+    const make = (className: string) => {
+      const el = document.createElement("div");
+      el.setAttribute("aria-hidden", "true");
+      el.className = className;
+      document.body.append(el);
+      return el;
+    };
+    const r = make(
+      "pointer-events-none fixed top-0 left-0 z-[2147483000] border-[1.5px] border-accent opacity-0 transition-opacity duration-200 [will-change:transform,width,height]",
+    );
+    const d = make("pointer-events-none fixed top-0 left-0 z-[2147483000] size-1 rounded-full bg-accent opacity-0 transition-opacity duration-200");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const root = document.documentElement;
     root.classList.add("has-cursor");
@@ -138,9 +148,11 @@ export function Cursor() {
       (Object.keys(cur) as (keyof Box)[]).forEach((key) => {
         cur[key] += (g[key] - cur[key]) * k;
       });
-      const r = ring.current;
-      const d = dot.current;
-      if (r && d) {
+      // Follow the newest open modal into the top layer, and back out.
+      const dialogs = document.querySelectorAll("dialog[open]");
+      const host = dialogs.length ? dialogs[dialogs.length - 1] : document.body;
+      if (r.parentElement !== host) host.append(r, d);
+      {
         r.style.transform = `translate3d(${cur.x}px, ${cur.y}px, 0) rotate(${cur.a}deg)`;
         r.style.width = `${cur.w}px`;
         r.style.height = `${cur.h}px`;
@@ -191,6 +203,8 @@ export function Cursor() {
     return () => {
       cancelAnimationFrame(raf);
       root.classList.remove("has-cursor");
+      r.remove();
+      d.remove();
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerover", onOver);
       window.removeEventListener("scroll", onScroll);
@@ -201,18 +215,5 @@ export function Cursor() {
     };
   }, []);
 
-  return (
-    <>
-      <div
-        ref={ring}
-        aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[2147483000] border-[1.5px] border-accent opacity-0 transition-opacity duration-200 [will-change:transform,width,height]"
-      />
-      <div
-        ref={dot}
-        aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[2147483000] size-1 rounded-full bg-accent opacity-0 transition-opacity duration-200"
-      />
-    </>
-  );
+  return null;
 }

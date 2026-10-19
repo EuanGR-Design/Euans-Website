@@ -249,15 +249,6 @@ h2 {
 .has-cursor iframe {
   cursor: auto !important;
 }
-/* A modal panel sits in the top layer, above the custom cursor, so it gets
-   the normal pointer back. */
-.has-cursor dialog[open],
-.has-cursor dialog[open] * {
-  cursor: auto !important;
-}
-.has-cursor dialog[open] :is(a, button) {
-  cursor: pointer !important;
-}
 
 /* The ring on the scrubber's play button, filling until the next version. */
 .autoplay-ring {
