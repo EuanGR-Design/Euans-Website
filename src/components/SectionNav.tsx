@@ -65,8 +65,9 @@ export function SectionNav({ links }: { links: Link[] }) {
   if (links.length < 3) return null;
   const current = links.find((l) => l.id === active);
 
-  const list = (compact: boolean) => (
-    <ul className={compact ? "py-2" : "space-y-0.5"}>
+  // Narrow screens: the full list, opened from the bar.
+  const list = (
+    <ul className="py-2">
       {links.map((l) => {
         const on = l.id === active;
         return (
@@ -75,14 +76,9 @@ export function SectionNav({ links }: { links: Link[] }) {
               href={`#${l.id}`}
               aria-current={on ? "location" : undefined}
               onClick={() => setOpen(false)}
-              className={`flex items-center gap-2.5 transition-colors ${
-                compact ? "px-5 py-2.5 text-[15px]" : "py-1 text-[13px] leading-snug"
-              } ${on ? "font-medium text-fg" : "text-muted hover:text-fg"}`}
+              className={`flex items-center gap-2.5 px-5 py-2.5 text-[15px] transition-colors ${on ? "font-medium text-fg" : "text-muted hover:text-fg"}`}
             >
-              <span
-                aria-hidden
-                className={`size-1.5 shrink-0 rounded-full transition-colors ${on ? "bg-accent" : "bg-fg/15"}`}
-              />
+              <span aria-hidden className={`size-1.5 shrink-0 rounded-full transition-colors ${on ? "bg-accent" : "bg-fg/15"}`} />
               {l.label}
             </a>
           </li>
@@ -93,13 +89,44 @@ export function SectionNav({ links }: { links: Link[] }) {
 
   return (
     <>
+      {/* Wide screens: a column of dots, naming only the section being read.
+          Hovering the column (or tabbing into it) brings out every label. */}
       <nav
         aria-label="Sections"
-        className={`fixed top-1/2 left-6 z-40 hidden w-44 -translate-y-1/2 transition-opacity duration-300 xl:block ${
+        className={`group/toc fixed top-1/2 left-4 z-40 hidden -translate-y-1/2 py-4 pr-6 transition-opacity duration-300 xl:block ${
           shown ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        {list(false)}
+        <ul className="space-y-0.5">
+          {links.map((l) => {
+            const on = l.id === active;
+            return (
+              <li key={l.id}>
+                <a
+                  href={`#${l.id}`}
+                  aria-current={on ? "location" : undefined}
+                  className="group/link inline-flex items-center gap-2.5 rounded-full px-2.5 py-1 text-[13px] leading-snug"
+                >
+                  <span
+                    aria-hidden
+                    className={`shrink-0 rounded-full transition-[width,height,background-color] duration-200 ${
+                      on ? "size-2 bg-accent" : "size-1.5 bg-fg/20 group-hover/link:size-2 group-hover/link:bg-fg/50"
+                    }`}
+                  />
+                  <span
+                    className={`inline-block origin-left whitespace-nowrap transition-[opacity,scale,translate,color] duration-200 ease-out ${
+                      on
+                        ? "font-medium text-fg"
+                        : "-translate-x-1 scale-95 text-muted opacity-0 group-focus-within/toc:translate-x-0 group-focus-within/toc:scale-100 group-focus-within/toc:opacity-100 group-hover/toc:translate-x-0 group-hover/toc:scale-100 group-hover/toc:opacity-100 group-hover/link:text-fg"
+                    }`}
+                  >
+                    {l.label}
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
       {/* Narrower screens: a slim bar under the header once the story starts. */}
@@ -120,7 +147,7 @@ export function SectionNav({ links }: { links: Link[] }) {
             <span className="truncate font-medium">{current?.label}</span>
             <ChevronDownIcon aria-hidden className={`ml-auto size-4 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`} />
           </button>
-          {open && <div className="max-h-[60vh] overflow-y-auto border-t border-line">{list(true)}</div>}
+          {open && <div className="max-h-[60vh] overflow-y-auto border-t border-line">{list}</div>}
         </nav>
       </div>
     </>
