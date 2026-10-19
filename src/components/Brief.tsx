@@ -119,7 +119,7 @@ export function BriefPreview({ b }: { b: BriefData }) {
         ref={dialog}
         aria-label={`${b.title}: product brief`}
         onClose={() => setOpen(false)}
-        className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-black/55 backdrop:backdrop-blur-sm"
+        className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-[#ff5c34]/25 backdrop:backdrop-blur-md"
       >
         {open && (
           <div
@@ -142,9 +142,9 @@ export function BriefPreview({ b }: { b: BriefData }) {
               initial={{ opacity: 0, y: 24, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto max-w-4xl"
+              className="mx-auto max-w-4xl rounded-xl shadow-[0_30px_80px_-20px_rgba(42,33,28,0.45)]"
             >
-              {b.recreation && <p className="mb-4 text-center text-sm text-white/80">{b.recreation}</p>}
+              {b.recreation && <p className="mb-4 text-center text-sm text-fg/80">{b.recreation}</p>}
               <Paper b={b} />
             </motion.div>
           </div>

@@ -766,7 +766,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
           role="dialog"
           aria-modal="true"
           aria-label="Quick Send iterations, full screen"
-          className="modal-in fixed inset-0 z-[100] flex bg-black/60 p-2 backdrop-blur-sm md:p-4"
+          className="modal-in fixed inset-0 z-[100] flex bg-[#ff5c34]/25 p-2 backdrop-blur-md md:p-4"
           onClick={closeFull}
         >
           <div

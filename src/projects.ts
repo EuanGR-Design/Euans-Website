@@ -128,7 +128,7 @@ export type Block =
       // A prompt under the grid to scroll on into the story.
       cue?: { label: string; href: string };
       // A short principle under the clips, with a quote that backs it up.
-      principle?: { eyebrow?: string; heading: string; body: string[]; quote?: { text: string; by: string; url: string } };
+      principle?: { eyebrow?: string; heading: string; body: string[]; quote?: { text: string; by: string; url: string; logo?: "linear" } };
     }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
   | {
@@ -398,7 +398,7 @@ const shot = (ref: string, alt: string, caption?: string): Img => {
 // Where every Legalesign case study sits, in the hero's facts.
 const legalesignContext = (forWhom: string, role: string) => [
   { label: "Company", value: "Legalesign, in-house" },
-  { label: "Product", value: "B2B SaaS e-signature web app" },
+  { label: "Product", value: "B2B e-signature product" },
   { label: "For", value: forWhom },
   { label: "My role", value: role },
 ];
@@ -546,7 +546,7 @@ export const projects: Project[] = [
     era: "legalesign",
     title: "Quick Send",
     summary: "A streamlined first send that cut trial bounce and churn.",
-    role: "Sole designer, product owner",
+    role: "Designer, product owner",
     tags: ["Onboarding", "Conversion", "UX"],
     cover: quickSendHero,
     hero: quickSendHero,
@@ -555,7 +555,7 @@ export const projects: Project[] = [
     statement:
       "I designed one focused flow that cuts trial bounce and gets new users sending, first time.",
     roleStatement:
-      "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
+      "As designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
     actions: [{ label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays", play: true, card: true }],
     heroLoop: {
       src: "/work/quick-send/hero-loop.mp4",
@@ -564,9 +564,9 @@ export const projects: Project[] = [
     },
     context: [
       { label: "Company", value: "Legalesign, in-house" },
-      { label: "Product", value: "B2B SaaS e-signature web app" },
+      { label: "Product", value: "B2B e-signature product" },
       { label: "For", value: "Trial and new users" },
-      { label: "My role", value: "Sole designer, product owner" },
+      { label: "My role", value: "Designer, product owner" },
     ],
     next: { slug: "template-editor", label: "See how Compose powers the Template Editor too." },
     blocks: [
@@ -740,6 +740,7 @@ export const projects: Project[] = [
             text: "One small thing that you won't see or think about but will hopefully feel.",
             by: "Andreas Eldh at Linear, on the invisible details in its menus",
             url: "https://linear.app/now/invisible-details",
+            logo: "linear",
           },
         },
         body: undefined,

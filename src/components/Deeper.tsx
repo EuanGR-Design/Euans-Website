@@ -54,33 +54,32 @@ export function Deeper({ d, children }: { d: DeeperData; children: React.ReactNo
           // A click on the dimmed backdrop lands on the dialog itself.
           if (e.target === e.currentTarget) setOpen(false);
         }}
-        className="inset-x-0 top-auto bottom-0 m-0 h-[92dvh] max-h-none w-full max-w-none overflow-hidden bg-transparent p-0 text-fg backdrop:bg-black/45 md:h-[88dvh]"
+        className="inset-x-0 top-auto bottom-0 m-0 h-[calc(100dvh-1.25rem)] max-h-none w-full max-w-none overflow-hidden bg-transparent p-0 text-fg backdrop:bg-[#ff5c34]/25 backdrop:backdrop-blur-md"
       >
         {open && (
           <motion.div
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="flex h-full flex-col rounded-t-3xl bg-bg shadow-2xl"
+            className="relative flex h-full flex-col rounded-t-3xl bg-bg shadow-[0_-20px_60px_-12px_rgba(42,33,28,0.4)]"
           >
             {/* A grab handle, a cue on phones that the sheet came up from below. */}
             <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-fg/15 md:hidden" />
-            <div className="border-b border-line pt-3 pb-5 md:pt-8 md:pb-7">
-              <div className="container-x flex items-start justify-between gap-6">
-                <div>
-                  <p className="eyebrow">Dig deeper</p>
-                  <h2 className="mt-2 text-2xl leading-tight font-semibold tracking-tight md:text-4xl">{d.heading}</h2>
-                  {d.body && <p className="mt-3 max-w-2xl leading-relaxed text-fg/75">{d.body}</p>}
-                </div>
-                <button
-                  type="button"
-                  autoFocus
-                  onClick={() => setOpen(false)}
-                  aria-label="Close"
-                  className="flex size-11 shrink-0 items-center justify-center rounded-full border border-line transition-colors hover:border-fg/30"
-                >
-                  <XMarkIcon aria-hidden className="size-5" />
-                </button>
+            {/* Closes from the sheet's own top corner, where people reach for it. */}
+            <button
+              type="button"
+              autoFocus
+              onClick={() => setOpen(false)}
+              aria-label="Close"
+              className="absolute top-3 right-3 z-10 flex size-10 items-center justify-center rounded-full border border-line bg-bg transition-colors hover:border-fg/30 md:top-4 md:right-4 md:size-11"
+            >
+              <XMarkIcon aria-hidden className="size-5" />
+            </button>
+            <div className="border-b border-line pt-2 pb-4 md:pt-5 md:pb-5">
+              <div className="container-x pr-16">
+                <p className="eyebrow">Dig deeper</p>
+                <h2 className="mt-1.5 text-xl leading-tight font-semibold tracking-tight md:text-3xl">{d.heading}</h2>
+                {d.body && <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-fg/75">{d.body}</p>}
               </div>
             </div>
             <div className="flex-1 overflow-y-auto overscroll-contain pb-10">

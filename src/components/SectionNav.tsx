@@ -6,7 +6,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 type Link = { id: string; label: string };
 
 // How much each label grows by its distance from the one being hovered.
-const WAVE = [1.3, 1.15, 1.06];
+const WAVE = [1.55, 1.3, 1.12];
 
 /**
  * Every section of a case study, so readers can jump straight to what
@@ -115,7 +115,7 @@ export function SectionNav({ links }: { links: Link[] }) {
                   href={`#${l.id}`}
                   aria-current={on ? "location" : undefined}
                   style={{ scale, transformOrigin: "13px 50%" }}
-                  className="group/link inline-flex items-center gap-2.5 rounded-full px-2.5 py-1 text-[13px] leading-snug transition-[scale] duration-200 ease-out"
+                  className="group/link inline-flex items-center gap-2.5 rounded-full px-2.5 py-1 text-[11px] leading-snug transition-[scale] duration-200 ease-out"
                 >
                   <span
                     aria-hidden
