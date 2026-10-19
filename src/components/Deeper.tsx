@@ -54,7 +54,7 @@ export function Deeper({ d, children }: { d: DeeperData; children: React.ReactNo
           // A click on the dimmed backdrop lands on the dialog itself.
           if (e.target === e.currentTarget) setOpen(false);
         }}
-        className="inset-x-0 top-auto bottom-0 m-0 h-[calc(100dvh-1.25rem)] max-h-none w-full max-w-none overflow-hidden bg-transparent p-0 text-fg backdrop:bg-[#ff5c34]/25 backdrop:backdrop-blur-md"
+        className="inset-x-0 top-auto bottom-0 m-0 h-[calc(100dvh-1.25rem)] max-h-none w-full max-w-none overflow-hidden bg-transparent p-0 text-fg backdrop:bg-[#1c2463]/45"
       >
         {open && (
           <motion.div
