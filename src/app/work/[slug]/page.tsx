@@ -8,6 +8,7 @@ import { ProjectLink } from "@/components/ProjectTransition";
 import { SectionNav } from "@/components/SectionNav";
 import { Icon } from "@/components/Icon";
 import { HeroPrototype, PlayLink } from "@/components/HeroPrototype";
+import { LoopVideo } from "@/components/LoopVideo";
 import { ArrowUpRightIcon } from "@heroicons/react/20/solid";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -94,6 +95,7 @@ export default async function ProjectPage({ params }: Props) {
               style={{ aspectRatio: `${hero.w} / ${hero.h}` }}
             >
               <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
+              {p.heroLoop && <HeroLoop loop={p.heroLoop} image={hero} />}
               {p.play && <HeroPrototype play={p.play} image={hero} title={p.title} />}
             </div>
             {p.scrollCue && (
@@ -154,6 +156,24 @@ export default async function ProjectPage({ params }: Props) {
       </nav>
       <SectionNav links={sections} />
     </article>
+  );
+}
+
+/**
+ * The finished product playing in the hero image's browser window. The
+ * recording is wider than the window, so it sits at the top and the app's
+ * own background fills the rest.
+ */
+function HeroLoop({ loop, image }: { loop: NonNullable<Project["heroLoop"]>; image: { w: number; h: number } }) {
+  const [x, y, w, h] = loop.screen;
+  const pct = (n: number, of: number) => `${(n / of) * 100}%`;
+  return (
+    <div
+      className="absolute overflow-hidden bg-[#f6f7f9]"
+      style={{ left: pct(x, image.w), top: pct(y, image.h), width: pct(w, image.w), height: pct(h, image.h), borderRadius: "0 0 2% 2% / 0 0 3% 3%" }}
+    >
+      <LoopVideo src={loop.src} poster={loop.poster} label={loop.label} className="h-full w-full object-contain" objectPosition="top" button={false} />
+    </div>
   );
 }
 

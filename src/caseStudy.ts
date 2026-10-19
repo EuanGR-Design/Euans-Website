@@ -5,36 +5,20 @@
 
 import type { Block } from "./projects";
 
-export type Section =
-  | "clips"
-  | "problem"
-  | "brief"
-  | "versions"
-  | "prototypes"
-  | "decisions"
-  | "handoff"
-  | "product"
-  | "result"
-  | "outcome";
+export type Section = "problem" | "brief" | "versions" | "prototypes" | "decisions" | "handoff" | "result" | "outcome";
 
 // What goes in each section, and where to see it done in Quick Send.
 const prompts: Record<Section, { eyebrow: string; ask: string; hint: string; anchor: string }> = {
-  clips: {
-    eyebrow: "Up close",
-    ask: "The details, straight under the hero.",
-    hint: "Short looping clips of the finished product, each on a blue tile, with a principle beneath them.",
-    anchor: "up-close",
-  },
   problem: {
     eyebrow: "The problem",
     ask: "The problem, in one line.",
-    hint: "How you found it (feedback, interviews, user testing, session recordings), then each thing that was wrong beside its fix. The research goes behind a Dig deeper.",
+    hint: "One line on how you found it (feedback, interviews, user testing, session recordings), then what users said as cards that turn over to show what they needed. The research and what was wrong go behind a Dig deeper.",
     anchor: "problem",
   },
   brief: {
     eyebrow: "The brief",
     ask: "The goal, in one line.",
-    hint: "A preview of the brief that opens full size: background, who it's for, the objective, requirements, what's out of scope and what success looks like.",
+    hint: "A line on switching from the product owner hat to the designer's, a preview of the brief that opens full size, and a couple of points on how it came about, such as the backlog and the scope.",
     anchor: "the-brief",
   },
   versions: {
@@ -52,20 +36,14 @@ const prompts: Record<Section, { eyebrow: string; ask: string; hint: string; anc
   decisions: {
     eyebrow: "Key decisions",
     ask: "The decisions that shaped it.",
-    hint: "Around six decisions, each with an icon and a line on why.",
+    hint: "Around six decisions, each with a short, simplified looping animation of the idea and a line on why. Clips of the finished details go behind a Dig deeper.",
     anchor: "key-decisions",
   },
   handoff: {
     eyebrow: "Design-to-dev handoff",
     ask: "Every route mapped, and annotated for the build.",
-    hint: "The annotated user flow from Figma, behind a blurred preview, with notes on how each part should be built.",
+    hint: "The annotated user flow from Figma, behind a blurred preview, then a couple of points on how the work was sequenced and kept in step with the developers.",
     anchor: "design-to-dev-handoff",
-  },
-  product: {
-    eyebrow: "Design and product",
-    ask: "Bringing design into product decisions.",
-    hint: "Where wearing both hats helped: the backlog, scope and the brief, the order of work, and working with the developers.",
-    anchor: "design-and-product",
   },
   result: {
     eyebrow: "Your turn",

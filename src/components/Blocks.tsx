@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { sectionAnchor, type Block, type Deeper as DeeperData, type Img } from "@/projects";
+import { sectionAnchor, type Block, type Deeper as DeeperData, type Img, type Notes as NotesData } from "@/projects";
 import { Reveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
@@ -17,6 +17,8 @@ import { FlowPan } from "./FlowPan";
 import { BrowserFrame } from "./BrowserFrame";
 import { BriefPreview } from "./Brief";
 import { HeroPrototype } from "./HeroPrototype";
+import { DecisionLoop } from "./DecisionLoop";
+import { Voices } from "./Voices";
 import { Deeper, useInPanel } from "./Deeper";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
@@ -58,6 +60,26 @@ function More({ d, name }: { d?: DeeperData; name: string }) {
   );
 }
 
+/** A few short points with icons, under a section's main content. */
+function Notes({ items }: { items?: NotesData }) {
+  if (!items) return null;
+  return (
+    <ul className="mt-10 grid gap-6 sm:grid-cols-2">
+      {items.map((n, i) => (
+        <Reveal key={n.title} delay={0.06 * i}>
+          <li className="flex gap-4">
+            <IconTile name={n.icon} size="sm" />
+            <div>
+              <p className="font-semibold">{n.title}</p>
+              <p className="mt-1 leading-relaxed text-muted">{n.body}</p>
+            </div>
+          </li>
+        </Reveal>
+      ))}
+    </ul>
+  );
+}
+
 // Copy that is still a prompt for the real words.
 const draftText = (draft?: boolean) => (draft ? "text-muted italic" : "");
 
@@ -92,6 +114,32 @@ function BlockView({
         </Section>
       );
     case "points":
+      // Items with a loop lead with it, as a card each.
+      if (b.items.some((p) => p.loop))
+        return (
+          <Section>
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {b.items.map((p, i) => {
+                // A last card on its own takes the whole row, side by side.
+                const last = i === b.items.length - 1;
+                const wide = last && b.items.length % 2 === 1 && b.items.length % 3 === 1;
+                return (
+                  <Reveal key={p.title} delay={0.08 * (i % 3)} className={`h-full ${wide ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+                    <li className={`h-full overflow-hidden rounded-3xl border border-line bg-raised ${wide ? "sm:flex sm:items-center" : ""}`}>
+                      <div className={`aspect-[4/3] overflow-hidden ${wide ? "sm:w-1/2 lg:w-1/3" : ""}`}>{p.loop && <DecisionLoop name={p.loop} />}</div>
+                      <div className={`p-6 md:p-7 ${wide ? "sm:flex-1 lg:px-12" : ""}`}>
+                        <h3 className={`font-semibold ${wide ? "text-xl lg:text-2xl" : "text-xl"}`}>{p.title}</h3>
+                        <p className="mt-2 max-w-xl leading-relaxed text-muted">{p.body}</p>
+                      </div>
+                    </li>
+                  </Reveal>
+                );
+              })}
+            </ul>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
@@ -244,6 +292,23 @@ function BlockView({
           <div className="mt-10">
             <Journey j={{ ...b, name, hasPrototype }} />
           </div>
+        </Section>
+      );
+    case "voices":
+      return (
+        <Section id={b.id}>
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end md:gap-12">
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="max-w-md text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
+          </div>
+          <div className="mt-12">
+            <Voices items={b.items} />
+          </div>
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "play":
@@ -726,6 +791,7 @@ function BlockView({
                   <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
                 </Reveal>
               )}
+              <Notes items={b.notes} />
             </div>
             <Reveal className="md:col-span-6">
               <BriefPreview b={b} />
@@ -845,7 +911,7 @@ function BlockView({
         </Section>
       );
     case "flow":
-      return <FlowPan b={b} />;
+      return <FlowPan b={b} after={b.notes && <Notes items={b.notes} />} />;
     case "outcome": {
       // On a surface it's a card in the page, so it reads as part of the
       // story rather than the band that closes it.

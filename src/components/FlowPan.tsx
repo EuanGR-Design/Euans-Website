@@ -15,7 +15,7 @@ type Flow = Extract<Block, { type: "flow" }>;
  * in view while it moves. With reduced motion, or no room to pan, it's a
  * plain sideways scroller.
  */
-export function FlowPan({ b }: { b: Flow }) {
+export function FlowPan({ b, after }: { b: Flow; after?: React.ReactNode }) {
   const reduce = useReducedMotion();
   const outer = useRef<HTMLDivElement>(null);
   const strip = useRef<HTMLDivElement>(null);
@@ -35,6 +35,8 @@ export function FlowPan({ b }: { b: Flow }) {
   }, []);
 
   const img = b.image;
+  // Anything that follows the flow, such as notes on how it was built.
+  const more = after && <div className="container-x">{after}</div>;
   const heading = (
     <div className="container-x">
       <Reveal>
@@ -54,6 +56,7 @@ export function FlowPan({ b }: { b: Flow }) {
             <FigmaFlow figma={b.figma} />
           </Reveal>
         </div>
+        {more}
       </section>
     );
   }
@@ -67,6 +70,7 @@ export function FlowPan({ b }: { b: Flow }) {
             <span className="eyebrow rounded-full border border-line bg-bg px-3 py-1.5">Annotated user flow coming soon</span>
           </div>
         </div>
+        {more}
       </section>
     );
   }
@@ -88,6 +92,7 @@ export function FlowPan({ b }: { b: Flow }) {
       <section className="border-t border-line py-20 md:py-28">
         {heading}
         <div className="mt-12 overflow-x-auto px-5 pb-4 md:px-10">{picture}</div>
+        {more}
       </section>
     );
   }
@@ -102,6 +107,7 @@ export function FlowPan({ b }: { b: Flow }) {
           </motion.div>
         </div>
       </div>
+      {more && <div className="pb-20 md:pb-28">{more}</div>}
     </section>
   );
 }
