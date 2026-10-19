@@ -725,8 +725,8 @@ export const projects: Project[] = [
       {
         ...quickSendInProduction,
         id: "up-close",
-        eyebrow: "Up close",
-        heading: "The details that make it feel finished.",
+        eyebrow: "What went live",
+        heading: "How it actually turned out.",
         bare: true,
         lifted: true,
         principle: {

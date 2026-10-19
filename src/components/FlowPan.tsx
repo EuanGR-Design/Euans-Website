@@ -154,19 +154,17 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
                   <div aria-hidden className="absolute inset-0 bg-bg/30" />
                 </>
               )}
-              <div className="relative">
-                <p
-                  className={`mx-auto max-w-xs text-sm md:max-w-sm md:text-base ${
-                    figma.preview ? "rounded-2xl bg-bg/85 px-4 py-2.5 text-fg/80 shadow-sm backdrop-blur" : "text-muted"
-                  }`}
-                >
+              <div className="relative rounded-3xl bg-bg/90 px-6 py-7 shadow-xl backdrop-blur md:px-10 md:py-9">
+                <p className="eyebrow">The handoff file</p>
+                <p className="mt-3 text-2xl font-semibold tracking-tight md:text-4xl">See what the devs saw.</p>
+                <p className="mx-auto mt-3 max-w-sm text-sm text-fg/75 md:text-base">
                   <span className="md:hidden">Every screen, from the dashboard to sent, laid out in Figma.</span>
                   <span className="max-md:hidden">Every screen, from the dashboard to sent. Drag to pan and scroll to zoom.</span>
                 </p>
                 <button
                   type="button"
                   onClick={() => setLaunched(true)}
-                  className="mt-6 hidden items-center gap-2.5 rounded-full bg-fg px-6 py-3.5 font-medium text-bg shadow-xl transition-transform hover:scale-[1.04] md:inline-flex"
+                  className="mt-6 hidden items-center gap-2.5 rounded-full bg-accent px-6 py-3.5 font-medium text-on-accent shadow-xl transition-transform hover:scale-[1.04] md:inline-flex"
                 >
                   <FigmaIcon />
                   Explore the flow
@@ -175,7 +173,7 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
                   href={figma.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-5 inline-flex items-center gap-2.5 rounded-full bg-fg px-5 py-3 text-sm font-medium text-bg shadow-xl md:hidden"
+                  className="mt-5 inline-flex items-center gap-2.5 rounded-full bg-accent px-5 py-3 text-sm font-medium text-on-accent shadow-xl md:hidden"
                 >
                   <FigmaIcon />
                   Open in Figma

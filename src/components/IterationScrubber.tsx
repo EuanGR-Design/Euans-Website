@@ -693,7 +693,16 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
           {words}
         </div>
         {prototypeCard && (
-          <div className={`mt-4 ${full ? "relative lg:mt-0 lg:shrink-0 lg:shadow-[0_-18px_24px_-12px_var(--bg)]" : "lg:mt-8"}`}>{prototypeCard}</div>
+          // On the page it sticks to the bottom of the screen, so the words scroll up under it.
+          <div
+            className={`mt-4 ${
+              full
+                ? "relative lg:mt-0 lg:shrink-0 lg:shadow-[0_-18px_24px_-12px_var(--bg)]"
+                : "lg:sticky lg:bottom-4 lg:z-10 lg:mt-8 lg:rounded-2xl lg:shadow-[0_-16px_28px_-10px_var(--bg),0_18px_40px_-20px_rgba(20,20,60,0.35)]"
+            }`}
+          >
+            {prototypeCard}
+          </div>
         )}
       </div>
 

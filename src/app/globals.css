@@ -123,6 +123,18 @@ body {
   }
 }
 
+/* A case study eases each section into place when you stop near its start,
+   without taking over the scroll: nearby stops snap, the rest scroll freely.
+   Each section's own scroll margin keeps it clear of the header. */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(article.has-toc) {
+    scroll-snap-type: y proximity;
+  }
+  article.has-toc :is(#story > section, #story > div > section) {
+    scroll-snap-align: start;
+  }
+}
+
 .eyebrow {
   font-size: 0.75rem;
   font-weight: 600;
