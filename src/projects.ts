@@ -671,7 +671,7 @@ export const projects: Project[] = [
         type: "iterations",
         eyebrow: "25 versions",
         heading: "From Figma screens to prototypes to the final design.",
-        body: "Versions 1 to 14 were screens I shared for feedback. From version 15, users tried clickable prototypes. Nothing was built until the design settled. It plays through on its own; drag the bar or click a numbered pin to take over.",
+        body: "Versions 1 to 14 were screens I shared for feedback. From version 15, users tried clickable prototypes. Nothing was built until the design settled. It plays through on its own; drag the bar, use the arrows or swipe to take over.",
         items: quickSendIterations,
         deeper: {
           label: "how I tested",
