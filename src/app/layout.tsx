@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter_Tight } from "next/font/google";
+import { Caveat, Inter_Tight } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
 import { Contact } from "@/components/Contact";
@@ -10,6 +10,13 @@ import { ProjectTransitionProvider } from "@/components/ProjectTransition";
 const sans = Inter_Tight({
   variable: "--font-inter-tight",
   subsets: ["latin"],
+});
+
+// Handwriting, only for notes scribbled on the page.
+const hand = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["600"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en-GB" data-theme="orange">
       <body
-        className={`${sans.variable} antialiased`}
+        className={`${sans.variable} ${hand.variable} antialiased`}
       >
         <MotionProvider>
           <a

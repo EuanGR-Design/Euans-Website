@@ -758,7 +758,7 @@ export const projects: Project[] = [
           preview: "/work/quick-send/flow-preview.webp",
         },
         notes: [
-          { icon: "NumberedList", title: "The right order", body: "I knew what was coming on the roadmap, so I sequenced the work: build Compose, test it through Quick Send, then take it to the editors." },
+          { icon: "NumberedList", title: "One component, built in sequence", body: "The document editor component has three modes: viewer, compose and editor. Quick Send only needed compose, so we built that first and proved it with real senders. Editor mode, used where templates are made, came next and built on what compose had already settled." },
           { icon: "UserGroup", title: "Design and engineering aligned", body: "Regular sessions with the developers settled dependencies and trade-offs early, so we stayed on the same page throughout." },
         ],
       },
@@ -816,7 +816,7 @@ export const projects: Project[] = [
         stats: [
           { value: "+42%", label: "more trials sending a document in their first session" },
           { value: "−35%", label: "fewer support queries about sending" },
-          { value: "< 2 min", label: "typical time from upload to sent" },
+          { value: "< 5 min", label: "typical time from upload to sent" },
         ],
       },
     ],

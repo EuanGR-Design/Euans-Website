@@ -184,30 +184,57 @@ function HeroLoop({ loop }: { loop: NonNullable<Project["heroLoop"]> }) {
 
 /**
  * The prototype as a picture of the hero beside the title, set at a playful
- * tilt that straightens on hover, when it asks you to have a play, so the
- * thing to click looks like the thing you'll get.
+ * tilt that straightens on hover, when it asks you to have a play. A note
+ * scribbled beside it, with a sketched arrow, says what it is.
  */
 function PrototypeCard({ action, image }: { action: NonNullable<Project["actions"]>[number]; image: { src: string; w: number; h: number } }) {
   return (
-    <PlayLink
-      href={action.href}
-      className="group relative block w-72 shrink-0 rotate-3 overflow-hidden rounded-3xl bg-raised shadow-[0_24px_50px_-20px_rgba(20,20,60,0.5)] transition-[rotate,translate,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:rotate-0 hover:shadow-[0_32px_60px_-22px_rgba(20,20,60,0.55)] max-md:ml-2 md:mb-2 lg:w-[22rem]"
-    >
-      <span className="block" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
-        <Image src={image.src} alt="" fill sizes="352px" className="object-cover object-top" />
-      </span>
-      {/* A click mark in the corner; on hover the picture softens and invites a play. */}
-      <span className="absolute top-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/95 text-[#2b3bd6] shadow-lg transition-opacity group-hover:opacity-0">
-        <Icon name={action.icon} className="size-5" />
-      </span>
-      <span className="absolute inset-0 flex items-center justify-center bg-bg/25 opacity-0 backdrop-blur-[1.5px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-        <span className="inline-flex h-11 items-center gap-2 rounded-full bg-fg px-5 font-medium text-bg shadow-lg">
-          <Icon name={action.icon} className="size-5" />
-          Have a play
+    <div className="relative shrink-0 max-md:ml-2 md:mb-2">
+      {/* On phones the note sits above the card; wider, it hangs below, pointing up. */}
+      <Scribble label={action.label} className="mb-2 ml-6 md:hidden" />
+      <PlayLink
+        href={action.href}
+        className="group relative block w-72 rotate-3 overflow-hidden rounded-3xl bg-raised shadow-[0_24px_50px_-20px_rgba(20,20,60,0.5)] transition-[rotate,translate,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:rotate-0 hover:shadow-[0_32px_60px_-22px_rgba(20,20,60,0.55)] lg:w-[22rem]"
+      >
+        <span className="block" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
+          <Image src={image.src} alt="" fill sizes="352px" className="object-cover object-top" />
         </span>
-      </span>
-      <span className="sr-only">{action.label}</span>
-    </PlayLink>
+        {/* A click mark in the corner; on hover the picture softens and invites a play. */}
+        <span className="absolute top-3 right-3 flex size-12 items-center justify-center rounded-full bg-white/95 text-[#2b3bd6] shadow-lg transition-opacity group-hover:opacity-0">
+          <Icon name={action.icon} className="size-6" />
+        </span>
+        <span className="absolute inset-0 flex items-center justify-center bg-bg/25 opacity-0 backdrop-blur-[1.5px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+          <span className="inline-flex h-11 items-center gap-2 rounded-full bg-fg px-5 font-medium text-bg shadow-lg">
+            <Icon name={action.icon} className="size-5" />
+            Have a play
+          </span>
+        </span>
+        <span className="sr-only">{action.label}</span>
+      </PlayLink>
+      <Scribble label={action.label} up className="absolute top-full right-4 mt-3 hidden md:flex" />
+    </div>
+  );
+}
+
+/** A handwritten note with a sketched arrow, pointing down at what follows, or `up` at what's above. */
+function Scribble({ label, up, className = "" }: { label: string; up?: boolean; className?: string }) {
+  return (
+    <p aria-hidden className={`pointer-events-none flex items-center gap-1 font-hand text-[1.75rem] leading-none whitespace-nowrap text-accent-ink ${up ? "flex-row-reverse" : ""} ${className}`}>
+      <svg
+        viewBox="0 0 70 56"
+        className={`h-12 w-14 shrink-0 ${up ? "-mt-10" : "mt-10 -scale-y-100"}`}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.4}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* A loose, slightly wobbly curve up to a quick two-stroke head. */}
+        <path d="M6 50c9-2 19-6 27-13 7-6 12-14 15-22 1-3 2-6 2.5-9" />
+        <path d="M41.5 12.5c3.5-3 6.5-6 9.2-8.3 1.4 4 3.3 7.4 6.2 10.8" />
+      </svg>
+      <span className="-rotate-3">{label}</span>
+    </p>
   );
 }
 

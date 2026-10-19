@@ -72,6 +72,8 @@
   /* One typeface throughout, Awwwards-style; "mono" text keeps even figures. */
   --font-sans: var(--font-inter-tight);
   --font-mono: var(--font-inter-tight);
+  /* The one exception: handwritten notes on the page. */
+  --font-hand: var(--font-caveat);
   /* A little tighter than Tailwind's defaults. `panel` is for the big blue
      panels and screens, rounded to suit how far their contents sit inside. */
   --radius-2xl: 0.875rem;

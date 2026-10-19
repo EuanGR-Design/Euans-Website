@@ -53,6 +53,8 @@ const SCRUBBER_ID = "iterations";
 // Autoplay: time on each version, and the pause after someone takes over.
 const STEP = 3500;
 const IDLE = 10000;
+// How far a swipe travels to move one version, in pixels.
+const SWIPE_STEP = 60;
 const SHOW_EVENT = "iterations:show";
 // Half the scrubber handle's width: the bar's ends sit this far in.
 const THUMB = 12;
@@ -177,64 +179,102 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
     setPickedPin(null);
     setSeen((s) => (s.has(next - 1) && s.has(next) && s.has(next + 1) ? s : new Set([...s, next - 1, next, next + 1])));
   };
+  // The version showing, for the swipes below, which can step several times
+  // before React has drawn the first.
+  const indexRef = useRef(index);
+  indexRef.current = index;
   // For the wheel listener, which is added once and outlives renders.
   const stepRef = useRef((by: number) => go(index + by));
   stepRef.current = (by: number) => {
     hush(IDLE);
-    go(index + by);
+    const next = Math.max(0, Math.min(last, indexRef.current + by));
+    if (next === indexRef.current) return;
+    go(next);
+    indexRef.current = next;
   };
 
-  // A sideways swipe on a trackpad moves one version per swipe. Only scrolls
-  // that are mostly sideways count, so the page always scrolls up and down.
+  // A sideways swipe on a trackpad scrubs through the versions as it goes, a
+  // version for every SWIPE_STEP pixels, so a gentle swipe moves one and a
+  // flick carries on through several as the trackpad's momentum dies away.
+  // Only scrolls that are mostly sideways count, so the page always scrolls
+  // up and down.
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
     let sum = 0;
-    let lockedAt = 0;
-    let lastAt = 0;
-    let lastSize = 0;
     const onWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
       // Keeps the browser from treating it as back or forward.
       e.preventDefault();
-      const now = performance.now();
-      const size = Math.abs(e.deltaX);
-      // A swipe's momentum keeps sending smaller and smaller scrolls. A pause,
-      // or a scroll that suddenly grows, is a new swipe.
-      const fresh = now - lastAt > 180 || (now - lockedAt > 150 && size > lastSize * 1.6 + 4);
-      lastAt = now;
-      lastSize = size;
-      if (lockedAt && !fresh) return;
-      lockedAt = 0;
+      // Turning back starts afresh rather than undoing what's built up.
+      if (sum && Math.sign(e.deltaX) !== Math.sign(sum)) sum = 0;
       sum += e.deltaX;
-      if (Math.abs(sum) < 40) return;
-      stepRef.current(sum > 0 ? 1 : -1);
-      sum = 0;
-      lockedAt = now;
+      while (Math.abs(sum) >= SWIPE_STEP) {
+        stepRef.current(sum > 0 ? 1 : -1);
+        sum -= Math.sign(sum) * SWIPE_STEP;
+      }
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, [full]);
 
-  // A finger swipe across the screen, on phones and tablets. The screen only
-  // lets the browser pan up and down, so sideways moves come here.
-  const swipe = useRef<{ x: number; y: number } | null>(null);
+  // A finger across the screen, on phones and tablets, does the same: it
+  // scrubs as it moves, then glides on and slows to a stop when let go fast.
+  // The screen only lets the browser pan up and down, so sideways moves come here.
+  const swipe = useRef<{ x: number; y: number; t: number; v: number; sum: number; sideways: boolean | null } | null>(null);
+  const glide = useRef(0);
   const swipeHandlers = {
     onPointerDown: (e: React.PointerEvent) => {
-      swipe.current = e.pointerType === "mouse" ? null : { x: e.clientX, y: e.clientY };
+      cancelAnimationFrame(glide.current);
+      swipe.current = e.pointerType === "mouse" ? null : { x: e.clientX, y: e.clientY, t: e.timeStamp, v: 0, sum: 0, sideways: null };
     },
-    onPointerUp: (e: React.PointerEvent) => {
+    onPointerMove: (e: React.PointerEvent) => {
       const s = swipe.current;
-      swipe.current = null;
       if (!s) return;
       const dx = e.clientX - s.x;
       const dy = e.clientY - s.y;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) stepRef.current(dx < 0 ? 1 : -1);
+      if (s.sideways === null) {
+        if (Math.hypot(dx, dy) < 10) return;
+        s.sideways = Math.abs(dx) > Math.abs(dy) * 1.2;
+      }
+      if (!s.sideways) return;
+      const dt = Math.max(1, e.timeStamp - s.t);
+      // How fast the finger is moving, smoothed, in pixels a millisecond.
+      s.v = s.v * 0.6 + (-dx / dt) * 0.4;
+      s.x = e.clientX;
+      s.y = e.clientY;
+      s.t = e.timeStamp;
+      s.sum -= dx;
+      while (Math.abs(s.sum) >= SWIPE_STEP) {
+        stepRef.current(s.sum > 0 ? 1 : -1);
+        s.sum -= Math.sign(s.sum) * SWIPE_STEP;
+      }
+    },
+    onPointerUp: () => {
+      const s = swipe.current;
+      swipe.current = null;
+      if (!s?.sideways || Math.abs(s.v) < 0.3) return;
+      let v = s.v;
+      let sum = s.sum;
+      let then = performance.now();
+      const frame = (now: number) => {
+        const dt = now - then;
+        then = now;
+        sum += v * dt;
+        v *= Math.pow(0.994, dt);
+        while (Math.abs(sum) >= SWIPE_STEP) {
+          stepRef.current(sum > 0 ? 1 : -1);
+          sum -= Math.sign(sum) * SWIPE_STEP;
+        }
+        if (Math.abs(v) > 0.05) glide.current = requestAnimationFrame(frame);
+      };
+      glide.current = requestAnimationFrame(frame);
     },
     onPointerCancel: () => {
       swipe.current = null;
     },
   };
+  useEffect(() => () => cancelAnimationFrame(glide.current), []);
 
   const running = auto && (inView || full) && !(over || dragging || focused || activePin !== null);
   // The final design stays up a little longer before it starts over.
