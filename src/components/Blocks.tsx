@@ -16,6 +16,7 @@ import { Bento } from "./Bento";
 import { FlowPan } from "./FlowPan";
 import { BrowserFrame } from "./BrowserFrame";
 import { BriefPreview } from "./Brief";
+import { HeroPrototype } from "./HeroPrototype";
 import { Deeper, useInPanel } from "./Deeper";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
@@ -243,6 +244,42 @@ function BlockView({
           <div className="mt-10">
             <Journey j={{ ...b, name, hasPrototype }} />
           </div>
+        </Section>
+      );
+    case "play":
+      // The prototype in the hero's browser window, to try at the end.
+      return (
+        <Section id={b.id}>
+          <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <p className="eyebrow">{b.eyebrow}</p>
+              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
+            </div>
+            {b.body && <p className="max-w-sm text-muted">{b.body}</p>}
+          </Reveal>
+          {b.image.src && (
+            <Reveal className="mt-12">
+              <div
+                className="relative overflow-hidden rounded-[1.75rem] bg-raised md:rounded-panel"
+                style={{ aspectRatio: `${b.image.w} / ${b.image.h}` }}
+              >
+                <Image src={b.image.src} alt={b.image.alt} fill sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
+                <HeroPrototype play={b.play} image={b.image} title={name} />
+              </div>
+              {/* Too small to use on a phone, so it opens full screen there. */}
+              <a
+                href={b.play.url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-6 inline-flex h-12 items-center gap-2 rounded-full bg-fg pr-5 pl-4 font-medium text-bg md:hidden"
+              >
+                <Icon name="CursorArrowRays" className="size-5" />
+                Open the prototype
+                <ArrowTopRightOnSquareIcon aria-hidden className="size-4 opacity-60" />
+              </a>
+            </Reveal>
+          )}
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "todo":
@@ -841,7 +878,8 @@ function BlockView({
                   ) : (
                     <span className={`font-mono text-sm ${soft}`}>{String(i + 1).padStart(2, "0")}</span>
                   )}
-                  <p className="mt-6 text-2xl leading-[1.2] font-semibold tracking-tight text-balance md:text-[1.75rem]">
+                  {it.goal && <p className={`eyebrow mt-6 ${card ? "!text-white/70" : "!text-on-tertiary/60"}`}>{it.goal}</p>}
+                  <p className={`${it.goal ? "mt-2" : "mt-6"} text-2xl leading-[1.2] font-semibold tracking-tight text-balance md:text-[1.75rem]`}>
                     {it.title}
                   </p>
                   <p className={`mt-4 text-lg leading-relaxed ${body}`}>{it.body}</p>

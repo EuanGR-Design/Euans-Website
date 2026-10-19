@@ -143,6 +143,18 @@ export type Block =
       width: number;
       height: number;
     }
+  // The final prototype to play with, in the same browser window as the
+  // hero image (see Project.play for `play`).
+  | {
+      type: "play";
+      id?: string;
+      eyebrow: string;
+      heading: string;
+      body?: string;
+      image: Img;
+      play: { url: string; width: number; screen: [number, number, number, number] };
+      deeper?: Deeper;
+    }
   // A section of the case study format that's still to be written: what
   // goes there, and a link to where Quick Send does it (src/caseStudy.ts).
   | { type: "todo"; id?: string; eyebrow: string; heading?: string; ask: string; hint: string; example?: string }
@@ -247,7 +259,8 @@ export type Block =
       type: "outcome";
       eyebrow?: string;
       heading: string;
-      items: { title: string; body: string; icon?: IconName }[];
+      // `goal` is what the item answers from the brief, shown above it.
+      items: { title: string; body: string; icon?: IconName; goal?: string }[];
       stats?: { value: string; label: string }[];
       // A CSS background that sets it apart as a card, in place of the
       // closing band.
@@ -499,14 +512,10 @@ export const projects: Project[] = [
     intro:
       "A send flow built around trial users, with an editor customers can embed in their own products at its centre.",
     statement:
-      "One focused flow that cuts trial bounce and gets new users sending, first time.",
+      "I designed one focused flow that cut trial bounce and got new users sending, first time.",
     roleStatement:
       "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
-    actions: [
-      { label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays", play: true },
-      { label: "Watch the production demo", href: "#in-production", icon: "Play" },
-    ],
-    play: { url: "https://peach-comma-28912996.figma.site", width: 1440, screen: [398, 359, 1603, 1057] },
+    actions: [{ label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays", play: true }],
     context: [
       { label: "Company", value: "Legalesign, in-house" },
       { label: "Product", value: "B2B SaaS e-signature web app" },
@@ -729,19 +738,25 @@ export const projects: Project[] = [
         ],
       },
       {
-        type: "video",
-        id: "in-production",
-        eyebrow: "The result",
-        heading: "Upload, add recipients, place fields, send.",
-        body: "Quick Send in production, start to finish, with no template in sight.",
-        src: "/work/quick-send/send-flow.mp4",
-        poster: "/work/quick-send/send-flow-poster.jpg",
-        label: "Screen recording of sending a document with Quick Send, from upload to sent",
+        type: "play",
+        id: "your-turn",
+        eyebrow: "Your turn",
+        heading: "Try it yourself.",
+        body: "The final prototype, the one the developers built from. Have a play, and send me any feedback.",
+        image: quickSendHero,
+        play: { url: "https://peach-comma-28912996.figma.site", width: 1440, screen: [398, 359, 1603, 1057] },
         deeper: {
-          label: "screen by screen",
-          heading: "Screen by screen.",
-          body: "Each step of Quick Send as it works in production.",
+          label: "the production recording",
+          heading: "Quick Send in production.",
+          body: "The whole flow as it works in production, start to finish, then each step on its own.",
           blocks: [
+            {
+              type: "video",
+              heading: "Upload, add recipients, place fields, send.",
+              src: "/work/quick-send/send-flow.mp4",
+              poster: "/work/quick-send/send-flow-poster.jpg",
+              label: "Screen recording of sending a document with Quick Send, from upload to sent",
+            },
             {
               type: "screens",
               eyebrow: "How it works",
@@ -762,12 +777,15 @@ export const projects: Project[] = [
       {
         type: "outcome",
         eyebrow: "The outcome",
-        heading: "What changed.",
+        heading: "What changed, goal by goal.",
         surface: quickSendBlue,
         items: [
-          { icon: "PaperAirplane", title: "First sends stopped being a problem.", body: "Trial users went from struggling to reach a first send to sending without trouble. Quick Send was the main driver." },
-          { icon: "Beaker", title: "Tested live, without the risk.", body: "Quick Send launched as a beta, so the new editor got real feedback without touching anyone's everyday sending." },
-          { icon: "PuzzlePiece", title: "It also led to Compose.", body: "A by-product, not the brief: the same editor now powers Compose, which customers embed in their own products, and the redesigned main editor." },
+          { goal: "The objective", icon: "PaperAirplane", title: "First sends stopped being a problem.", body: "Trial users went from struggling to reach a first send to sending in their first session. Quick Send was the main driver." },
+          { goal: "No barriers", icon: "HandRaised", title: "Nothing to set up first.", body: "No template to make, nothing left in the library after sending, and nothing the rest of the team can see." },
+          { goal: "One clean flow", icon: "ArrowLongRight", title: "Decluttered, and easier to follow.", body: "Users found it far more intuitive and sent without needing help, so support queries went down." },
+          { goal: "Beyond the brief", icon: "UserPlus", title: "Smoother onboarding, cleaner demos.", body: "New users got going faster, and the whole flow, upload to sent, is short enough to show in a sales demo." },
+          { goal: "Beyond the brief", icon: "Beaker", title: "Tested live, without the risk.", body: "Quick Send launched as a beta, so the new editor got real feedback without touching anyone's everyday sending." },
+          { goal: "Beyond the brief", icon: "PuzzlePiece", title: "It also led to Compose.", body: "The same editor now powers Compose, which customers embed in their own products, and the redesigned main editor." },
         ],
         todo: "Add the numbers: trial first-send rate and bounce, before and after.",
       },

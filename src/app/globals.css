@@ -115,6 +115,14 @@ body {
   }
 }
 
+/* On wide screens a case study's section list sits in the left margin, so
+   its content moves over to clear it. Panels opened over the page don't. */
+@media (min-width: 1280px) {
+  .has-toc .container-x:not(dialog .container-x) {
+    padding-left: max(2.5rem, calc(14rem - (100vw - 1280px) / 2));
+  }
+}
+
 .eyebrow {
   font-size: 0.75rem;
   font-weight: 600;

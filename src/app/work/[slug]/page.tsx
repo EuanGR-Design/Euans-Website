@@ -36,9 +36,10 @@ export default async function ProjectPage({ params }: Props) {
   // A headless grid of clips sits tight under the hero, as one run of images.
   const first = p.blocks[0];
   const leadsWithClips = first?.type === "bento" && !first.heading;
+  const sections = sectionLinks(p);
 
   return (
-    <article>
+    <article className={sections.length >= 3 ? "has-toc" : undefined}>
       <header className="pt-32 md:pt-44">
         <div className="container-x">
           <Link
@@ -151,7 +152,7 @@ export default async function ProjectPage({ params }: Props) {
           )}
         </div>
       </nav>
-      <SectionNav links={sectionLinks(p)} />
+      <SectionNav links={sections} />
     </article>
   );
 }
@@ -164,7 +165,7 @@ function StoryHeader({ p }: { p: Project }) {
   const role = p.roleStatement ?? p.intro;
   return (
     <>
-      <p className="mt-10 max-w-5xl text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
+      <p className="mt-10 max-w-[16em] text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
         {p.statement}
       </p>
       {(role || p.actions) && (
@@ -183,7 +184,7 @@ function StoryHeader({ p }: { p: Project }) {
                     {a.label}
                   </>
                 );
-                if (a.play && p.play)
+                if (a.play)
                   return (
                     <PlayLink key={a.href} href={a.href} className={className}>
                       {label}

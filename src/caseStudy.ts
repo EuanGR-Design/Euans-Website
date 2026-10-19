@@ -68,15 +68,15 @@ const prompts: Record<Section, { eyebrow: string; ask: string; hint: string; anc
     anchor: "design-and-product",
   },
   result: {
-    eyebrow: "The result",
-    ask: "It in production, start to finish.",
-    hint: "A recording of the whole flow, with screen by screen behind a Dig deeper.",
-    anchor: "in-production",
+    eyebrow: "Your turn",
+    ask: "Try it yourself.",
+    hint: "The final prototype to play with, in the same browser window as the hero, with a way to send feedback. The production recording and screen by screen go behind a Dig deeper.",
+    anchor: "your-turn",
   },
   outcome: {
     eyebrow: "The outcome",
-    ask: "What changed.",
-    hint: "Three points on a blue card, then the before and after numbers.",
+    ask: "What changed, goal by goal.",
+    hint: "Each goal from the brief and what happened to it, then what went beyond the brief, then the before and after numbers.",
     anchor: "the-outcome",
   },
 };
