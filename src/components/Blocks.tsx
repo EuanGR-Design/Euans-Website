@@ -127,7 +127,7 @@ function BlockView({
                 return (
                   <Reveal key={p.title} delay={0.08 * (i % 3)} className={`h-full ${wide ? "sm:col-span-2 lg:col-span-3" : ""}`}>
                     <li className={`h-full overflow-hidden rounded-3xl border border-line bg-raised ${wide ? "sm:flex sm:items-center" : ""}`}>
-                      <div className={`aspect-[4/3] overflow-hidden ${wide ? "sm:w-1/2 lg:w-1/3" : ""}`}>{p.loop && <DecisionLoop name={p.loop} />}</div>
+                      <div className={`aspect-[4/3] overflow-hidden ${wide ? "sm:w-1/2 lg:w-1/3" : ""}`}>{p.loop && <DecisionLoop name={p.loop} className="rounded-none" />}</div>
                       <div className={`p-6 md:p-7 ${wide ? "sm:flex-1 lg:px-12" : ""}`}>
                         <h3 className={`font-semibold ${wide ? "text-xl lg:text-2xl" : "text-xl"}`}>{p.title}</h3>
                         <p className="mt-2 max-w-xl leading-relaxed text-muted">{p.body}</p>

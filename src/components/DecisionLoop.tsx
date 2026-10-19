@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { MotionConfig, motion } from "framer-motion";
+import type { DecisionLoopName } from "@/projects";
 import {
   ArrowPathIcon,
   AtSymbolIcon,
@@ -27,7 +28,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 
-export type DecisionLoopName = "recipients" | "sidebar" | "fields" | "panel" | "modals" | "send" | "again";
+export type { DecisionLoopName };
 
 // Every scene is laid out on a fixed 480x360 stage and scaled to fit, the way
 // a prototype is scaled to its frame, so it reads the same at any card width.
