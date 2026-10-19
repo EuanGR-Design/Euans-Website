@@ -3,6 +3,16 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { motion } from "framer-motion";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ArrowsPointingInIcon,
+  ArrowsPointingOutIcon,
+  PauseIcon,
+  PlayIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import type { Img } from "@/projects";
 
 // A comment pin on the screen, at x and y percent of the frame.
@@ -27,15 +37,25 @@ const prompts = {
 };
 
 /**
- * Screens stacked in one frame, with a blue scrubber that steps through them.
- * The screen takes all the room it can: the arrows sit either side of it, and
- * only one row (the version, the bar and the full-screen button) sits below.
+ * Screens stacked in one frame, with a scrubber that steps through them.
+ *
+ * On wide screens it's a split: the screen takes the right of the page and
+ * stays put while you read, and everything that's words (the version, what
+ * changed, the feedback and the numbered notes for the pins) sits on the
+ * left. Nothing opens over the screen. Below that it stacks: the screen,
+ * the scrubber, then the words.
+ *
+ * It moves with the arrows, the arrow keys, the scrubber bar, or a sideways
+ * swipe (a trackpad's sideways scroll, or a finger on a phone). Ordinary
+ * up-and-down scrolling always just scrolls the page.
  */
 const SCRUBBER_ID = "iterations";
 // Autoplay: time on each version, and the pause after someone takes over.
 const STEP = 3500;
 const IDLE = 10000;
 const SHOW_EVENT = "iterations:show";
+// Half the scrubber handle's width: the bar's ends sit this far in.
+const THUMB = 12;
 
 /** Scrolls to the iterations scrubber and shows `version`, counted from 1. */
 export function showIteration(version: number) {
@@ -52,16 +72,21 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
   const [prev, setPrev] = useState(0);
   // Only load screens that have been shown, plus their neighbours.
   const [seen, setSeen] = useState(() => new Set([0, 1]));
-  // The pop-up only shows while the bar is hovered, dragged or keyboard-focused.
-  const [hover, setHover] = useState(false);
+  // The version under the pointer on the bar, named beside it.
+  const [hoverAt, setHoverAt] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
   const [focused, setFocused] = useState(false);
-  const showPopup = hover || dragging || focused;
-  // Which comment pin is open on the current screen, if any.
-  const [openPin, setOpenPin] = useState<number | null>(null);
+  // Whether a mouse is over any part of the scrubber, which holds autoplay.
+  const [over, setOver] = useState(false);
+  // The pin and its note that are lit up together, if any.
+  const [activePin, setActivePin] = useState<number | null>(null);
+  // A pin that's been tapped or clicked. Below the split its note shows just
+  // under the screen, since the list of notes is further down the page.
+  const [pickedPin, setPickedPin] = useState<number | null>(null);
   // Full-screen view, shown as a modal over a faded page.
   const [full, setFull] = useState(false);
   const [inlineHeight, setInlineHeight] = useState<number>();
+  const rootRef = useRef<HTMLDivElement>(null);
   const inlineRef = useRef<HTMLDivElement>(null);
   const openButton = useRef<HTMLButtonElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -69,10 +94,10 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
   const [closedPrompts, setClosedPrompts] = useState<Set<number>>(() => new Set());
 
   // Autoplay: steps through the versions on its own while the scrubber is in
-  // view. It holds while a comment is open or the bar is in use, goes quiet
-  // for IDLE after any click or key press (and briefly while the mouse moves
-  // over it), then carries on. The play button turns it off for good, and
-  // reduced motion leaves it off to begin with.
+  // view. It holds while the mouse is over it, a note is lit or the bar is in
+  // use, goes quiet for IDLE after any click, key press or swipe, then
+  // carries on. The play button turns it off for good, and reduced motion
+  // leaves it off to begin with.
   const [auto, setAuto] = useState(false);
   const [inView, setInView] = useState(false);
   const quietUntil = useRef(0);
@@ -90,7 +115,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
     setAuto(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     const el = inlineRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.45 });
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.3 });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -106,14 +131,10 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
     };
   }, [dragging]);
 
-  // Escape closes an open pin first, then full screen.
+  // Escape closes full screen.
   useEffect(() => {
-    if (openPin === null && !full) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      if (openPin !== null) setOpenPin(null);
-      else closeFull();
-    };
+    if (!full) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeFull();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
@@ -152,11 +173,70 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
     if (next === index) return;
     setPrev(index);
     setIndex(next);
-    setOpenPin(null);
+    setActivePin(null);
+    setPickedPin(null);
     setSeen((s) => (s.has(next - 1) && s.has(next) && s.has(next + 1) ? s : new Set([...s, next - 1, next, next + 1])));
   };
+  // For the wheel listener, which is added once and outlives renders.
+  const stepRef = useRef((by: number) => go(index + by));
+  stepRef.current = (by: number) => {
+    hush(IDLE);
+    go(index + by);
+  };
 
-  const running = auto && (inView || full) && !(hover || dragging || focused || openPin !== null);
+  // A sideways swipe on a trackpad moves one version per swipe. Only scrolls
+  // that are mostly sideways count, so the page always scrolls up and down.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    let sum = 0;
+    let lockedAt = 0;
+    let lastAt = 0;
+    let lastSize = 0;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.ctrlKey) return;
+      // Keeps the browser from treating it as back or forward.
+      e.preventDefault();
+      const now = performance.now();
+      const size = Math.abs(e.deltaX);
+      // A swipe's momentum keeps sending smaller and smaller scrolls. A pause,
+      // or a scroll that suddenly grows, is a new swipe.
+      const fresh = now - lastAt > 180 || (now - lockedAt > 150 && size > lastSize * 1.6 + 4);
+      lastAt = now;
+      lastSize = size;
+      if (lockedAt && !fresh) return;
+      lockedAt = 0;
+      sum += e.deltaX;
+      if (Math.abs(sum) < 40) return;
+      stepRef.current(sum > 0 ? 1 : -1);
+      sum = 0;
+      lockedAt = now;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [full]);
+
+  // A finger swipe across the screen, on phones and tablets. The screen only
+  // lets the browser pan up and down, so sideways moves come here.
+  const swipe = useRef<{ x: number; y: number } | null>(null);
+  const swipeHandlers = {
+    onPointerDown: (e: React.PointerEvent) => {
+      swipe.current = e.pointerType === "mouse" ? null : { x: e.clientX, y: e.clientY };
+    },
+    onPointerUp: (e: React.PointerEvent) => {
+      const s = swipe.current;
+      swipe.current = null;
+      if (!s) return;
+      const dx = e.clientX - s.x;
+      const dy = e.clientY - s.y;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) stepRef.current(dx < 0 ? 1 : -1);
+    },
+    onPointerCancel: () => {
+      swipe.current = null;
+    },
+  };
+
+  const running = auto && (inView || full) && !(over || dragging || focused || activePin !== null);
   // The final design stays up a little longer before it starts over.
   const step = index === last ? STEP * 2 : STEP;
   useEffect(() => {
@@ -175,7 +255,8 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
       if (index === last) {
         setPrev(index);
         setIndex(0);
-        setOpenPin(null);
+        setActivePin(null);
+        setPickedPin(null);
       } else go(index + 1);
     }, step);
     return () => clearTimeout(t);
@@ -189,300 +270,372 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
   const label = index === last ? `${version} · Final design` : version;
   const ratio = items[0].image.w / items[0].image.h;
   const prototype = item.prototype && !closedPrompts.has(index) ? item.prototype : null;
+  const pins = item.pins ?? [];
+  // Where each stage starts, marked on the bar.
+  const stageStarts = items.flatMap((it, i) => (i > 0 && it.stage && it.stage !== items[i - 1].stage ? [i] : []));
 
-  const details = (
-    <dl className="space-y-3 text-sm leading-relaxed">
-      <div>
-        <dt className="eyebrow">What changed</dt>
-        <dd className={`mt-1 ${item.change ? "" : "text-muted italic"}`}>{item.change ?? prompts.change}</dd>
-      </div>
-      <div>
-        <dt className="eyebrow">The feedback</dt>
-        <dd className={`mt-1 ${item.feedback ? "" : "text-muted italic"}`}>{item.feedback ?? prompts.feedback}</dd>
-      </div>
-    </dl>
-  );
 
   const roundButton =
-    "h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-bg text-lg transition-colors hover:border-accent disabled:opacity-30";
+    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-bg transition-colors hover:border-accent disabled:opacity-30 disabled:hover:border-line";
 
-  const arrow = (step: -1 | 1, className: string) => (
+  const arrow = (by: -1 | 1) => (
     <button
       type="button"
-      onClick={() => go(index + step)}
-      disabled={step < 0 ? index === 0 : index === last}
-      aria-label={step < 0 ? "Earlier version" : "Later version"}
-      className={`${roundButton} ${className}`}
+      onClick={() => go(index + by)}
+      disabled={by < 0 ? index === 0 : index === last}
+      aria-label={by < 0 ? "Earlier version" : "Later version"}
+      title={by < 0 ? "Earlier version" : "Later version"}
+      className={roundButton}
     >
-      {step < 0 ? "←" : "→"}
+      {by < 0 ? <ArrowLeftIcon aria-hidden className="size-4" /> : <ArrowRightIcon aria-hidden className="size-4" />}
     </button>
   );
 
-  const prototypeCard = (className: string) =>
-    prototype && (
-      <div
-        key={index}
-        className={`prompt-in rounded-2xl border border-line bg-bg p-5 shadow-2xl ${className}`}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <p className="eyebrow">{index === last ? "The final design" : `Version ${index + 1}`}</p>
-          <button
-            type="button"
-            onClick={() => setClosedPrompts((s) => new Set([...s, index]))}
-            aria-label="Dismiss"
-            className="-mt-1 -mr-1 rounded-full px-2 text-muted hover:text-fg"
-          >
-            ×
-          </button>
-        </div>
-        <p className="mt-2 text-lg font-semibold">{prototype.title ?? "Try the prototype"}</p>
-        <p className="mt-1 text-sm leading-relaxed text-muted">{prototype.body}</p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {prototype.links.map((link, i) => (
-            <a
-              key={link.url}
-              href={link.url}
-              {...(link.url.startsWith("#")
-                ? {
-                    onClick: (e: React.MouseEvent) => {
-                      e.preventDefault();
-                      if (full) closeFull();
-                      requestAnimationFrame(() =>
-                        document.querySelector(link.url)?.scrollIntoView({ behavior: "smooth" }),
-                      );
-                    },
-                  }
-                : { target: "_blank", rel: "noreferrer" })}
-              className={`inline-flex rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                i === 0 ? "bg-accent text-on-accent hover:opacity-90" : "border border-line hover:border-accent"
-              }`}
-            >
-              {link.label} {link.url.startsWith("#") ? "↓" : "↗"}
-            </a>
-          ))}
-        </div>
-      </div>
-    );
+  const playButton = (
+    <button
+      type="button"
+      onClick={() => {
+        setAuto(!auto);
+        quietUntil.current = 0;
+        setTick((n) => n + 1);
+      }}
+      aria-pressed={auto}
+      aria-label={auto ? "Stop playing through versions" : "Play through versions"}
+      title={auto ? "Stop autoplay" : "Autoplay"}
+      className={`${roundButton} relative`}
+    >
+      {auto ? <PauseIcon aria-hidden className="size-4" /> : <PlayIcon aria-hidden className="ml-0.5 size-4" />}
+      {/* A ring that fills while it waits to move on. */}
+      {counting && (
+        <svg key={`${index}-${tick}`} viewBox="0 0 40 40" className="absolute -inset-px -rotate-90" aria-hidden>
+          <circle
+            cx="20"
+            cy="20"
+            r="19"
+            fill="none"
+            stroke="var(--accent)"
+            strokeWidth="2"
+            pathLength={1}
+            strokeDasharray="1"
+            className="autoplay-ring"
+            style={{ animationDuration: `${step}ms` }}
+          />
+        </svg>
+      )}
+    </button>
+  );
 
-  // Room left for everything that isn't the screen: the bar below it, plus the
-  // nav bar inline or the modal's padding in full screen.
-  const reserved = full ? "7rem" : "10rem";
+  const fullButton = full ? (
+    <button
+      ref={closeButton}
+      type="button"
+      onClick={closeFull}
+      aria-label="Close full screen"
+      title="Close full screen"
+      className={roundButton}
+    >
+      <ArrowsPointingInIcon aria-hidden className="size-4" />
+    </button>
+  ) : (
+    <button ref={openButton} type="button" onClick={openFull} aria-label="Full screen" title="Full screen" className={roundButton}>
+      <ArrowsPointingOutIcon aria-hidden className="size-4" />
+    </button>
+  );
+
+  // The version a point on the bar stands for.
+  const versionAt = (e: React.PointerEvent<HTMLElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const f = (e.clientX - r.left - THUMB) / (r.width - THUMB * 2);
+    return Math.max(0, Math.min(last, Math.round(f * last)));
+  };
+  // Named under the bar: the version being dragged to or pointed at, or the
+  // one showing while the bar has keyboard focus.
+  const named = dragging ? index : (hoverAt ?? (focused ? index : null));
+
+  const bar = (
+    <div className="relative min-w-0 flex-1">
+      <input
+        type="range"
+        min={0}
+        max={last}
+        step={1}
+        value={index}
+        onChange={(e) => go(Number(e.target.value))}
+        onPointerDown={() => setDragging(true)}
+        onPointerMove={(e) => e.pointerType === "mouse" && setHoverAt(versionAt(e))}
+        onPointerLeave={() => setHoverAt(null)}
+        onFocus={(e) => setFocused(e.currentTarget.matches(":focus-visible"))}
+        onBlur={() => setFocused(false)}
+        aria-label="Quick Send iterations"
+        aria-valuetext={label}
+        className="scrubber block w-full"
+        style={{ "--p": `${p * 100}%` } as React.CSSProperties}
+      />
+      {/* One dot per version, and a taller mark where each stage begins. */}
+      <div className="pointer-events-none absolute top-1/2" style={{ left: THUMB, right: THUMB }} aria-hidden>
+        {items.map((_, i) => {
+          if (i === index) return null;
+          const starts = stageStarts.includes(i);
+          return (
+            <span
+              key={i}
+              className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ${
+                starts ? "h-3 w-0.5" : "hidden h-1 w-1 sm:block"
+              } ${i < index ? "bg-white/80" : starts ? "bg-fg/35" : "bg-fg/25"}`}
+              style={{ left: `${(i / last) * 100}%` }}
+            />
+          );
+        })}
+      </div>
+      {/* The version under the pointer, named below the bar so nothing covers the screen. */}
+      <div className="pointer-events-none absolute inset-x-0 top-full hidden h-5 md:block" aria-hidden>
+        {named !== null && (
+          <p
+            className="absolute top-0.5 text-xs whitespace-nowrap"
+            style={{
+              left: `calc(${THUMB}px + ${named / Math.max(1, last)} * (100% - ${THUMB * 2}px))`,
+              transform: `translateX(-${(named / Math.max(1, last)) * 100}%)`,
+            }}
+          >
+            <span className="font-medium tabular-nums">{named === last ? "Final" : `v${named + 1}`}</span>
+            {items[named].stage && named !== last && <span className="text-muted"> · {items[named].stage}</span>}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+
+  const prototypeCard = prototype && (
+    <div key={index} className="prompt-in rounded-2xl border border-line bg-raised p-5">
+      <div className="flex items-start justify-between gap-3">
+        <p className="eyebrow">{index === last ? "The final design" : `Version ${index + 1}`}</p>
+        <button
+          type="button"
+          onClick={() => setClosedPrompts((s) => new Set([...s, index]))}
+          aria-label="Dismiss"
+          className="-mt-1 -mr-1 rounded-full p-1 text-muted hover:text-fg"
+        >
+          <XMarkIcon aria-hidden className="size-4" />
+        </button>
+      </div>
+      <p className="mt-2 text-lg font-semibold">{prototype.title ?? "Try the prototype"}</p>
+      <p className="mt-1 text-sm leading-relaxed text-muted">{prototype.body}</p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {prototype.links.map((link, i) => (
+          <a
+            key={link.url}
+            href={link.url}
+            {...(link.url.startsWith("#")
+              ? {
+                  onClick: (e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (full) closeFull();
+                    requestAnimationFrame(() => document.querySelector(link.url)?.scrollIntoView({ behavior: "smooth" }));
+                  },
+                }
+              : { target: "_blank", rel: "noreferrer" })}
+            className={`inline-flex rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              i === 0 ? "bg-accent text-on-accent hover:opacity-90" : "border border-line hover:border-accent"
+            }`}
+          >
+            {link.label} {link.url.startsWith("#") ? "↓" : "↗"}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Everything that's words: the version, what changed, the feedback, and a
+  // note for each pin, numbered to match.
+  const words = (
+    <motion.div
+      key={index}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+      className="space-y-6"
+    >
+      <div>
+        <p className="flex items-baseline gap-2 tabular-nums">
+          <span className="text-4xl font-bold tracking-tight lg:text-5xl">{String(index + 1).padStart(2, "0")}</span>
+          <span className="text-muted">/ {items.length}</span>
+        </p>
+        <p className={`mt-1.5 text-sm font-medium ${item.stage ? "text-accent-ink" : "text-muted italic"}`}>
+          {index === last ? "The final design" : (item.stage ?? prompts.stage)}
+        </p>
+      </div>
+
+      <dl className="space-y-4 leading-relaxed">
+        <div>
+          <dt className="eyebrow">What changed</dt>
+          <dd className={`mt-1.5 ${item.change ? "" : "text-muted italic"}`}>{item.change ?? prompts.change}</dd>
+        </div>
+        <div>
+          <dt className="eyebrow">The feedback</dt>
+          <dd className={`mt-1.5 text-fg/80 ${item.feedback ? "" : "text-muted italic"}`}>{item.feedback ?? prompts.feedback}</dd>
+        </div>
+      </dl>
+
+      {pins.length > 0 && (
+        <div>
+          <p className="eyebrow">On the screen</p>
+          <ol className="mt-2 -mx-2.5 space-y-0.5">
+            {pins.map((pin, i) => (
+              <li
+                key={i}
+                onPointerEnter={(e) => e.pointerType === "mouse" && setActivePin(i)}
+                onPointerLeave={(e) => e.pointerType === "mouse" && setActivePin(null)}
+                className={`flex gap-3 rounded-xl px-2.5 py-2 text-sm leading-relaxed transition-colors ${
+                  activePin === i ? "bg-accent-soft" : ""
+                }`}
+              >
+                <span
+                  aria-hidden
+                  className={`mt-px flex size-6 shrink-0 items-center justify-center rounded-full rounded-bl-none bg-accent text-xs font-semibold text-on-accent transition-shadow ${
+                    activePin === i ? "ring-4 ring-accent/30" : ""
+                  }`}
+                >
+                  {i + 1}
+                </span>
+                <span>{pin.note}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+    </motion.div>
+  );
+
+  // The screen, with its numbered pins.
+  const screen = (
+    <div
+      className="relative isolate touch-pan-y overflow-hidden rounded-2xl border border-line bg-raised select-none md:rounded-3xl"
+      style={{ aspectRatio: `${ratio}` }}
+      {...swipeHandlers}
+    >
+      {items.map((it, i) =>
+        seen.has(i) && it.image.src ? (
+          <Image
+            key={i}
+            src={it.image.src}
+            alt={i === index ? it.image.alt : ""}
+            aria-hidden={i !== index}
+            fill
+            draggable={false}
+            sizes={full ? "(min-width: 1024px) 80vw, 100vw" : "(min-width: 1024px) 65vw, 100vw"}
+            priority={i === 0}
+            className={`object-cover object-top ${
+              i === index ? "z-10 opacity-100 transition-opacity duration-300" : i === prev ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ) : null,
+      )}
+
+      {/* A version whose screen hasn't been added yet. */}
+      {!item.image.src && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-raised bg-[radial-gradient(var(--line)_1px,transparent_1px)] [background-size:16px_16px]">
+          <span className="eyebrow rounded-full border border-line bg-bg px-3 py-1.5">Screen coming soon</span>
+        </div>
+      )}
+
+      {/* Numbered pins, like Figma's comments, marking where this version changed. Their notes are beside the screen. */}
+      <div key={index} className="pin-layer absolute inset-0 z-20">
+        {pins.map((pin, i) => {
+          const lit = activePin === i;
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => {
+                setActivePin(i);
+                setPickedPin(i);
+              }}
+              onPointerEnter={(e) => e.pointerType === "mouse" && setActivePin(i)}
+              onPointerLeave={(e) => e.pointerType === "mouse" && setActivePin(null)}
+              onFocus={() => setActivePin(i)}
+              onBlur={() => {
+                setActivePin(null);
+                setPickedPin(null);
+              }}
+              aria-label={`Change ${i + 1}: ${pin.note}`}
+              className={`pin-bubble absolute flex h-7 w-7 -translate-y-full items-center justify-center rounded-full rounded-bl-none border-2 border-white text-xs font-semibold text-on-accent shadow-lg transition-[transform,opacity,box-shadow] md:h-8 md:w-8 md:text-sm bg-accent ${
+                lit ? "z-10 scale-115 ring-4 ring-accent/40" : activePin !== null ? "opacity-50" : ""
+              }`}
+              // Kept far enough in that a pin by the edge isn't cut off.
+              style={{ left: `min(${pin.x}%, 100% - 2.5rem)`, top: `max(${pin.y}%, 2.5rem)`, transformOrigin: "bottom left" }}
+            >
+              {i + 1}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const controls = (
+    <div className="flex items-center gap-2 sm:gap-3">
+      {playButton}
+      {arrow(-1)}
+      {bar}
+      {arrow(1)}
+      {fullButton}
+    </div>
+  );
 
   const scrubber = (
     <div
-      className="flex items-center justify-center gap-3 lg:gap-5"
-      onPointerMove={(e) => e.pointerType === "mouse" && hush(4000)}
+      ref={rootRef}
+      className={`overscroll-x-contain lg:grid lg:items-start ${
+        full
+          ? "lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-10"
+          : // On the left, the words line up with the rest of the page, clear of the section list in the margin.
+            "lg:grid-cols-[minmax(0,5fr)_minmax(0,9fr)] lg:gap-10 lg:pl-4 xl:gap-14 xl:pl-[calc((100%-1280px)/2+40px)] xl:[.has-toc_&]:pl-[max(200px,calc((100%-1280px)/2+40px))]"
+      }`}
+      onPointerEnter={(e) => e.pointerType === "mouse" && setOver(true)}
+      onPointerLeave={() => setOver(false)}
       onPointerDownCapture={() => hush(IDLE)}
       onKeyDownCapture={() => hush(IDLE)}
+      onKeyDown={(e) => {
+        // The arrow keys step through versions from any button here too; the bar handles its own.
+        if ((e.key !== "ArrowLeft" && e.key !== "ArrowRight") || (e.target as HTMLElement).tagName !== "BUTTON") return;
+        e.preventDefault();
+        go(index + (e.key === "ArrowLeft" ? -1 : 1));
+      }}
     >
-      {arrow(-1, "hidden md:flex")}
-
-      <div className="min-w-0 shrink" style={{ width: `calc((100dvh - ${reserved}) * ${ratio})` }}>
-        <div className="relative">
-          <div
-            className="relative isolate overflow-hidden rounded-2xl border border-line bg-raised md:rounded-3xl"
-            style={{ aspectRatio: `${ratio}` }}
-            onClick={() => setOpenPin(null)}
-          >
-            {items.map((it, i) =>
-              seen.has(i) && it.image.src ? (
-                <Image
-                  key={i}
-                  src={it.image.src}
-                  alt={i === index ? it.image.alt : ""}
-                  aria-hidden={i !== index}
-                  fill
-                  sizes="(min-width: 1280px) 1600px, 100vw"
-                  priority={i === 0}
-                  className={`object-cover object-top ${
-                    i === index ? "z-10 opacity-100 transition-opacity duration-300" : i === prev ? "opacity-100" : "opacity-0"
-                  }`}
-                />
-              ) : null,
-            )}
-
-            {/* A version whose screen hasn't been added yet. */}
-            {!item.image.src && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-raised bg-[radial-gradient(var(--line)_1px,transparent_1px)] [background-size:16px_16px]">
-                <span className="eyebrow rounded-full border border-line bg-bg px-3 py-1.5">Screen coming soon</span>
-              </div>
-            )}
-
-            {/* Comment pins, like Figma's, marking where this version changed. */}
-            <div key={index} className="pin-layer absolute inset-0 z-20">
-              {item.pins?.map((pin, i) => {
-                const open = openPin === i;
-                return (
-                  <div
-                    key={i}
-                    className={`absolute ${open ? "z-10" : ""}`}
-                    style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
-                  >
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenPin(open ? null : i);
-                      }}
-                      aria-expanded={open}
-                      aria-label={`Change ${i + 1}: ${pin.note}`}
-                      className={`pin-bubble absolute bottom-0 left-0 flex h-7 w-7 items-center justify-center rounded-full rounded-bl-none border-2 border-white text-xs font-semibold text-on-accent shadow-lg transition-transform hover:scale-110 md:h-8 md:w-8 md:text-sm ${
-                        open ? "bg-accent ring-4 ring-accent/40" : "bg-accent"
-                      }`}
-                    >
-                      {i + 1}
-                    </button>
-                    {open && (
-                      <p
-                        role="note"
-                        onClick={(e) => e.stopPropagation()}
-                        className={`absolute w-56 rounded-xl border border-line bg-bg p-3 text-xs leading-relaxed shadow-xl md:w-64 md:text-sm ${
-                          pin.x > 55 ? "right-0" : "left-0"
-                        } ${pin.y > 55 ? "bottom-9 md:bottom-10" : "top-2"}`}
-                      >
-                        {pin.note}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Versions with a prototype invite people to click through them. */}
-          {prototypeCard("hidden md:absolute md:right-4 md:bottom-4 md:z-30 md:block md:w-72")}
-        </div>
-
-        <div className="mt-4 flex items-center gap-3">
-          {arrow(-1, "flex md:hidden")}
-          <button
-            type="button"
-            onClick={() => {
-              setAuto(!auto);
-              quietUntil.current = 0;
-              setTick((n) => n + 1);
-            }}
-            aria-pressed={auto}
-            aria-label={auto ? "Stop playing through versions" : "Play through versions"}
-            title={auto ? "Stop autoplay" : "Autoplay"}
-            className={`${roundButton} relative flex`}
-          >
-            {auto ? (
-              <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
-                <rect x="3" y="2" width="3.5" height="12" rx="1" />
-                <rect x="9.5" y="2" width="3.5" height="12" rx="1" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 16 16" className="ml-0.5 h-3.5 w-3.5" fill="currentColor" aria-hidden>
-                <path d="M4 2.5v11a1 1 0 0 0 1.5.86l9-5.5a1 1 0 0 0 0-1.72l-9-5.5A1 1 0 0 0 4 2.5Z" />
-              </svg>
-            )}
-            {/* A ring that fills while it waits to move on. */}
-            {counting && (
-              <svg key={`${index}-${tick}`} viewBox="0 0 40 40" className="absolute -inset-px -rotate-90" aria-hidden>
-                <circle
-                  cx="20"
-                  cy="20"
-                  r="19"
-                  fill="none"
-                  stroke="var(--accent)"
-                  strokeWidth="2"
-                  pathLength={1}
-                  strokeDasharray="1"
-                  className="autoplay-ring"
-                  style={{ animationDuration: `${step}ms` }}
-                />
-              </svg>
-            )}
-          </button>
-          <p className="hidden shrink-0 text-sm text-muted tabular-nums md:block" aria-live={auto ? "off" : "polite"}>
-            <span className="sr-only">{label}</span>
-            <span aria-hidden>
-              <span className="text-fg">{index + 1}</span> / {items.length}
-            </span>
-          </p>
-          <div className="relative flex-1" onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
-            {/* The pop-up above the handle. It slides from hanging right to hanging left so it never leaves the bar. */}
-            <div
-              className={`pointer-events-none absolute bottom-full z-40 mb-4 hidden w-96 transition-opacity duration-150 md:block ${
-                showPopup ? "opacity-100" : "opacity-0"
-              }`}
-              style={{ left: `calc(${p} * (100% - 24px) + 12px)`, transform: `translateX(-${p * 100}%)` }}
-              aria-hidden
-            >
-              <div className="rounded-2xl border border-line bg-bg p-5 shadow-xl">
-                <p className={`text-xs ${item.stage ? "text-accent-ink" : "text-muted italic"}`}>{item.stage ?? prompts.stage}</p>
-                <p className="mt-1 font-semibold">{label}</p>
-                <div className="mt-4">{details}</div>
-              </div>
-            </div>
-
-            <input
-              type="range"
-              min={0}
-              max={last}
-              step={1}
-              value={index}
-              onChange={(e) => go(Number(e.target.value))}
-              onPointerDown={() => setDragging(true)}
-              onFocus={(e) => setFocused(e.currentTarget.matches(":focus-visible"))}
-              onBlur={() => setFocused(false)}
-              aria-label="Quick Send iterations"
-              aria-valuetext={label}
-              className="scrubber block w-full"
-              style={{ "--p": `${p * 100}%` } as React.CSSProperties}
-            />
-            {/* One dot per version, on the track itself so it costs no height. */}
-            <div className="pointer-events-none absolute inset-x-[12px] top-1/2 hidden -translate-y-1/2 md:block" aria-hidden>
-              {items.map((_, i) =>
-                i === index ? null : (
-                  <span
-                    key={i}
-                    className={`absolute top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full ${
-                      i < index ? "bg-white/70" : "bg-fg/30"
-                    }`}
-                    style={{ left: `${(i / last) * 100}%` }}
-                  />
-                ),
-              )}
-            </div>
-          </div>
-          {arrow(1, "flex md:hidden")}
-          {full ? (
-            <button
-              ref={closeButton}
-              type="button"
-              onClick={closeFull}
-              aria-label="Close full screen"
-              title="Close full screen"
-              className={`${roundButton} flex`}
-            >
-              <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-                <path d="M2 6h4V2M14 6h-4V2M2 10h4v4M14 10h-4v4" />
-              </svg>
-            </button>
-          ) : (
-            <button ref={openButton} type="button" onClick={openFull} aria-label="Full screen" title="Full screen" className={`${roundButton} flex`}>
-              <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-                <path d="M6 2H2v4M10 2h4v4M6 14H2v-4M10 14h4v-4" />
-              </svg>
-            </button>
+      {/* The screen and the scrubber. On wide screens they hold still while you read beside them. */}
+      <div
+        className={`lg:col-start-2 lg:row-start-1 ${full ? "" : "lg:sticky lg:top-[124px] xl:top-[88px]"}`}
+      >
+        <div
+          className="mx-auto max-w-full lg:mx-0"
+          style={{ width: `calc((100dvh - ${full ? "8rem" : "12rem"}) * ${ratio})` }}
+        >
+          {screen}
+          {pickedPin !== null && pins[pickedPin] && (
+            <p role="note" className="mt-3 flex gap-3 rounded-2xl bg-accent-soft px-3 py-2.5 text-sm leading-relaxed lg:hidden">
+              <span
+                aria-hidden
+                className="mt-px flex size-6 shrink-0 items-center justify-center rounded-full rounded-bl-none bg-accent text-xs font-semibold text-on-accent"
+              >
+                {pickedPin + 1}
+              </span>
+              <span>{pins[pickedPin].note}</span>
+            </p>
           )}
-        </div>
-
-        {prototypeCard("mt-4 md:hidden")}
-
-        {/* On small screens, which can't hover, the details sit below the bar. */}
-        <div className="mt-4 rounded-2xl border border-line bg-raised p-5 md:hidden">
-          <p className="text-xs">
-            <span className="text-muted tabular-nums">{version}</span>
-            <span className={item.stage ? "text-accent-ink" : "text-muted italic"}> · {item.stage ?? prompts.stage}</span>
-          </p>
-          <div className="mt-4">{details}</div>
+          <div className="mt-4 md:mb-5">{controls}</div>
         </div>
       </div>
 
-      {arrow(1, "hidden md:flex")}
+      <div className={`mt-6 lg:col-start-1 lg:row-start-1 lg:mt-0 ${full ? "lg:max-h-[calc(100dvh-5rem)] lg:overflow-y-auto" : ""}`}>
+        <div className="rounded-3xl border border-line bg-raised p-5 sm:p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-1">
+          {words}
+        </div>
+        {prototypeCard && <div className="mt-4 lg:mt-8">{prototypeCard}</div>}
+      </div>
+
+      <p className="sr-only" aria-live={auto ? "off" : "polite"}>
+        {label}
+      </p>
     </div>
   );
 
@@ -504,10 +657,11 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
           onClick={closeFull}
         >
           <div
-            className="flex flex-1 flex-col justify-center overflow-y-auto rounded-3xl border border-line bg-bg p-3 shadow-2xl md:p-4"
+            className="flex flex-1 flex-col overflow-y-auto rounded-3xl border border-line bg-bg p-4 shadow-2xl md:p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            {scrubber}
+            {/* Centred with auto margins, so a tall scrubber on a phone still scrolls from its top. */}
+            <div className="my-auto">{scrubber}</div>
           </div>
         </div>,
         document.body,
