@@ -19,6 +19,7 @@ import { BriefPreview } from "./Brief";
 import { HeroPrototype } from "./HeroPrototype";
 import { DecisionLoop } from "./DecisionLoop";
 import { Voices } from "./Voices";
+import { Testing } from "./Testing";
 import { Deeper, useInPanel } from "./Deeper";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
@@ -167,6 +168,18 @@ function BlockView({
           <More d={b.deeper} name={name} />
         </Section>
       );
+    case "testing":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <Testing b={b} />
+        </Section>
+      );
     case "image":
       return (
         <Section>
@@ -228,8 +241,8 @@ function BlockView({
               )}
             </div>
           )}
-          <div className={b.surface ? `container-x ${b.heading ? "mt-12" : ""}` : "mx-auto mt-12 max-w-[1440px] px-3 md:px-6"}>
-            <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} surface={b.surface} />
+          <div className={b.surface || b.lifted ? `container-x ${b.heading ? "mt-12" : ""}` : "mx-auto mt-12 max-w-[1440px] px-3 md:px-6"}>
+            <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} surface={b.surface} lifted={b.lifted} />
           </div>
           {b.principle && (
             <Reveal className="container-x mt-20 grid gap-8 md:mt-28 md:grid-cols-12 md:gap-12">
@@ -810,42 +823,49 @@ function BlockView({
             </Reveal>
           )}
           <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {b.items.map((it, i) => (
-              <Reveal key={it.version} delay={0.06 * i} className="h-full">
-                <li className="flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised">
-                  {it.image.src && (
-                    <div className="relative aspect-[2000/1425] border-b border-line bg-bg">
-                      <Image
-                        src={it.image.src}
-                        alt={it.image.alt}
-                        fill
-                        sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover object-top"
-                      />
+            {b.items.map((it, i) => {
+              const links = it.links.map((l, j) => (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium shadow-lg transition-transform hover:scale-[1.04] ${
+                    j === 0 ? "bg-fg text-bg" : "bg-bg text-fg"
+                  }`}
+                >
+                  {it.links.length > 1 ? l.label : "Open the prototype"}
+                  <ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
+                </a>
+              ));
+              return (
+                <Reveal key={it.version} delay={0.06 * i} className="h-full">
+                  {/* The card lifts on hover and its buttons appear over the screen. Touch screens show them below. */}
+                  <li className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-24px_rgba(20,20,60,0.4)] focus-within:-translate-y-1.5">
+                    {it.image.src && (
+                      <div className="relative aspect-[2000/1425] border-b border-line bg-bg">
+                        <Image
+                          src={it.image.src}
+                          alt={it.image.alt}
+                          fill
+                          sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+                          className="object-cover object-top"
+                        />
+                        <div className="absolute inset-0 hidden flex-col items-center justify-center gap-2 bg-bg/40 opacity-0 backdrop-blur-md transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:hover)]:flex">
+                          {links}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex flex-1 flex-col p-5">
+                      <span className="font-mono text-xs text-accent-ink">Version {it.version}</span>
+                      <h3 className="mt-2 text-lg leading-snug font-semibold">{it.title}</h3>
+                      <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{it.body}</p>
+                      <div className="mt-auto flex flex-wrap gap-2 pt-5 [@media(hover:hover)]:hidden">{links}</div>
                     </div>
-                  )}
-                  <div className="flex flex-1 flex-col p-6">
-                    <span className="font-mono text-sm text-accent-ink">Version {it.version}</span>
-                    <h3 className="mt-3 text-xl leading-snug font-semibold">{it.title}</h3>
-                    <p className="mt-2 leading-relaxed text-muted">{it.body}</p>
-                    <div className="mt-auto flex flex-wrap gap-2 pt-6">
-                      {it.links.map((l) => (
-                        <a
-                          key={l.url}
-                          href={l.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]"
-                        >
-                          {it.links.length > 1 ? l.label : "Open the prototype"}
-                          <ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </li>
-              </Reveal>
-            ))}
+                  </li>
+                </Reveal>
+              );
+            })}
           </ol>
           {b.note && (
             <Reveal>

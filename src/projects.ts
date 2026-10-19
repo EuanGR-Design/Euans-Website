@@ -122,6 +122,9 @@ export type Block =
       // A CSS background for every tile, with the clip inset on it like the
       // hero card.
       surface?: string;
+      // Each clip on its own white card with a shadow, so it stands out from
+      // the page.
+      lifted?: boolean;
       // A prompt under the grid to scroll on into the story.
       cue?: { label: string; href: string };
       // A short principle under the clips, with a quote that backs it up.
@@ -268,8 +271,24 @@ export type Block =
       sections: { label: string; body?: string; items?: { title: string; body: string; icon?: IconName }[] }[];
       // A CSS background for the panel the preview sits on.
       surface?: string;
+      // Said under the preview and above the full brief, when the sheet is
+      // a stand-in for a brief that can't be shown.
+      recreation?: string;
       notes?: Notes;
       deeper?: Deeper;
+    }
+  // How a design was tested: one round as a loop of steps, then every
+  // version as a small screen, grouped by how it was put in front of people.
+  // `marked` versions get a badge, such as the clickable prototypes.
+  | {
+      type: "testing";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      cycle: { icon: IconName; title: string; body: string }[];
+      repeat: string;
+      bands: { label: string; title: string; body: string; screens: { version: number; image: Img; marked?: boolean }[] }[];
+      mark?: string;
     }
   // The ending: big statements of what changed, then any numbers.
   | {
@@ -351,13 +370,15 @@ export type Project = {
   // Buttons beside the role line, such as a prototype to try or a video to
   // watch. A link starting with # jumps down the page; others open a new tab.
   // `play` marks the prototype link, which plays it in the hero on desktop.
-  actions?: { label: string; href: string; icon: IconName; play?: boolean }[];
+  // `card` shows it as a small picture of the hero beside the title, with a
+  // drawn arrow and the label, instead of a button.
+  actions?: { label: string; href: string; icon: IconName; play?: boolean; card?: boolean }[];
   // A prototype to play inside the hero image's browser window. `screen` is
   // the window's content area in the image's pixels: x, y, width, height.
   play?: { url: string; width: number; screen: [number, number, number, number] };
-  // A short silent loop of the finished product, playing in the hero image's
-  // browser window. `screen` is as for `play`.
-  heroLoop?: { src: string; poster: string; label: string; screen: [number, number, number, number] };
+  // A short silent loop of the finished product, playing in a browser window
+  // on the hero's blue panel, sized to the recording.
+  heroLoop?: { src: string; poster: string; label: string };
   context?: { label: string; value: string }[];
   impact?: { value: string; label: string }[];
   // Which project to suggest next, and why. Defaults to the next in the list.
@@ -535,12 +556,11 @@ export const projects: Project[] = [
       "I designed one focused flow that cuts trial bounce and gets new users sending, first time.",
     roleStatement:
       "As the sole designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
-    actions: [{ label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays", play: true }],
+    actions: [{ label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays", play: true, card: true }],
     heroLoop: {
       src: "/work/quick-send/hero-loop.mp4",
       poster: "/work/quick-send/hero-loop-poster.jpg",
       label: "Quick Send sped up, from the dashboard through upload, recipients and fields to sent",
-      screen: [398, 359, 1603, 1057],
     },
     context: [
       { label: "Company", value: "Legalesign, in-house" },
@@ -556,16 +576,16 @@ export const projects: Project[] = [
         eyebrow: "The problem",
         heading: "Sending a document was harder than it should be.",
         body: "Most trials ended before a first send. Feedback, interviews, user testing and session recordings all pointed at the send flow, and at trial and new users. This is what they told us.",
-        // Placeholders based on what users said, to be swapped for real quotes.
+        // Paraphrased from what users said again and again.
         items: [
           { quote: "I just wanted to send a document.", need: "One flow from upload to Send, with a clear start and end." },
-          { quote: "I clicked Send and there was nothing there.", need: "Send to start the flow, not open an empty template picker." },
+          { quote: "Where do I even start sending?", need: "Send to start the flow, not lead to a dead end until they'd made a template." },
           { quote: "Why do I have to make a template first?", need: "To send without one, then reuse the document or people next time." },
-          { quote: "I don't want the whole team seeing this.", need: "One-off sends kept out of the shared library." },
-          { quote: "Where did my document go after I uploaded it?", need: "To land straight in the send flow, not somewhere to go and find it." },
-          { quote: "There's so much on this screen, I don't know where to start.", need: "Only what the step they're on needs, with everything else a click away." },
-          { quote: "Can I send it to more than one person?", need: "Several recipients at once, each clear on screen in their own colour." },
-          { quote: "I wasn't sure if it had actually sent.", need: "A clear end: who it went to, and what happens next." },
+          { quote: "Where did my document go after I uploaded it?", need: "A clear next step after upload, straight into the send flow." },
+          { quote: "There's too much going on. Too many options.", need: "Only what the step they're on needs, with everything else a click away." },
+          { quote: "I just need to get this signed quickly.", need: "The shortest path from upload to Send, with nothing in the way." },
+          { quote: "It's a one-off. I don't need it saved.", need: "The document deleted after sending, so nothing private is kept to go to the wrong person later." },
+          { quote: "I don't want my team using or editing my templates.", need: "One-off sends kept out of the shared library, so the team's templates stay the right ones." },
         ],
         deeper: {
           label: "the research",
@@ -631,9 +651,10 @@ export const projects: Project[] = [
         surface: quickSendBlue,
         heading: "Get a new user from sign‑up to a sent document in their first session.",
         body: "As the product owner, I gathered the evidence and wrote the brief. Then I switched hats to design it.",
+        recreation: "A simplified recreation of the brief. The original stayed with Legalesign.",
         notes: [
-          { icon: "QueueList", title: "Opportunities in the backlog", body: "I worked through the backlog to find where one piece of work could solve several problems." },
-          { icon: "DocumentText", title: "Scope", body: "I defined what Quick Send would and wouldn't do." },
+          { icon: "QueueList", title: "Insights from every direction", body: "Hotjar recordings, my clips of pain points, user interviews, and what sales and support heard. It all fed the insights, and the insights fed the opportunity." },
+          { icon: "UserGroup", title: "Scope, set together", body: "I defined what Quick Send would and wouldn't do with sales, engineering and leadership." },
         ],
         title: "Quick Send",
         meta: [
@@ -707,7 +728,7 @@ export const projects: Project[] = [
         eyebrow: "Up close",
         heading: "The details that make it feel finished.",
         bare: true,
-        surface: quickSendBlue,
+        lifted: true,
         principle: {
           eyebrow: "How I work",
           heading: "The fine details, and the big picture.",

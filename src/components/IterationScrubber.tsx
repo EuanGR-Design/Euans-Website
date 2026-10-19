@@ -273,6 +273,12 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
   const pins = item.pins ?? [];
   // Where each stage starts, marked on the bar.
   const stageStarts = items.flatMap((it, i) => (i > 0 && it.stage && it.stage !== items[i - 1].stage ? [i] : []));
+  // Each stage's run of versions, named under the bar so the marks explain themselves.
+  const stages = [0, ...stageStarts].flatMap((start, n, all) => {
+    const end = (all[n + 1] ?? items.length) - 1;
+    const name = items[start].stage;
+    return name ? [{ name, start, end }] : [];
+  });
 
 
   const roundButton =
@@ -371,7 +377,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
         className="scrubber block w-full"
         style={{ "--p": `${p * 100}%` } as React.CSSProperties}
       />
-      {/* One dot per version, and a taller mark where each stage begins. */}
+      {/* One dot per version, and a taller mark where each stage begins, named below. */}
       <div className="pointer-events-none absolute top-1/2" style={{ left: THUMB, right: THUMB }} aria-hidden>
         {items.map((_, i) => {
           if (i === index) return null;
@@ -387,8 +393,27 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
           );
         })}
       </div>
-      {/* The version under the pointer, named below the bar so nothing covers the screen. */}
+      {/* The stages, or the version under the pointer, named below the bar so nothing covers the screen. */}
       <div className="pointer-events-none absolute inset-x-0 top-full hidden h-5 md:block" aria-hidden>
+        {named === null &&
+          stages.map((st, n) => {
+            const at = (st.start + st.end) / 2 / Math.max(1, last);
+            // The first and last names sit inside the bar's ends.
+            const shift = n === 0 ? 0 : n === stages.length - 1 ? 100 : 50;
+            const on = index >= st.start && index <= st.end;
+            return (
+              <p
+                key={st.name}
+                className={`absolute top-0.5 text-xs whitespace-nowrap transition-colors ${on ? "font-medium text-fg" : "text-muted"}`}
+                style={{
+                  left: n === 0 ? THUMB : n === stages.length - 1 ? `calc(100% - ${THUMB}px)` : `calc(${THUMB}px + ${at} * (100% - ${THUMB * 2}px))`,
+                  transform: `translateX(-${shift}%)`,
+                }}
+              >
+                {st.start === last ? "Final" : st.name}
+              </p>
+            );
+          })}
         {named !== null && (
           <p
             className="absolute top-0.5 text-xs whitespace-nowrap"
@@ -589,7 +614,7 @@ export function IterationScrubber({ items }: { items: Iteration[] }) {
         full
           ? "lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-10"
           : // On the left, the words line up with the rest of the page, clear of the section list in the margin.
-            "lg:grid-cols-[minmax(0,5fr)_minmax(0,9fr)] lg:gap-10 lg:pl-4 xl:gap-14 xl:pl-[calc((100%-1280px)/2+40px)] xl:[.has-toc_&]:pl-[max(200px,calc((100%-1280px)/2+40px))]"
+            "lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:pl-4 xl:gap-14 xl:pl-[calc((100%-1280px)/2+40px)] xl:[.has-toc_&]:pl-[max(200px,calc((100%-1280px)/2+40px))]"
       }`}
       onPointerEnter={(e) => e.pointerType === "mouse" && setOver(true)}
       onPointerLeave={() => setOver(false)}

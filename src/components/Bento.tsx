@@ -19,17 +19,20 @@ const spans: Record<BentoTile["span"], string> = {
  * One long recording, then a grid of short looping clips. `bare` shows the
  * clips alone, with no captions or play buttons. `surface` paints every tile
  * with the same background and insets its clip on it, like the hero card.
+ * `lifted` puts each clip on its own white card with a shadow instead.
  */
 export function Bento({
   feature,
   tiles,
   bare,
   surface,
+  lifted,
 }: {
   feature?: Feature;
   tiles: BentoTile[];
   bare?: boolean;
   surface?: string;
+  lifted?: boolean;
 }) {
   return (
     <div className="space-y-4">
@@ -41,13 +44,17 @@ export function Bento({
           <Caption title={feature.title} caption={feature.caption} />
         </Reveal>
       )}
-      <div className={`grid md:grid-cols-2 lg:grid-cols-3 ${surface ? "gap-5 md:gap-6" : "gap-4"}`}>
+      <div className={`grid md:grid-cols-2 lg:grid-cols-3 ${surface || lifted ? "gap-5 md:gap-6" : "gap-4"}`}>
         {tiles.map((t, i) => (
           <Reveal
             key={t.title}
             delay={0.05 * (i % 3)}
             className={`group/tile relative flex flex-col overflow-hidden ${
-              surface ? "rounded-[1.75rem] p-4 md:rounded-panel md:p-6" : "rounded-3xl border border-line bg-raised"
+              surface
+                ? "rounded-[1.75rem] p-4 md:rounded-panel md:p-6"
+                : lifted
+                  ? "rounded-[1.75rem] bg-white shadow-[0_24px_50px_-22px_rgba(20,20,60,0.35)] ring-1 ring-black/5"
+                  : "rounded-3xl border border-line bg-raised"
             } ${spans[t.span]}`}
             style={surface ? { background: surface } : undefined}
           >

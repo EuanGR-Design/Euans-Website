@@ -1,5 +1,6 @@
 import {
   AdjustmentsHorizontalIcon,
+  ArrowPathIcon,
   ArrowLongRightIcon,
   ArrowTrendingDownIcon,
   ArrowUturnLeftIcon,
@@ -18,6 +19,7 @@ import {
   MagnifyingGlassIcon,
   NumberedListIcon,
   PaperAirplaneIcon,
+  PencilSquareIcon,
   PlayIcon,
   PuzzlePieceIcon,
   QueueListIcon,
@@ -50,6 +52,7 @@ function ArrowsSplitIcon(props: React.ComponentProps<"svg">) {
 const icons = {
   AdjustmentsHorizontal: AdjustmentsHorizontalIcon,
   ArrowLongRight: ArrowLongRightIcon,
+  ArrowPath: ArrowPathIcon,
   ArrowsSplit: ArrowsSplitIcon,
   ArrowTrendingDown: ArrowTrendingDownIcon,
   ArrowUturnLeft: ArrowUturnLeftIcon,
@@ -68,6 +71,7 @@ const icons = {
   MagnifyingGlass: MagnifyingGlassIcon,
   NumberedList: NumberedListIcon,
   PaperAirplane: PaperAirplaneIcon,
+  PencilSquare: PencilSquareIcon,
   Play: PlayIcon,
   PuzzlePiece: PuzzlePieceIcon,
   QueueList: QueueListIcon,

@@ -10,6 +10,9 @@ import { Icon } from "@/components/Icon";
 import { HeroPrototype, PlayLink } from "@/components/HeroPrototype";
 import { LoopVideo } from "@/components/LoopVideo";
 import { ArrowUpRightIcon } from "@heroicons/react/20/solid";
+import { basePath } from "@/lib/basePath";
+
+const titleClass = "mt-4 text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.04em]";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -53,12 +56,11 @@ export default async function ProjectPage({ params }: Props) {
             {era?.label}
             {p.year && ` · ${p.year}`}
           </p>
-          <h1 className="mt-4 text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.04em]">
-            {p.title}
-          </h1>
           {p.statement ? (
             <StoryHeader p={p} />
           ) : (
+          <>
+          <h1 className={titleClass}>{p.title}</h1>
           <div className="mt-8 grid gap-10 md:grid-cols-12">
             <p className="text-lg leading-relaxed text-fg/80 md:col-span-7 md:text-xl">{p.intro}</p>
             <dl className="grid grid-cols-2 gap-6 text-sm md:col-span-4 md:col-start-9 md:grid-cols-1">
@@ -84,6 +86,7 @@ export default async function ProjectPage({ params }: Props) {
               </div>
             </dl>
           </div>
+          </>
           )}
         </div>
         {hero?.src && (
@@ -95,7 +98,7 @@ export default async function ProjectPage({ params }: Props) {
               style={{ aspectRatio: `${hero.w} / ${hero.h}` }}
             >
               <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
-              {p.heroLoop && <HeroLoop loop={p.heroLoop} image={hero} />}
+              {p.heroLoop && <HeroLoop loop={p.heroLoop} />}
               {p.play && <HeroPrototype play={p.play} image={hero} title={p.title} />}
             </div>
             {p.scrollCue && (
@@ -160,19 +163,54 @@ export default async function ProjectPage({ params }: Props) {
 }
 
 /**
- * The finished product playing in the hero image's browser window. The
- * recording is wider than the window, so it sits at the top and the app's
- * own background fills the rest.
+ * The finished product playing in a browser window on the hero's blue panel,
+ * laid out like Euan's video template. The window is sized to the recording,
+ * so it fills the window with no gap, and takes most of the panel's width.
  */
-function HeroLoop({ loop, image }: { loop: NonNullable<Project["heroLoop"]>; image: { w: number; h: number } }) {
-  const [x, y, w, h] = loop.screen;
-  const pct = (n: number, of: number) => `${(n / of) * 100}%`;
+function HeroLoop({ loop }: { loop: NonNullable<Project["heroLoop"]> }) {
   return (
-    <div
-      className="absolute overflow-hidden bg-[#f6f7f9]"
-      style={{ left: pct(x, image.w), top: pct(y, image.h), width: pct(w, image.w), height: pct(h, image.h), borderRadius: "0 0 2% 2% / 0 0 3% 3%" }}
-    >
-      <LoopVideo src={loop.src} poster={loop.poster} label={loop.label} className="h-full w-full object-contain" objectPosition="top" button={false} />
+    <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #5185ff, #4456f6)" }}>
+      <div className="w-[90%] overflow-hidden rounded-[clamp(8px,1.6vw,20px)] bg-[#f4f5f8] shadow-[0_18px_40px_-10px_rgba(0,0,0,0.3)] ring-2 ring-[#79adfc]">
+        {/* The browser's tab and address bars, from the template. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`${basePath}/work/quick-send/browser-bar.svg`} alt="" width={1440} height={79} className="block h-auto w-full" />
+        <div className="aspect-[1280/714]">
+          <LoopVideo src={loop.src} poster={loop.poster} label={loop.label} className="block h-full w-full object-cover" wrapperClassName="h-full w-full" button={false} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The prototype as a small picture of the hero beside the title, with a
+ * drawn arrow from its label, so the thing to click looks like the thing
+ * you'll get.
+ */
+function PrototypeCard({ action, image }: { action: NonNullable<Project["actions"]>[number]; image: { src: string; w: number; h: number } }) {
+  return (
+    <div className="w-60 shrink-0 lg:w-72">
+      <p className="flex items-end gap-1 pl-1 text-base font-medium text-accent-ink lg:text-lg">
+        {action.label}
+        {/* A loose, hand-drawn arrow down to the card. */}
+        <svg aria-hidden viewBox="0 0 64 48" className="mb-[-1.25rem] h-12 w-16 shrink-0" fill="none" stroke="currentColor" strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 10 C 26 2, 48 10, 50 40" />
+          <path d="M41 33 L 50 41 L 57 31" />
+        </svg>
+      </p>
+      <PlayLink
+        href={action.href}
+        className="group relative mt-6 block overflow-hidden rounded-2xl bg-raised shadow-[0_18px_40px_-18px_rgba(20,20,60,0.45)] ring-1 ring-line transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_28px_50px_-20px_rgba(20,20,60,0.5)]"
+      >
+        <span className="block" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
+          <Image src={image.src} alt="" fill sizes="288px" className="object-cover object-top" />
+        </span>
+        <span className="absolute right-3 bottom-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-white/95 px-3.5 text-sm font-medium text-[#2b3bd6] shadow transition-transform group-hover:scale-105">
+          <Icon name={action.icon} className="size-4" />
+          Play
+        </span>
+        <span className="sr-only">{action.label}</span>
+      </PlayLink>
     </div>
   );
 }
@@ -183,17 +221,26 @@ function HeroLoop({ loop, image }: { loop: NonNullable<Project["heroLoop"]>; ima
  */
 function StoryHeader({ p }: { p: Project }) {
   const role = p.roleStatement ?? p.intro;
+  const hero = projectImage(p);
+  const card = hero?.src ? p.actions?.find((a) => a.card) : undefined;
+  const actions = p.actions?.filter((a) => a !== card);
   return (
     <>
-      <p className="mt-10 max-w-[16em] text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
-        {p.statement}
-      </p>
-      {(role || p.actions) && (
+      <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between md:gap-12">
+        <div className="min-w-0">
+          <h1 className={titleClass}>{p.title}</h1>
+          <p className="mt-10 max-w-[16em] text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
+            {p.statement}
+          </p>
+        </div>
+        {card && hero?.src && <PrototypeCard action={card} image={{ ...hero, src: hero.src }} />}
+      </div>
+      {(role || !!actions?.length) && (
         <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-12">
           {role && <p className="max-w-3xl text-lg leading-relaxed text-fg/75 md:text-xl">{role}</p>}
-          {p.actions && (
+          {!!actions?.length && (
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row md:flex-col">
-              {p.actions.map((a, i) => {
+              {actions.map((a, i) => {
                 const external = !a.href.startsWith("#");
                 const className = `group inline-flex h-12 items-center gap-2.5 rounded-full pr-5 pl-4 font-medium transition-colors ${
                   i === 0 ? "bg-fg text-bg hover:bg-fg/85" : "border border-line hover:border-fg/30"
