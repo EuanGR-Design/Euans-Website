@@ -5,25 +5,18 @@ import { MotionConfig, motion } from "framer-motion";
 import type { DecisionLoopName } from "@/projects";
 import {
   ArrowPathIcon,
-  AtSymbolIcon,
+  ArrowRightIcon,
+  ArrowsRightLeftIcon,
   Bars3BottomLeftIcon,
-  BuildingOfficeIcon,
-  CalendarIcon,
-  CheckCircleIcon,
+  Bars3Icon,
   CheckIcon,
+  ChevronDownIcon,
   ChevronLeftIcon,
-  ChevronUpDownIcon,
-  ClockIcon,
+  ChevronRightIcon,
   Cog6ToothIcon,
-  DocumentPlusIcon,
-  ExclamationTriangleIcon,
-  HashtagIcon,
-  PaperClipIcon,
-  PencilIcon,
-  PlusCircleIcon,
+  DocumentDuplicateIcon,
   PlusIcon,
-  UserGroupIcon,
-  UserIcon,
+  TrashIcon,
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
@@ -35,21 +28,31 @@ export type { DecisionLoopName };
 const W = 480;
 const H = 360;
 
-const INK = "#1d2140";
-const MUTED = "#7a809b";
-const BAR = "#e4e7f0";
-const PRIMARY = "#4556f6";
+// The product's own palette, sampled from the production recordings.
+const INK = "#3e3f46";
+const MUTED = "#757986";
+const BAR = "#e6e8ee";
+const LINE = "#e3e5ec";
+const CANVAS = "#f4f5f8";
+const PRIMARY = "#3949f3";
+const PRIMARY_OFF = "#93bbfa";
+const PRIMARY_SOFT = "#ecf1fe";
+const DANGER = "#f03f3c";
+const SCRIM = "rgba(26,33,96,0.5)";
 const SHADOW = "0 12px 30px -12px rgba(20,20,80,0.45)";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+// Recipient colours, in the order the product hands them out. `fg` is the
+// strong colour (field outlines, icons), `bg` the card wash, `pill` the role
+// label behind `ink` text, `ring` a selected card's outline, `dot` an avatar.
 const TINT = {
-  blue: { fg: "#4f7bff", bg: "#e9efff" },
-  green: { fg: "#2bb673", bg: "#e2f5eb" },
-  yellow: { fg: "#f5b52e", bg: "#fdf2d9" },
-  purple: { fg: "#9b6bff", bg: "#efe8ff" },
+  blue: { fg: "#5277e6", bg: "#eef3fe", pill: "#dae7fe", ink: "#283399", ring: "#9bb6f6", dot: "#98b3f2" },
+  green: { fg: "#2fcf98", bg: "#ebfef7", pill: "#c6f7e4", ink: "#21654d", ring: "#60efba", dot: "#64ecb6" },
+  yellow: { fg: "#eaac19", bg: "#fefaec", pill: "#fdefb8", ink: "#7e3c12", ring: "#f7d554", dot: "#ffdf53" },
+  purple: { fg: "#9a6cf0", bg: "#f5f0ff", pill: "#e7dcff", ink: "#55279e", ring: "#c3a6fb", dot: "#c2a5f7" },
 };
 
-type Icon = typeof PlusIcon;
+type Tint = (typeof TINT)["blue"];
 
 /** One beat of a loop: how long it lasts, and where the cursor is. */
 type Step = { ms: number; cursor?: [number, number]; click?: boolean };
@@ -65,10 +68,10 @@ type Loop = {
 };
 
 /**
- * A small looping animation for one of the Quick Send key decisions: simple
- * white UI on the brand blue, stripped back to the one idea it's making. It
- * only runs while on screen, and shows a single still frame when motion is
- * reduced.
+ * A small looping animation for one of the Quick Send key decisions: the
+ * product's own UI on the brand blue, stripped back to the one idea it's
+ * making. It only runs while on screen, and shows a single still frame when
+ * motion is reduced.
  */
 export function DecisionLoop({ name, className = "" }: { name: DecisionLoopName; className?: string }) {
   const loop = LOOPS[name];
@@ -191,7 +194,7 @@ function Pointer({
       >
         <path
           d="M3 2v17.5l4.6-4.3 2.9 6.6 3-1.3-2.9-6.5h6.3z"
-          fill={INK}
+          fill="#1d2140"
           stroke="white"
           strokeWidth="1.6"
           strokeLinejoin="round"
@@ -210,10 +213,24 @@ function Bar({ w, h = 7, color = BAR, className = "" }: { w: number | string; h?
 function AppWindow({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div
-      className={`absolute overflow-hidden rounded-[14px] bg-[#eff2f8] ${className}`}
-      style={{ left: 24, top: 24, width: 432, height: 312, boxShadow: SHADOW }}
+      className={`absolute overflow-hidden rounded-[14px] ${className}`}
+      style={{ left: 24, top: 24, width: 432, height: 312, background: CANVAS, boxShadow: SHADOW }}
     >
       {children}
+    </div>
+  );
+}
+
+/** The app's header bar: Exit on the left, the breadcrumb in the middle. */
+function AppHeader() {
+  return (
+    <div className="absolute inset-x-0 top-0 flex h-[20px] items-center border-b bg-white px-[8px]" style={{ borderColor: LINE }}>
+      <ChevronLeftIcon className="size-[10px]" style={{ color: MUTED }} />
+      <Bar w={16} h={4} color="#d3d6de" className="ml-[2px]" />
+      <span className="absolute left-1/2 flex -translate-x-1/2 gap-[4px]">
+        <Bar w={58} h={4} color="#c9ccd6" />
+        <Bar w={34} h={4} color="#dfe1e7" />
+      </span>
     </div>
   );
 }
@@ -237,29 +254,269 @@ function Page({ lines = 4 }: { lines?: number }) {
 
 function Sheet({ style, children }: { style: React.CSSProperties; children?: ReactNode }) {
   return (
-    <div className="absolute overflow-hidden rounded-md bg-white shadow-[0_1px_4px_rgba(20,20,80,0.12)]" style={style}>
+    <div className="absolute overflow-hidden rounded-[3px] bg-white shadow-[0_1px_4px_rgba(20,20,80,0.12)]" style={style}>
       {children}
     </div>
   );
 }
 
-/** A field you can place: a tinted icon and its name. */
-function Chip({ icon: I, label, tint = TINT.blue, className = "" }: { icon: Icon; label: string; tint?: { fg: string; bg: string }; className?: string }) {
+/* Field types --------------------------------------------------------------- */
+
+// Only types the product actually has: the three it shows by default, and the
+// others that sit behind More field types.
+type FieldType = "Signature" | "Initials" | "Text" | "Date" | "Auto date" | "Email";
+
+/**
+ * Field-type icons. Placeholders for now: each is one glyph in this map, drawn
+ * on a 16x16 outline grid, so the real icons can be dropped in here without
+ * touching any of the loops.
+ */
+const FIELD_ICONS: Record<FieldType, ReactNode> = {
+  Signature: (
+    <>
+      <path d="M2.5 11.5c1.6-1.4 3.2-4.6 3-6.8-.2-1.6-1.6-.6-1.7 1.6-.2 2.6.4 5.2 1.6 5.2 1 0 1.5-2 2.6-2 .9 0 .4 1.6 1.4 1.6.8 0 1.2-.9 1.8-.9.5 0 .7.6 1.3.6" />
+      <path d="M2.5 14h11" />
+    </>
+  ),
+  Initials: (
+    <>
+      <path d="M2.5 11c1.2-1.2 2.2-3.6 2-5.4-.2-1.3-1.3-.3-1.2 1.4.1 2.2.7 4 1.7 4 .9 0 1.3-2.4 2.4-2.4.8 0 .3 2.4 1.3 2.4 1 0 1.4-4.8 2.6-4.8.9 0 .2 4.8 1.3 4.8" />
+      <path d="M2.5 14h11" />
+    </>
+  ),
+  Text: <path d="M3.5 5V3.5h9V5M8 3.5v9M6.25 12.5h3.5" />,
+  Date: (
+    <>
+      <rect x="2.75" y="4" width="10.5" height="9.5" rx="1.5" />
+      <path d="M2.75 7.25h10.5M5.5 2.5v3M10.5 2.5v3" />
+    </>
+  ),
+  "Auto date": (
+    <>
+      <rect x="2.75" y="4" width="10.5" height="9.5" rx="1.5" />
+      <path d="M5.5 2.5v3M10.5 2.5v3M5.75 9.75l1.6 1.5 3-3" />
+    </>
+  ),
+  Email: (
+    <>
+      <circle cx="8" cy="8" r="2.4" />
+      <path d="M10.4 8v.9a1.6 1.6 0 0 0 3.2 0V8A5.6 5.6 0 1 0 11 12.8" />
+    </>
+  ),
+};
+
+function FieldIcon({ field, className = "" }: { field: FieldType; className?: string }) {
   return (
-    <div className={`flex h-full w-full items-center gap-2 rounded-lg border border-[#e3e6ef] bg-white px-2 ${className}`}>
-      <span className="flex size-[22px] shrink-0 items-center justify-center rounded-md" style={{ background: tint.bg, color: tint.fg }}>
-        <I className="size-[13px]" />
-      </span>
-      <span className="truncate text-[13px] font-medium">{label}</span>
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      {FIELD_ICONS[field]}
+    </svg>
+  );
+}
+
+/** A field's icon on its tinted, outlined tile. */
+function FieldTile({ field, tint = TINT.blue, size = 22 }: { field: FieldType; tint?: Tint; size?: number }) {
+  return (
+    <span
+      className="flex shrink-0 items-center justify-center rounded-[5px] border"
+      style={{ width: size, height: size, background: tint.bg, borderColor: tint.ring, color: tint.fg }}
+    >
+      <FieldIcon field={field} className="size-[62%]" />
+    </span>
+  );
+}
+
+/** The six-dot grip on the end of a draggable row. */
+function Grip({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 6 10" className={`h-[9px] w-[6px] shrink-0 ${className}`} fill="#9a9fac">
+      {[0, 1].map((c) => [1, 5, 9].map((r) => <circle key={`${c}${r}`} cx={1 + c * 4} cy={r} r={0.95} />))}
+    </svg>
+  );
+}
+
+/** A field you can place: its tile, its name and a grip, on a white card. */
+function Chip({
+  field,
+  tint = TINT.blue,
+  small = false,
+  alert,
+  className = "",
+}: {
+  field: FieldType;
+  tint?: Tint;
+  small?: boolean;
+  // Whether it's still needed; left out, the chip has no room for the flag.
+  alert?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex h-full w-full items-center rounded-lg bg-white shadow-[0_1px_3px_rgba(30,35,70,0.13)] ${small ? "gap-[6px] px-[4px]" : "gap-2 px-[6px]"} ${className}`}
+    >
+      <FieldTile field={field} tint={tint} size={small ? 16 : 22} />
+      <span className={`truncate font-medium ${small ? "text-[10px]" : "text-[13px]"}`}>{field}</span>
+      {alert !== undefined && (
+        <motion.span
+          className="ml-auto flex size-[12px] shrink-0 items-center justify-center rounded-[4px] bg-[#ffe5e6]"
+          initial={false}
+          animate={{ opacity: alert ? 1 : 0, scale: alert ? 1 : 0.6 }}
+          transition={{ duration: 0.25 }}
+        >
+          <span className="flex size-[8px] items-center justify-center rounded-full text-[6px] font-bold text-white" style={{ background: DANGER }}>
+            !
+          </span>
+        </motion.span>
+      )}
+      <Grip className={alert === undefined ? "ml-auto" : ""} />
     </div>
   );
 }
 
-function Toggle({ on = true }: { on?: boolean }) {
+/** A field placed on the page, in its recipient's colour. */
+function PlacedField({ field, tint, style }: { field: FieldType; tint: Tint; style: React.CSSProperties }) {
   return (
-    <span className="relative block h-[16px] w-[28px] shrink-0 rounded-full" style={{ background: on ? PRIMARY : "#d9dce6" }}>
-      <span className="absolute top-[2px] size-[12px] rounded-full bg-white" style={{ left: on ? 14 : 2 }} />
+    <div
+      className="absolute flex items-center rounded-[2px] border-[1.5px] px-[4px] text-[8.5px] font-medium"
+      style={{ background: tint.bg, borderColor: tint.fg, color: tint.ink, ...style }}
+    >
+      {field}
+      <span className="absolute top-[-1px] right-[3px] text-[10px] leading-none" style={{ color: DANGER }}>
+        *
+      </span>
+    </div>
+  );
+}
+
+/** The role label on a recipient card. */
+function RolePill({ tint, small = false }: { tint: Tint; small?: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full font-medium ${small ? "gap-[2px] px-[4px] py-[1px] text-[8px]" : "gap-[3px] px-[7px] py-[2px] text-[11px]"}`}
+      style={{ background: tint.pill, color: tint.ink }}
+    >
+      <FieldIcon field="Signature" className={small ? "size-[8px]" : "size-[11px]"} />
+      Signer
     </span>
+  );
+}
+
+/** A recipient on the sidebar: their role, a name and an email as bars. */
+function RecipientCard({
+  tint,
+  open = false,
+  missing = false,
+  style,
+  children,
+}: {
+  tint: Tint;
+  open?: boolean;
+  missing?: boolean;
+  style: React.CSSProperties;
+  children?: ReactNode;
+}) {
+  return (
+    <div
+      className="absolute rounded-[9px]"
+      style={{ background: tint.bg, boxShadow: open ? `inset 0 0 0 2px ${tint.ring}` : `inset 0 0 0 1px ${tint.ring}`, ...style }}
+    >
+      <div className="absolute top-[6px] left-[6px]">
+        <RolePill tint={tint} small />
+      </div>
+      <motion.span
+        className="absolute top-[8px] right-[7px] size-[4px] rounded-full"
+        style={{ background: DANGER }}
+        initial={false}
+        animate={{ opacity: missing ? 1 : 0 }}
+      />
+      <Bar w={50} h={4} color={tint.ink} className="absolute top-[25px] left-[7px] opacity-60" />
+      <Bar w={70} h={3} color={tint.fg} className="absolute top-[33px] left-[7px] opacity-50" />
+      {children}
+    </div>
+  );
+}
+
+/** "Required" until every signer has a signature field, then "Ready". */
+function StatusPill({ ready }: { ready: boolean }) {
+  return (
+    <span className="relative block h-[13px] w-[48px]">
+      <motion.span
+        className="absolute inset-y-0 right-0 flex items-center gap-[3px] rounded-full px-[4px] text-[7.5px] font-semibold"
+        style={{ background: "#ffecee", color: "#d4302e" }}
+        initial={false}
+        animate={{ opacity: ready ? 0 : 1 }}
+      >
+        <span className="flex size-[8px] items-center justify-center rounded-full text-[6px] text-white" style={{ background: DANGER }}>
+          1
+        </span>
+        Required
+      </motion.span>
+      <motion.span
+        className="absolute inset-y-0 right-0 flex items-center gap-[2px] rounded-full px-[5px] text-[7.5px] font-semibold"
+        style={{ background: "#d6f8ea", color: "#1f7a57" }}
+        initial={false}
+        animate={{ opacity: ready ? 1 : 0 }}
+      >
+        Ready
+        <CheckIcon className="size-[8px]" />
+      </motion.span>
+    </span>
+  );
+}
+
+/** The left panel's frame: a white card floating on the canvas. */
+function SidePanel({ children }: { children: ReactNode }) {
+  return (
+    <div className="absolute overflow-hidden rounded-[12px] border bg-white shadow-[0_2px_8px_-2px_rgba(20,20,80,0.1)]" style={{ left: 8, top: 28, width: 132, bottom: 8, borderColor: LINE }}>
+      {children}
+    </div>
+  );
+}
+
+const DEFAULT_FIELDS: FieldType[] = ["Signature", "Text", "Date"];
+
+/**
+ * The sidebar's resting state, Recipients & Fields: the selected recipient
+ * open with the fields to place for them, the others folded away.
+ */
+function RecipientsAndFields({ missing = false }: { missing?: boolean }) {
+  return (
+    <>
+      <div className="absolute inset-x-[8px] top-[8px] flex items-center justify-between">
+        <Bar w={58} h={6} color="#c9ccd6" />
+        <StatusPill ready={!missing} />
+      </div>
+      <Bar w={96} h={3} className="absolute top-[24px] left-[8px]" />
+      <RecipientCard tint={TINT.blue} open missing={missing} style={{ left: 6, right: 6, top: 34, height: 133 }}>
+        {DEFAULT_FIELDS.map((f, i) => (
+          <div key={f} className="absolute inset-x-[5px] h-[22px]" style={{ top: 45 + i * 27 }}>
+            <Chip field={f} small alert={missing && i === 0} />
+          </div>
+        ))}
+      </RecipientCard>
+      <RecipientCard tint={TINT.green} style={{ left: 6, right: 6, top: 173, height: 43 }} />
+      <RecipientCard tint={TINT.yellow} style={{ left: 6, right: 6, top: 222, height: 43 }} />
+    </>
+  );
+}
+
+// The page every in-product loop shares, and the signature lines on it.
+const PAGE = { left: 152, top: 34, width: 148 };
+const SIGN_ROWS = [186, 216, 246];
+
+/** The document, with a signing line for each recipient. */
+function DocPage() {
+  return (
+    <Sheet style={{ ...PAGE, height: 300 }}>
+      <Page lines={2} />
+      {/* The Signatures heading. */}
+      <Bar w={44} h={4} color="#cfd3dd" className="absolute top-[172px] left-[10px]" />
+      {SIGN_ROWS.map((y) => (
+        <div key={y} className="absolute inset-x-[10px]" style={{ top: y }}>
+          <span className="absolute inset-x-0 top-[16px] h-px bg-[#d5d8e0]" />
+          <Bar w={46} h={3} className="absolute top-[20px] left-0" />
+        </div>
+      ))}
+    </Sheet>
   );
 }
 
@@ -302,7 +559,7 @@ function RecipientsScene({ s }: { s: number }) {
           {RECIPIENTS.map((r, i) => (
             <motion.div
               key={r.name}
-              className="absolute rounded-md border-2 border-dashed"
+              className="absolute rounded-[3px] border-2"
               style={{ left: 196 + (i % 2) * 104, top: 196 + Math.floor(i / 2) * 50, width: 92, height: 34, background: r.tint.bg, borderColor: r.tint.fg }}
               initial={false}
               animate={{ opacity: i < n ? 1 : 0 }}
@@ -310,7 +567,7 @@ function RecipientsScene({ s }: { s: number }) {
           ))}
         </AppWindow>
       </div>
-      <div className="absolute inset-0 bg-[#1a2370]/15" />
+      <div className="absolute inset-0 bg-[#1a2160]/15" />
 
       <motion.div
         className="absolute overflow-hidden rounded-2xl bg-white"
@@ -325,14 +582,14 @@ function RecipientsScene({ s }: { s: number }) {
           <motion.div
             key={r.name}
             className="absolute inset-x-[16px] flex h-[44px] items-center gap-3 rounded-xl border border-[#eceef4] px-3"
-            style={{ top: 56 + 52 * i }}
+            style={{ top: 56 + 52 * i, boxShadow: `inset 3px 0 0 ${r.tint.fg}` }}
             initial={false}
             animate={{ opacity: i < n ? 1 : 0, y: i < n ? 0 : 10, scale: i < n ? 1 : 0.96 }}
             transition={{ duration: 0.4, ease: EASE, delay: i < n ? 0.08 : 0 }}
           >
             <span
               className="flex size-[26px] shrink-0 items-center justify-center rounded-full text-[13px] font-semibold"
-              style={{ background: r.tint.bg, color: r.tint.fg }}
+              style={{ background: r.tint.pill, color: r.tint.ink }}
             >
               {i + 1}
             </span>
@@ -340,13 +597,13 @@ function RecipientsScene({ s }: { s: number }) {
               <span className="text-[14px] font-medium">{r.name}</span>
               <Bar w={96} h={5} />
             </span>
-            <span className="rounded-full px-2 py-[2px] text-[11px] font-medium" style={{ background: r.tint.bg, color: r.tint.fg }}>
+            <span className="rounded-full px-2 py-[2px] text-[11px] font-medium" style={{ background: r.tint.pill, color: r.tint.ink }}>
               {r.role}
             </span>
           </motion.div>
         ))}
         <motion.div
-          className="absolute inset-x-[16px] flex h-[40px] items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#b9c2f9] text-[13px] font-semibold"
+          className="absolute inset-x-[16px] flex h-[40px] items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#b4c3f7] text-[13px] font-semibold"
           style={{ color: PRIMARY }}
           initial={false}
           animate={{ top: 56 + 52 * n }}
@@ -378,7 +635,7 @@ function SidebarScene({ s }: { s: number }) {
     <AppWindow>
       {/* The document grows into the room the second sidebar gave back. */}
       <motion.div
-        className="absolute top-[20px] h-[320px] overflow-hidden rounded-md bg-white shadow-[0_1px_4px_rgba(20,20,80,0.12)]"
+        className="absolute top-[20px] h-[320px] overflow-hidden rounded-[3px] bg-white shadow-[0_1px_4px_rgba(20,20,80,0.12)]"
         initial={false}
         animate={settled ? { left: 156, width: 252 } : { left: 116, width: 192 }}
         transition={{ duration: 0.7, ease: EASE }}
@@ -388,7 +645,8 @@ function SidebarScene({ s }: { s: number }) {
 
       {/* Left: cluttered before, tidy after. */}
       <motion.div
-        className="absolute inset-y-0 left-0 overflow-hidden border-r border-[#eceef4] bg-white"
+        className="absolute inset-y-0 left-0 overflow-hidden border-r bg-white"
+        style={{ borderColor: LINE }}
         initial={false}
         animate={{ width: settled ? 132 : 104 }}
         transition={{ duration: 0.7, ease: EASE }}
@@ -396,21 +654,21 @@ function SidebarScene({ s }: { s: number }) {
         <motion.div className="absolute inset-0 flex flex-col gap-[7px] p-[10px]" initial={false} animate={{ opacity: settled ? 0 : 1 }}>
           {[0, 1, 2].map((g) => (
             <div key={g} className="mb-[4px] flex flex-col gap-[6px]">
-              <Bar w={40 + g * 6} h={6} color="#c9cfdf" />
+              <Bar w={40 + g * 6} h={6} color="#c9ccd6" />
               {[64, 50, 70, 42].map((w, i) => (
                 <div key={i} className="flex items-center gap-[6px]">
                   <span
                     className="size-[12px] shrink-0 rounded-[3px]"
-                    style={{ background: (i + g) % 3 === 0 ? TINT.blue.bg : "#e1e5ee" }}
+                    style={{ background: (i + g) % 3 === 0 ? TINT.blue.pill : "#e3e5eb" }}
                   />
-                  <Bar w={w - g * 6} h={6} color="#dde1ea" />
+                  <Bar w={w - g * 6} h={6} color="#dfe1e7" />
                 </div>
               ))}
             </div>
           ))}
           <div className="mt-auto flex gap-[5px]">
-            <Bar w={40} h={18} color="#e1e5ee" />
-            <Bar w={40} h={18} color="#e1e5ee" />
+            <Bar w={40} h={18} color="#e3e5eb" />
+            <Bar w={40} h={18} color="#e3e5eb" />
           </div>
         </motion.div>
         <motion.div
@@ -420,24 +678,24 @@ function SidebarScene({ s }: { s: number }) {
           transition={{ duration: 0.5, ease: EASE, delay: settled ? 0.25 : 0 }}
         >
           <span className="mb-[2px] text-[13px] font-semibold">Fields</span>
-          {[
-            { icon: PencilIcon, label: "Signature" },
-            { icon: Bars3BottomLeftIcon, label: "Text" },
-            { icon: CalendarIcon, label: "Date" },
-          ].map((f) => (
-            <div key={f.label} className="h-[32px]">
-              <Chip icon={f.icon} label={f.label} />
+          {DEFAULT_FIELDS.map((f) => (
+            <div key={f} className="h-[28px]">
+              <Chip field={f} small />
             </div>
           ))}
-          <span className="mt-auto flex h-[32px] items-center justify-center rounded-lg text-[13px] font-semibold text-white" style={{ background: PRIMARY }}>
-            Send
-          </span>
+          {/* Document options and Manage recipients, as the real panel ends. */}
+          {[0, 1].map((i) => (
+            <span key={i} className={`flex h-[26px] items-center justify-center rounded-full border ${i === 0 ? "mt-auto" : ""}`} style={{ borderColor: "#d9dce4" }}>
+              <Bar w={[58, 64][i]} h={5} color="#c9ccd6" />
+            </span>
+          ))}
         </motion.div>
       </motion.div>
 
       {/* Right: slides across and folds into the left. */}
       <motion.div
-        className="absolute inset-y-0 z-10 overflow-hidden border-l border-[#eceef4] bg-white"
+        className="absolute inset-y-0 z-10 overflow-hidden border-l bg-white"
+        style={{ borderColor: LINE }}
         initial={false}
         animate={{
           left: merged ? 0 : 320,
@@ -447,9 +705,9 @@ function SidebarScene({ s }: { s: number }) {
         transition={{ duration: 0.75, ease: [0.65, 0, 0.35, 1], opacity: { duration: 0.35 } }}
       >
         <motion.div className="absolute inset-x-0 top-0 w-[112px]" initial={false} animate={{ opacity: merged ? 0.3 : 1 }} transition={{ duration: 0.3 }}>
-          <div className="relative flex gap-[8px] border-b border-[#eceef4] px-[10px] pt-[12px] pb-[9px]">
+          <div className="relative flex gap-[8px] border-b px-[10px] pt-[12px] pb-[9px]" style={{ borderColor: LINE }}>
             {[22, 26, 20].map((w, i) => (
-              <Bar key={i} w={w} h={7} color={i === tab ? PRIMARY : "#d3d8e4"} />
+              <Bar key={i} w={w} h={7} color={i === tab ? PRIMARY : "#d3d6de"} />
             ))}
             <motion.span
               className="absolute bottom-[-1px] h-[2px] rounded-full"
@@ -470,13 +728,13 @@ function SidebarScene({ s }: { s: number }) {
               {rows.map((w, i) =>
                 i % 3 === 1 ? (
                   <div key={i} className="flex items-center justify-between">
-                    <Bar w={w * 0.7} h={6} color="#dde1ea" />
+                    <Bar w={w * 0.7} h={6} color="#dfe1e7" />
                     <Toggle on={(i + t) % 2 === 0} />
                   </div>
                 ) : i % 3 === 2 ? (
-                  <span key={i} className="block h-[18px] rounded-[5px] border border-[#e3e6ef]" />
+                  <span key={i} className="block h-[18px] rounded-[5px] border" style={{ borderColor: LINE }} />
                 ) : (
-                  <Bar key={i} w={w} h={6} color="#dde1ea" />
+                  <Bar key={i} w={w} h={6} color="#dfe1e7" />
                 ),
               )}
             </motion.div>
@@ -487,86 +745,96 @@ function SidebarScene({ s }: { s: number }) {
   );
 }
 
+function Toggle({ on = true }: { on?: boolean }) {
+  return (
+    <span className="relative block h-[16px] w-[28px] shrink-0 rounded-full" style={{ background: on ? PRIMARY : "#d9dce4" }}>
+      <span className="absolute top-[2px] size-[12px] rounded-full bg-white" style={{ left: on ? 14 : 2 }} />
+    </span>
+  );
+}
+
 /* ------------------------------------------------------------------------ */
 /* 3. Three fields by default                                                */
 /* ------------------------------------------------------------------------ */
 
-const FIELDS: { icon: Icon; label: string; keep?: number }[] = [
-  { icon: PencilIcon, label: "Signature", keep: 0 },
-  { icon: PencilIcon, label: "Initials" },
-  { icon: Bars3BottomLeftIcon, label: "Text", keep: 1 },
-  { icon: AtSymbolIcon, label: "Email" },
-  { icon: CalendarIcon, label: "Date", keep: 2 },
-  { icon: ClockIcon, label: "Auto date" },
-  { icon: UserIcon, label: "Name" },
-  { icon: CheckCircleIcon, label: "Checkbox" },
-  { icon: ChevronUpDownIcon, label: "Dropdown" },
-  { icon: HashtagIcon, label: "Number" },
-  { icon: BuildingOfficeIcon, label: "Company" },
-  { icon: PaperClipIcon, label: "Attachment" },
+// Every field type the product has, in the order the old panel listed them.
+// `keep` is the slot each of the default three ends up in.
+const ALL_FIELDS: { field: FieldType; keep?: number }[] = [
+  { field: "Signature", keep: 0 },
+  { field: "Initials" },
+  { field: "Text", keep: 1 },
+  { field: "Date", keep: 2 },
+  { field: "Auto date" },
+  { field: "Email" },
 ];
+
+// Field rows sit 36px apart inside the recipient's card.
+const ROW_AT = (slot: number) => 58 + slot * 36;
 
 function FieldsScene({ s }: { s: number }) {
   const few = s === 1 || s === 2;
-  // Card heights for the full grid and the short list, kept centred.
-  const h = few ? 250 : 312;
+  // Panel and card heights for the full list and the short one, kept centred.
+  const card = few ? ROW_AT(3) + 32 : ROW_AT(6) + 4;
+  const h = 44 + card + 12;
   return (
     <motion.div
       className="absolute overflow-hidden rounded-2xl bg-white"
-      style={{ left: 90, width: 300, boxShadow: SHADOW }}
+      style={{ left: 110, width: 260, boxShadow: SHADOW }}
       initial={false}
       animate={{ top: (H - h) / 2, height: h }}
       transition={{ duration: 0.8, ease: EASE, delay: few ? 0.3 : 0 }}
     >
-      <div className="absolute inset-x-[18px] top-[18px] flex items-center justify-between">
-        <span className="text-[15px] font-semibold">Place fields</span>
-        <span className="relative h-[20px] w-[28px] text-[12px] font-semibold" style={{ color: MUTED }}>
-          {[12, 3].map((count, i) => (
-            <motion.span
-              key={count}
-              className="absolute inset-0 flex items-center justify-center rounded-full bg-[#f0f2f7]"
-              initial={false}
-              animate={{ opacity: (i === 1) === few ? 1 : 0 }}
-              transition={{ duration: 0.3, delay: few ? 0.3 : 0 }}
-            >
-              {count}
-            </motion.span>
-          ))}
-        </span>
-      </div>
-      {FIELDS.map((f, i) => {
-        const grid = { left: 18 + (i % 2) * 136, top: 56 + Math.floor(i / 2) * 41, width: 128, height: 33 };
-        const kept = f.keep !== undefined;
-        const goal = few
-          ? kept
-            ? { left: 18, top: 56 + f.keep! * 50, width: 264, height: 42, opacity: 1, scale: 1 }
-            : { ...grid, opacity: 0, scale: 0.7 }
-          : { ...grid, opacity: 1, scale: 1 };
-        return (
-          <motion.div
-            key={f.label}
-            className="absolute"
-            initial={false}
-            animate={goal}
-            transition={
-              few && !kept
-                ? { duration: 0.35, ease: EASE, delay: 0.02 * i }
-                : { duration: 0.7, ease: EASE, delay: few ? 0.3 : kept ? 0 : 0.25 + 0.02 * i }
-            }
-          >
-            <Chip icon={f.icon} label={f.label} />
-          </motion.div>
-        );
-      })}
-      <motion.span
-        className="absolute left-[18px] text-[13px] font-semibold"
-        style={{ top: 214, color: PRIMARY }}
+      <span className="absolute top-[16px] left-[16px] text-[15px] font-semibold">Recipients &amp; Fields</span>
+
+      {/* The recipient the fields are being placed for. */}
+      <motion.div
+        className="absolute inset-x-[12px] top-[44px] rounded-[12px]"
+        style={{ background: TINT.blue.bg, boxShadow: `inset 0 0 0 2px ${TINT.blue.ring}` }}
         initial={false}
-        animate={{ opacity: few ? 1 : 0, y: few ? 0 : 6 }}
-        transition={{ duration: 0.4, delay: few ? 0.8 : 0 }}
+        animate={{ height: card }}
+        transition={{ duration: 0.8, ease: EASE, delay: few ? 0.3 : 0 }}
       >
-        More fields
-      </motion.span>
+        <div className="absolute top-[10px] left-[10px]">
+          <RolePill tint={TINT.blue} />
+        </div>
+        <Bar w={92} h={6} color={TINT.blue.ink} className="absolute top-[34px] left-[11px] opacity-60" />
+        <Bar w={126} h={4} color={TINT.blue.fg} className="absolute top-[45px] left-[11px] opacity-50" />
+
+        {ALL_FIELDS.map((f, i) => {
+          const kept = f.keep !== undefined;
+          const goal = few
+            ? kept
+              ? { top: ROW_AT(f.keep!), opacity: 1, scale: 1 }
+              : { top: ROW_AT(i), opacity: 0, scale: 0.9 }
+            : { top: ROW_AT(i), opacity: 1, scale: 1 };
+          return (
+            <motion.div
+              key={f.field}
+              className="absolute inset-x-[10px] h-[30px]"
+              initial={false}
+              animate={goal}
+              transition={
+                few && !kept
+                  ? { duration: 0.35, ease: EASE, delay: 0.03 * i }
+                  : { duration: 0.7, ease: EASE, delay: few ? 0.3 : kept ? 0 : 0.25 + 0.03 * i }
+              }
+            >
+              <Chip field={f.field} />
+            </motion.div>
+          );
+        })}
+
+        <motion.span
+          className="absolute left-[14px] flex items-center gap-[6px] text-[12px] font-medium"
+          style={{ top: ROW_AT(3) + 4, color: MUTED }}
+          initial={false}
+          animate={{ opacity: few ? 1 : 0, y: few ? 0 : 6 }}
+          transition={{ duration: 0.4, delay: few ? 0.8 : 0 }}
+        >
+          <span className="size-0 border-y-[4px] border-l-[6px] border-y-transparent" style={{ borderLeftColor: MUTED }} />
+          More field types
+        </motion.span>
+      </motion.div>
     </motion.div>
   );
 }
@@ -575,23 +843,84 @@ function FieldsScene({ s }: { s: number }) {
 /* 4. A panel that follows you                                               */
 /* ------------------------------------------------------------------------ */
 
-const PLACE_FIELDS = [
-  { icon: PencilIcon, label: "Signature" },
-  { icon: Bars3BottomLeftIcon, label: "Text" },
-  { icon: CalendarIcon, label: "Date" },
-];
+// Page-relative spots: the Text field that gets selected, and its size.
+const TEXT_FIELD = { left: 76, top: SIGN_ROWS[0], width: 58, height: 15 };
+const TEXT_FIELD_AT: [number, number] = [24 + PAGE.left + TEXT_FIELD.left + 30, 24 + PAGE.top + TEXT_FIELD.top + 9];
+const PAGE_BLANK_AT: [number, number] = [24 + PAGE.left + 96, 24 + PAGE.top + 132];
 
-/** The sidebar's resting state: the fields you can place. */
-function PlaceFields({ extra }: { extra?: ReactNode }) {
+/** The sidebar while a field is selected: that field's Content editor. */
+function FieldEditor() {
   return (
-    <div className="flex h-full flex-col gap-[8px] p-[12px]">
-      <span className="mb-[2px] text-[13px] font-semibold">Place fields</span>
-      {PLACE_FIELDS.map((f) => (
-        <div key={f.label} className="h-[34px]">
-          <Chip icon={f.icon} label={f.label} />
-        </div>
-      ))}
-      {extra}
+    <div className="absolute inset-0 p-[8px]">
+      <div className="flex h-[18px] items-center gap-[5px]">
+        <span className="flex size-[16px] items-center justify-center rounded-[4px]" style={{ background: PRIMARY_SOFT, color: PRIMARY }}>
+          <Bars3BottomLeftIcon className="size-[10px]" />
+        </span>
+        <span className="text-[11px] font-semibold">Content</span>
+        <span className="ml-auto flex size-[15px] items-center justify-center rounded-[4px] border" style={{ borderColor: "#d9dce4" }}>
+          <XMarkIcon className="size-[9px]" style={{ color: MUTED }} />
+        </span>
+      </div>
+
+      {/* Content, Placement, Dimensions. */}
+      <div className="mt-[8px] flex h-[16px] rounded-[5px] border p-[1px]" style={{ background: CANVAS, borderColor: LINE }}>
+        {[22, 28, 30].map((w, i) => (
+          <span key={i} className="flex flex-1 items-center justify-center rounded-[4px]" style={{ background: i === 0 ? "#e1e9fd" : "transparent" }}>
+            <Bar w={w} h={3} color={i === 0 ? PRIMARY : "#c3c7d1"} />
+          </span>
+        ))}
+      </div>
+
+      <EditorLabel top={52} label="Field type" />
+      <div
+        className="absolute inset-x-[8px] flex h-[22px] items-center gap-[6px] rounded-[6px] border border-dashed px-[4px] text-[10px] font-medium"
+        style={{ top: 72, background: "#f6f8ff", borderColor: "#a9bdf6" }}
+      >
+        <FieldTile field="Text" size={15} />
+        Text
+      </div>
+
+      <EditorLabel top={104} label="Assignee" />
+      <div
+        className="absolute inset-x-[8px] flex h-[20px] items-center gap-[5px] rounded-[6px] border px-[5px]"
+        style={{ top: 124, background: CANVAS, borderColor: LINE, color: TINT.blue.ink }}
+      >
+        <FieldIcon field="Signature" className="size-[9px]" />
+        <Bar w={44} h={4} color="#b9bdc8" />
+        <span className="ml-auto flex size-[13px] items-center justify-center rounded-[3px] border bg-white" style={{ borderColor: "#d9dce4" }}>
+          <ArrowsRightLeftIcon className="size-[8px]" style={{ color: MUTED }} />
+        </span>
+      </div>
+
+      <EditorLabel top={154} label="Field label" />
+      <div className="absolute inset-x-[8px] flex h-[20px] items-center rounded-[6px] border bg-white px-[6px]" style={{ top: 174, borderColor: "#dfe2ea" }}>
+        <Bar w={72} h={4} />
+      </div>
+
+      <span
+        className="absolute inset-x-[8px] bottom-[34px] flex h-[20px] items-center justify-center gap-[4px] rounded-full border text-[9.5px] font-medium"
+        style={{ borderColor: "#d9dce4" }}
+      >
+        <DocumentDuplicateIcon className="size-[9px]" style={{ color: MUTED }} />
+        Duplicate
+      </span>
+      <span
+        className="absolute inset-x-[8px] bottom-[8px] flex h-[20px] items-center justify-center gap-[4px] rounded-full border text-[9.5px] font-medium"
+        style={{ borderColor: "#f3a5a4", color: "#e2403d" }}
+      >
+        <TrashIcon className="size-[9px]" />
+        Delete
+      </span>
+    </div>
+  );
+}
+
+/** A small editor section label, with a grey line of help under it. */
+function EditorLabel({ top, label }: { top: number; label: string }) {
+  return (
+    <div className="absolute left-[9px]" style={{ top }}>
+      <span className="block text-[9px] font-semibold">{label}</span>
+      <Bar w={64} h={3} className="mt-[3px]" />
     </div>
   );
 }
@@ -600,105 +929,83 @@ function PanelScene({ s }: { s: number }) {
   const editing = s === 1 || s === 2;
   return (
     <AppWindow>
-      <div className="absolute inset-y-0 left-0 w-[150px] overflow-hidden border-r border-[#eceef4] bg-white">
+      <AppHeader />
+      <SidePanel>
         <motion.div className="absolute inset-0" initial={false} animate={{ opacity: editing ? 0 : 1, x: editing ? -16 : 0 }} transition={{ duration: 0.25, ease: EASE, delay: editing ? 0 : 0.2 }}>
-          <PlaceFields
-            extra={
-              <div className="mt-3 flex flex-col gap-[8px]">
-                <Bar w={70} h={6} color="#d9dde8" />
-                <Bar w={110} h={6} />
-                <Bar w={92} h={6} />
-              </div>
-            }
-          />
+          <RecipientsAndFields />
         </motion.div>
         <motion.div
-          className="absolute inset-0 flex flex-col gap-[10px] p-[12px]"
+          className="absolute inset-0"
           initial={false}
           animate={{ opacity: editing ? 1 : 0, x: editing ? 0 : 16 }}
           transition={{ duration: 0.3, ease: EASE, delay: editing ? 0.2 : 0 }}
         >
-          <span className="mb-[2px] flex items-center gap-1 text-[13px] font-semibold">
-            <ChevronLeftIcon className="size-[14px]" style={{ color: MUTED }} />
-            Edit field
-          </span>
-          <div className="flex flex-col gap-[5px]">
-            <span className="text-[11px] font-medium" style={{ color: MUTED }}>Recipient</span>
-            <span className="flex h-[30px] items-center gap-[6px] rounded-lg border border-[#e3e6ef] px-2 text-[12px] font-medium">
-              <span className="size-[9px] shrink-0 rounded-full" style={{ background: TINT.blue.fg }} />
-              Skylar Blake
-              <ChevronUpDownIcon className="ml-auto size-[12px]" style={{ color: MUTED }} />
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[12px] font-medium">Required</span>
-            <Toggle />
-          </div>
-          <div className="flex flex-col gap-[7px]">
-            <span className="text-[11px] font-medium" style={{ color: MUTED }}>Size</span>
-            <span className="relative block h-[4px] rounded-full bg-[#e4e7f0]">
-              <span className="absolute inset-y-0 left-0 w-[55%] rounded-full" style={{ background: PRIMARY }} />
-              <span className="absolute top-1/2 left-[55%] size-[12px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white" style={{ borderColor: PRIMARY }} />
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[12px] font-medium">Read only</span>
-            <Toggle on={false} />
-          </div>
+          <FieldEditor />
         </motion.div>
-      </div>
+      </SidePanel>
 
-      <Sheet style={{ left: 172, top: 56, width: 238, height: 280 }}>
-        <Page lines={2} />
-      </Sheet>
+      <DocPage />
+      <PlacedField field="Signature" tint={TINT.blue} style={{ left: PAGE.left + 10, top: PAGE.top + SIGN_ROWS[0], width: 58, height: 15 }} />
+      <PlacedField field="Signature" tint={TINT.green} style={{ left: PAGE.left + 10, top: PAGE.top + SIGN_ROWS[1], width: 58, height: 15 }} />
+      <PlacedField field="Signature" tint={TINT.yellow} style={{ left: PAGE.left + 10, top: PAGE.top + SIGN_ROWS[2], width: 58, height: 15 }} />
 
-      {/* The field on the page, selected while it's being edited. */}
+      {/* The Text field, selected while it's being edited. */}
       <motion.div
-        className="absolute flex items-center gap-[6px] rounded-md border-2 px-2 text-[12px] font-semibold"
-        style={{ left: 196, top: 240, width: 124, height: 40, background: TINT.blue.bg, color: TINT.blue.fg }}
+        className="absolute"
+        style={{ left: PAGE.left + TEXT_FIELD.left, top: PAGE.top + TEXT_FIELD.top, width: TEXT_FIELD.width, height: TEXT_FIELD.height }}
         initial={false}
-        animate={{ borderColor: editing ? TINT.blue.fg : "rgba(79,123,255,0.45)", borderStyle: editing ? "solid" : "dashed" }}
+        animate={{ scale: editing ? 1.04 : 1 }}
         transition={{ duration: 0.2 }}
       >
-        <PencilIcon className="size-[13px]" />
-        Signature
-        {[
-          "-top-[5px] -left-[5px]",
-          "-top-[5px] -right-[5px]",
-          "-bottom-[5px] -left-[5px]",
-          "-bottom-[5px] -right-[5px]",
-        ].map((pos) => (
+        <PlacedField field="Text" tint={TINT.blue} style={{ inset: 0 }} />
+        <motion.span
+          className="absolute -inset-[3px] rounded-[3px] border-[1.5px]"
+          style={{ borderColor: PRIMARY }}
+          initial={false}
+          animate={{ opacity: editing ? 1 : 0 }}
+          transition={{ duration: 0.2 }}
+        />
+        {["top-1/2 -right-[5px] h-[8px] w-[4px] -translate-y-1/2", "left-1/2 -bottom-[5px] h-[4px] w-[10px] -translate-x-1/2"].map((pos) => (
           <motion.span
             key={pos}
-            className={`absolute size-[8px] rounded-[2px] border-2 bg-white ${pos}`}
-            style={{ borderColor: TINT.blue.fg }}
+            className={`absolute rounded-[1px] ${pos}`}
+            style={{ background: PRIMARY }}
             initial={false}
-            animate={{ opacity: editing ? 1 : 0, scale: editing ? 1 : 0.4 }}
+            animate={{ opacity: editing ? 1 : 0 }}
             transition={{ duration: 0.2 }}
           />
         ))}
       </motion.div>
 
+      {/* Send, ready, in its corner: every signer has a signature. */}
+      <div className="absolute rounded-[12px] bg-white p-[3px] shadow-[0_4px_14px_-4px_rgba(20,20,80,0.28)]" style={SEND}>
+        <span className="flex h-[26px] items-center justify-center gap-[5px] rounded-[9px] text-[10.5px] font-semibold text-white" style={{ background: PRIMARY }}>
+          Send Document
+          <ChevronRightIcon className="size-[12px]" />
+        </span>
+      </div>
+
       {/* The formatting toolbar only exists while a field is selected. */}
       <motion.div
-        className="absolute flex h-[34px] items-center gap-[10px] rounded-lg bg-white px-3 text-[13px] font-semibold shadow-[0_4px_14px_-4px_rgba(20,20,80,0.3)]"
-        style={{ left: 166, top: 10 }}
+        className="absolute flex h-[24px] items-center gap-[7px] rounded-[9px] border bg-white px-[6px] text-[10px] font-semibold shadow-[0_4px_14px_-4px_rgba(20,20,80,0.3)]"
+        style={{ left: PAGE.left - 6, top: 26, borderColor: LINE }}
         initial={false}
-        animate={{ opacity: editing ? 1 : 0, y: editing ? 0 : -12 }}
+        animate={{ opacity: editing ? 1 : 0, y: editing ? 0 : -10 }}
         transition={{ duration: 0.35, ease: EASE, delay: editing ? 0.15 : 0 }}
       >
-        <span className="flex items-center gap-1 rounded-md border border-[#e3e6ef] px-[6px] py-[2px] text-[12px] font-medium">
-          Inter
-          <ChevronUpDownIcon className="size-[11px]" style={{ color: MUTED }} />
+        <span className="flex h-[16px] items-center gap-[3px] rounded-[4px] border px-[4px] text-[9px] font-medium" style={{ borderColor: LINE }}>
+          12
+          <ChevronDownIcon className="size-[8px]" style={{ color: MUTED }} />
         </span>
-        <span className="text-[12px] font-medium">12</span>
-        <span className="h-[16px] w-px bg-[#e3e6ef]" />
+        <span className="h-[12px] w-px" style={{ background: LINE }} />
         <span className="font-bold">B</span>
-        <span className="italic">I</span>
+        <span className="font-serif italic">I</span>
         <span className="underline">U</span>
-        <span className="h-[16px] w-px bg-[#e3e6ef]" />
-        <Bars3BottomLeftIcon className="size-[14px]" />
-        <span className="size-[14px] rounded-full" style={{ background: INK }} />
+        <span className="h-[12px] w-px" style={{ background: LINE }} />
+        <span className="flex size-[16px] items-center justify-center rounded-[4px]" style={{ background: PRIMARY_SOFT, color: PRIMARY }}>
+          <Bars3BottomLeftIcon className="size-[10px]" />
+        </span>
+        <Bars3Icon className="size-[10px]" style={{ color: MUTED }} />
       </motion.div>
     </AppWindow>
   );
@@ -707,6 +1014,20 @@ function PanelScene({ s }: { s: number }) {
 /* ------------------------------------------------------------------------ */
 /* 5. Modals for occasional tasks                                            */
 /* ------------------------------------------------------------------------ */
+
+/** The sidebar's resting state: the fields you can place. */
+function PlaceFields() {
+  return (
+    <div className="flex h-full flex-col gap-[8px] p-[12px]">
+      <span className="mb-[2px] text-[13px] font-semibold">Place fields</span>
+      {DEFAULT_FIELDS.map((f) => (
+        <div key={f} className="h-[34px]">
+          <Chip field={f} />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // Window-relative: the sidebar buttons, then the modal's Done button.
 const RECIPIENTS_BTN: [number, number] = [24 + 88, 24 + 222 + 17];
@@ -720,7 +1041,7 @@ function ModalsScene({ s }: { s: number }) {
     <>
       <motion.div className="absolute inset-0" initial={false} animate={{ filter: open ? "blur(2.5px)" : "blur(0px)" }} transition={{ duration: 0.35 }}>
         <AppWindow>
-          <div className="absolute inset-y-0 left-0 w-[176px] border-r border-[#eceef4] bg-white">
+          <div className="absolute inset-y-0 left-0 w-[176px] border-r bg-white" style={{ borderColor: LINE }}>
             <PlaceFields />
             {[
               { icon: UsersIcon, label: "Recipients" },
@@ -728,12 +1049,12 @@ function ModalsScene({ s }: { s: number }) {
             ].map((b, i) => (
               <motion.span
                 key={b.label}
-                className="absolute inset-x-[12px] flex h-[34px] items-center gap-[7px] rounded-lg border px-[9px] text-[13px] font-medium whitespace-nowrap"
+                className="absolute inset-x-[12px] flex h-[34px] items-center gap-[7px] rounded-full border px-[11px] text-[13px] font-medium whitespace-nowrap"
                 style={{ top: 222 + i * 40 }}
                 initial={false}
                 animate={{
-                  borderColor: pressed === i ? "#b9c2f9" : "#e3e6ef",
-                  backgroundColor: pressed === i ? "#eef0ff" : "#ffffff",
+                  borderColor: pressed === i ? "#9bb6f6" : "#d9dce4",
+                  backgroundColor: pressed === i ? PRIMARY_SOFT : "#ffffff",
                 }}
                 transition={{ duration: 0.2 }}
               >
@@ -747,12 +1068,12 @@ function ModalsScene({ s }: { s: number }) {
           </Sheet>
         </AppWindow>
       </motion.div>
-      <motion.div className="absolute inset-0 bg-[#1a2370]" initial={false} animate={{ opacity: open ? 0.22 : 0 }} transition={{ duration: 0.35 }} />
+      <motion.div className="absolute inset-0 bg-[#1a2160]" initial={false} animate={{ opacity: open ? 0.3 : 0 }} transition={{ duration: 0.35 }} />
 
       <Modal show={open === "recipients"} title="Recipients">
         {RECIPIENTS.map((r, i) => (
           <div key={r.name} className="flex h-[30px] items-center gap-[10px]">
-            <span className="flex size-[22px] items-center justify-center rounded-full text-[11px] font-semibold" style={{ background: r.tint.bg, color: r.tint.fg }}>
+            <span className="flex size-[22px] items-center justify-center rounded-full text-[11px] font-semibold" style={{ background: r.tint.pill, color: r.tint.ink }}>
               {i + 1}
             </span>
             <span className="text-[13px] font-medium">{r.name}</span>
@@ -768,7 +1089,7 @@ function ModalsScene({ s }: { s: number }) {
         ].map((o, i) => (
           <div key={i} className="flex h-[30px] items-center justify-between">
             <span className="flex flex-col gap-[6px]">
-              <Bar w={o.w} h={6} color="#cfd4e2" />
+              <Bar w={o.w} h={6} color="#cfd2db" />
               <Bar w={o.w + 30} h={5} />
             </span>
             <Toggle on={o.on} />
@@ -803,111 +1124,155 @@ function Modal({ show, title, children }: { show: boolean; title: string; childr
 /* 6. A Send you can't hit by accident                                       */
 /* ------------------------------------------------------------------------ */
 
-// Window-relative positions: the Signature chip to drag from, the spot on
-// the page it's dropped on, and the Send button.
-const CHIP_AT: [number, number] = [24 + 70, 24 + 56];
-const DROP_AT: [number, number] = [24 + 208 + 56, 24 + 216 + 19];
-const SEND_AT: [number, number] = [24 + 82, 24 + 260 + 20];
+// The Send card in the header's top-right corner, window-relative; its
+// popover opens downwards out of the same card.
+const SEND = { left: 300, top: 28, width: 124 };
+// Stage spots: Send (over its chevron, so the label and the popover stay
+// readable), and the empty signing line the signature goes on.
+const SEND_AT: [number, number] = [24 + SEND.left + 108, 24 + SEND.top + 13];
+const SIGN_AT: [number, number] = [24 + PAGE.left + 40, 24 + PAGE.top + SIGN_ROWS[0] + 9];
 const COUNT_FROM = 5;
+const TICK = 650;
+
+/** The quick-send mark: a chevron with speed lines. */
+function SendMark({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="white" className={className}>
+      <path d="M10 5h4.2l6.3 7-6.3 7H10l6.3-7z" />
+      <path d="M6.6 9.2h2.6l2.5 2.8-2.5 2.8H6.6l2.5-2.8z" />
+      <path d="M3 6.2h3.6l.9 1.2H3.9zM3 17.8h3.6l.9-1.2H3.9z" />
+    </svg>
+  );
+}
 
 function SendScene({ s }: { s: number }) {
   const placed = s >= 3 && s <= 10;
   const counting = s >= 5 && s <= 9;
-  const sent = s === 10;
+  const sending = s === 10;
   const n = COUNT_FROM - (s - 5);
+  // Which popover is open under the button, if any.
+  const pop = s === 1 ? "missing" : s === 4 ? "ready" : counting ? "pending" : null;
+  // How much of the countdown has run, a beat at a time.
+  const run = counting ? (s - 4) / COUNT_FROM : 0.04;
   return (
     <AppWindow>
-      <div className="absolute inset-y-0 left-0 w-[164px] border-r border-[#eceef4] bg-white">
-        <PlaceFields />
+      <AppHeader />
+      <SidePanel>
+        <RecipientsAndFields missing={!placed} />
+      </SidePanel>
 
-        {/* What's missing, until it isn't. */}
-        <motion.div
-          className="absolute inset-x-[12px] flex items-start gap-[6px] rounded-lg border px-[9px] py-[8px] text-[12px] font-medium"
-          style={{ top: 196, background: "#fff6e0", borderColor: "#f5d27e", color: "#8a5a00" }}
-          initial={false}
-          animate={{ opacity: placed ? 0 : 1, y: placed ? 6 : 0 }}
-          transition={{ duration: 0.35 }}
-        >
-          <ExclamationTriangleIcon className="mt-px size-[14px] shrink-0" style={{ color: TINT.yellow.fg }} />
-          1 signature field missing
-        </motion.div>
+      <DocPage />
+      <PlacedField field="Signature" tint={TINT.green} style={{ left: PAGE.left + 10, top: PAGE.top + SIGN_ROWS[1], width: 58, height: 15 }} />
+      <PlacedField field="Signature" tint={TINT.yellow} style={{ left: PAGE.left + 10, top: PAGE.top + SIGN_ROWS[2], width: 58, height: 15 }} />
+      {/* The first signer's line, empty until the signature lands on it. */}
+      <motion.div
+        className="absolute rounded-[2px] border border-dashed"
+        style={{ left: PAGE.left + 10, top: PAGE.top + SIGN_ROWS[0], width: 58, height: 15, borderColor: TINT.blue.ring }}
+        initial={false}
+        animate={{ opacity: placed ? 0 : s === 2 ? 1 : 0.6 }}
+      />
+      <motion.div
+        className="absolute"
+        style={{ left: PAGE.left + 10, top: PAGE.top + SIGN_ROWS[0], width: 58, height: 15 }}
+        initial={false}
+        animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : 0.85 }}
+        transition={{ duration: 0.25 }}
+      >
+        <PlacedField field="Signature" tint={TINT.blue} style={{ inset: 0 }} />
+      </motion.div>
 
+      {/* Send, top right, with the popover that grows out of its card. */}
+      <motion.div
+        className="absolute overflow-hidden rounded-[12px] bg-white shadow-[0_4px_14px_-4px_rgba(20,20,80,0.28)]"
+        style={SEND}
+        initial={false}
+        animate={{ height: pop ? 78 : 32 }}
+        transition={{ duration: 0.35, ease: EASE, delay: pop === "missing" || pop === "ready" ? 0.4 : 0 }}
+      >
         <motion.span
-          className="absolute right-[14px] text-[13px] font-semibold"
-          style={{ top: 234, color: PRIMARY }}
-          initial={false}
-          animate={{ opacity: counting ? 1 : 0 }}
-          transition={{ duration: 0.25 }}
-        >
-          Cancel
-        </motion.span>
-
-        <motion.span
-          className="absolute inset-x-[12px] flex h-[40px] items-center justify-center overflow-hidden rounded-xl text-[15px] font-bold"
-          style={{ top: 260 }}
+          className="absolute inset-x-[3px] top-[3px] flex h-[26px] items-center justify-center gap-[5px] overflow-hidden rounded-[9px] border text-[10.5px] font-semibold"
           initial={false}
           animate={{
-            backgroundColor: sent ? TINT.green.fg : placed ? PRIMARY : "#e7e9f1",
-            color: placed ? "#ffffff" : "#a3a8bd",
+            backgroundColor: counting ? PRIMARY_SOFT : placed ? PRIMARY : PRIMARY_OFF,
+            borderColor: counting ? PRIMARY : "rgba(0,0,0,0)",
+            color: counting ? PRIMARY : "#ffffff",
           }}
           transition={{ duration: 0.3 }}
         >
+          {counting ? (
+            `Cancel ${n}s`
+          ) : (
+            <>
+              Send Document
+              <ChevronRightIcon className="size-[12px]" />
+            </>
+          )}
+          {/* The countdown fills the button from the left; the label turns
+              white where the fill has reached it. */}
           <motion.span
-            className="absolute inset-y-0 left-0 bg-white/20"
+            className="absolute inset-0 flex items-center justify-center text-white"
+            style={{ background: PRIMARY }}
             initial={false}
-            animate={{ width: counting ? `${((s - 4) / COUNT_FROM) * 100}%` : "0%" }}
-            transition={{ duration: counting ? 0.45 : 0, ease: "linear" }}
-          />
-          <span className="relative">
-            {sent ? (
-              <span className="flex items-center gap-1">
-                <CheckIcon className="size-[16px]" />
-                Sent
-              </span>
-            ) : counting ? (
-              `Sending in ${n}`
-            ) : (
-              "Send"
-            )}
-          </span>
+            animate={{ clipPath: `inset(0 ${(1 - run) * 100}% 0 0)`, opacity: counting ? 1 : 0 }}
+            transition={{ clipPath: { duration: counting ? TICK / 1000 : 0, ease: "linear" }, opacity: { duration: 0.2 } }}
+          >
+            {counting && `Cancel ${n}s`}
+          </motion.span>
         </motion.span>
-      </div>
 
-      <Sheet style={{ left: 186, top: 20, width: 224, height: 320 }}>
-        <Page lines={2} />
-      </Sheet>
-      {/* Where the signature goes, then the signature itself. */}
+        {(
+          [
+            { key: "missing", title: "Signature required", body: "Add one for every signer" },
+            { key: "ready", title: "Ready to send", body: null },
+            { key: "pending", title: "Pending send…", body: "Cancel before it goes" },
+          ] as const
+        ).map((p) => (
+          <motion.div
+            key={p.key}
+            className="absolute inset-x-[9px] top-[37px]"
+            initial={false}
+            animate={{ opacity: pop === p.key ? 1 : 0 }}
+            transition={{ duration: 0.25, delay: pop === p.key ? (p.key === "pending" ? 0.1 : 0.55) : 0 }}
+          >
+            <span className="block text-[10.5px] font-semibold">{p.title}</span>
+            {p.body ? (
+              <span className="mt-[3px] block text-[8.5px]" style={{ color: MUTED }}>
+                {p.body}
+              </span>
+            ) : (
+              // Who it's going to: the three recipients, in their colours.
+              <span className="mt-[4px] flex items-center gap-[5px] text-[8.5px]" style={{ color: MUTED }}>
+                <span className="flex">
+                  {[TINT.blue, TINT.green, TINT.yellow].map((t, i) => (
+                    <span key={i} className="-ml-[3px] size-[11px] rounded-full border-[1.5px] border-white first:ml-0" style={{ background: t.dot }} />
+                  ))}
+                </span>
+                To 3 recipients
+              </span>
+            )}
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Once the countdown runs out: on its way. */}
       <motion.div
-        className="absolute rounded-md border-2 border-dashed border-[#d3d8e6]"
-        style={{ left: 208, top: 216, width: 112, height: 38 }}
+        className="absolute inset-0 flex flex-col items-center justify-center gap-[10px]"
+        style={{ background: CANVAS }}
         initial={false}
-        animate={{ opacity: placed ? 0 : 1 }}
-      />
-      <motion.div
-        className="absolute flex items-center gap-[6px] rounded-md border-2 border-dashed px-2 text-[12px] font-semibold"
-        style={{ left: 208, top: 216, width: 112, height: 38, background: TINT.blue.bg, color: TINT.blue.fg, borderColor: TINT.blue.fg }}
-        initial={false}
-        animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : 0.92 }}
-        transition={{ duration: 0.2 }}
+        animate={{ opacity: sending ? 1 : 0 }}
+        transition={{ duration: 0.35 }}
       >
-        <PencilIcon className="size-[13px]" />
-        Signature
+        <motion.span
+          className="flex size-[46px] items-center justify-center rounded-full"
+          style={{ background: PRIMARY }}
+          initial={false}
+          animate={{ scale: sending ? 1 : 0.7 }}
+        >
+          <SendMark className="size-[26px]" />
+        </motion.span>
+        <span className="text-[15px] font-semibold">Sending…</span>
       </motion.div>
     </AppWindow>
-  );
-}
-
-/** The chip under the cursor while it's dragged onto the page. */
-function SendCarry(s: number) {
-  if (s !== 1 && s !== 2) return undefined;
-  return (
-    <div
-      className="absolute flex items-center gap-[6px] rounded-md border-2 px-2 text-[12px] font-semibold shadow-[0_8px_18px_-6px_rgba(20,20,80,0.45)]"
-      style={{ left: -56, top: -19, width: 112, height: 38, background: TINT.blue.bg, color: TINT.blue.fg, borderColor: TINT.blue.fg }}
-    >
-      <PencilIcon className="size-[13px]" />
-      Signature
-    </div>
   );
 }
 
@@ -915,146 +1280,179 @@ function SendCarry(s: number) {
 /* 7. Send another, without starting over                                    */
 /* ------------------------------------------------------------------------ */
 
-const AGAIN_OPTIONS: { icon: Icon; label: string }[] = [
-  { icon: DocumentPlusIcon, label: "Same recipients, different document" },
-  { icon: UserGroupIcon, label: "Same document, different recipients" },
-  { icon: PlusCircleIcon, label: "New send entirely" },
-];
+const AGAIN_OPTIONS = ["Same document, different recipients", "Same recipients, different document", "New send entirely"];
 
-// The modal's two sizes, kept centred: "Sent", then the three choices.
-const SENT_H = 196;
-const CHOOSE_H = 236;
-const SEND_ANOTHER_BTN: [number, number] = [289, (H - SENT_H) / 2 + SENT_H - 18 - 17];
-const PICK_AT: [number, number] = [262, (H - CHOOSE_H) / 2 + 56 + 52 + 22];
+// The success card and the dialog over it, both centred in the window.
+const CARD = { left: 122, top: 40, width: 236, height: 280 };
+const DIALOG = { left: 125, top: 82, width: 230, height: 196 };
+const SEND_ANOTHER_AT: [number, number] = [CARD.left + 12 + 54, CARD.top + 246 + 12];
+const OPTION_AT = (i: number): [number, number] => [DIALOG.left + 112, DIALOG.top + 68 + i * 30 + 13];
+const CONTINUE_AT: [number, number] = [DIALOG.left + 168, DIALOG.top + 164 + 12];
 
 function AgainScene({ s }: { s: number }) {
-  const modal = s <= 3;
-  const choosing = s >= 1 && s <= 3;
-  const picked = s === 3;
-  // Same document, different recipients: the people clear, the page stays.
-  const cleared = s === 4 || s === 5;
-  const h = choosing ? CHOOSE_H : SENT_H;
+  const sent = s >= 1;
+  const dialog = s >= 2 && s <= 6;
+  const picked = s >= 4 ? 1 : 0;
+  // Same recipients, different document: on to choosing the new file.
+  const upload = s === 7;
   return (
-    <>
-      <motion.div className="absolute inset-0" initial={false} animate={{ filter: modal ? "blur(2.5px)" : "blur(0px)" }} transition={{ duration: 0.35 }}>
-        <AppWindow>
-          <div className="absolute inset-y-0 left-0 flex w-[164px] flex-col gap-[8px] border-r border-[#eceef4] bg-white p-[12px]">
-            <span className="mb-[2px] text-[13px] font-semibold">Recipients</span>
-            <div className="relative h-[120px]">
-              {RECIPIENTS.map((r, i) => (
-                <motion.div
-                  key={r.name}
-                  className="absolute inset-x-0 flex h-[32px] items-center gap-[8px] rounded-lg border border-[#e3e6ef] px-[7px]"
-                  style={{ top: i * 40 }}
-                  initial={false}
-                  animate={{ opacity: cleared ? 0 : 1, x: cleared ? -10 : 0 }}
-                  transition={{ duration: 0.35, ease: EASE, delay: cleared ? 0.06 * i : 0.25 + 0.08 * i }}
-                >
-                  <span className="flex size-[20px] shrink-0 items-center justify-center rounded-full text-[11px] font-semibold" style={{ background: r.tint.bg, color: r.tint.fg }}>
-                    {i + 1}
-                  </span>
-                  <span className="truncate text-[12px] font-medium">{r.name}</span>
-                </motion.div>
-              ))}
-              <motion.div
-                className="absolute inset-x-0 top-0 flex h-[32px] items-center justify-center gap-1 rounded-lg border border-dashed border-[#b9c2f9] text-[12px] font-semibold"
-                style={{ color: PRIMARY }}
-                initial={false}
-                animate={{ opacity: cleared ? 1 : 0 }}
-                transition={{ duration: 0.3, delay: cleared ? 0.35 : 0 }}
-              >
-                <PlusIcon className="size-[13px]" />
-                Add recipient
-              </motion.div>
-            </div>
-          </div>
-          <Sheet style={{ left: 186, top: 20, width: 224, height: 320 }}>
-            <Page lines={2} />
-          </Sheet>
-          {/* The document's fields stay put, waiting for new people. */}
-          {RECIPIENTS.map((r, i) => (
-            <motion.div
-              key={r.name}
-              className="absolute rounded-md border-2 border-dashed"
-              style={{ left: 206 + (i % 2) * 100, top: 210 + Math.floor(i / 2) * 46, width: 88, height: 34 }}
-              initial={false}
-              animate={{ backgroundColor: cleared ? "#f3f4f8" : r.tint.bg, borderColor: cleared ? "#cfd4e2" : r.tint.fg }}
-              transition={{ duration: 0.4, delay: cleared ? 0.2 : 0.25 }}
-            />
-          ))}
-        </AppWindow>
-      </motion.div>
-      <motion.div className="absolute inset-0 bg-[#1a2370]" initial={false} animate={{ opacity: modal ? 0.22 : 0 }} transition={{ duration: 0.35 }} />
-
+    <AppWindow>
+      {/* The last step: the send's summary, and the way to go again. */}
       <motion.div
-        className="absolute overflow-hidden rounded-2xl bg-white"
-        style={{ left: 90, width: 300, boxShadow: SHADOW }}
+        className="absolute inset-0"
         initial={false}
-        animate={{ top: (H - h) / 2, height: h, opacity: modal ? 1 : 0, scale: modal ? 1 : 0.94 }}
-        transition={{ duration: 0.4, ease: EASE }}
+        animate={{ opacity: upload ? 0 : 1, filter: dialog ? "blur(2px)" : "blur(0px)" }}
+        transition={{ duration: 0.35 }}
       >
-        {/* Sent, with the way to go again. */}
-        <motion.div
-          className="absolute inset-x-0 top-0 flex flex-col items-center p-[18px]"
-          style={{ height: SENT_H }}
+        <div className="absolute rounded-[14px] bg-white shadow-[0_6px_20px_-8px_rgba(20,20,80,0.25)]" style={{ ...CARD, left: CARD.left - 24, top: CARD.top - 24 }}>
+          <span className="absolute top-[16px] left-1/2 flex size-[36px] -translate-x-1/2 items-center justify-center rounded-full" style={{ background: PRIMARY }}>
+            <motion.span className="absolute" initial={false} animate={{ opacity: sent ? 0 : 1, scale: sent ? 0.6 : 1 }} transition={{ duration: 0.25 }}>
+              <SendMark className="size-[20px]" />
+            </motion.span>
+            <motion.span className="absolute text-white" initial={false} animate={{ opacity: sent ? 1 : 0, scale: sent ? 1 : 0.4 }} transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}>
+              <CheckIcon className="size-[20px]" />
+            </motion.span>
+          </span>
+          <span className="absolute inset-x-0 top-[60px] text-center text-[15px] font-bold">
+            <motion.span className="absolute inset-x-0" initial={false} animate={{ opacity: sent ? 0 : 1 }}>
+              Sending…
+            </motion.span>
+            <motion.span className="absolute inset-x-0" initial={false} animate={{ opacity: sent ? 1 : 0 }}>
+              Sent!
+            </motion.span>
+          </span>
+          <div className="absolute inset-x-0 top-[84px] flex flex-col items-center gap-[4px]">
+            <Bar w={170} h={4} />
+            <Bar w={120} h={4} />
+          </div>
+
+          {/* Document name, recipients, status. */}
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="absolute inset-x-[12px] flex h-[16px] items-center rounded-[5px] border px-[6px]" style={{ top: 102 + i * 20, background: CANVAS, borderColor: "#eceef2" }}>
+              <Bar w={[50, 42, 30][i]} h={3} color="#c9ccd6" />
+              <span className="absolute left-[118px] flex items-center">
+                {i === 0 && <Bar w={48} h={4} color="#a9adb8" />}
+                {i === 1 && <span className="rounded-[3px] bg-[#e3e5eb] px-[3px] text-[7.5px] font-semibold">3</span>}
+                {i === 2 && (
+                  <span className="flex items-center gap-[3px] rounded-full px-[5px] py-px text-[7px] font-medium" style={{ background: "#c7f0ff", color: "#1a6f93" }}>
+                    <span className="size-[3px] rounded-full bg-[#2ab6ec]" />
+                    In progress
+                  </span>
+                )}
+              </span>
+            </div>
+          ))}
+
+          {/* Each recipient, and where their copy has got to. */}
+          {[TINT.blue, TINT.green, TINT.yellow].map((t, i) => (
+            <div key={i} className="absolute inset-x-[14px] flex h-[18px] items-center gap-[6px]" style={{ top: 172 + i * 22 }}>
+              <span className="flex size-[16px] items-center justify-center rounded-[5px]" style={{ background: t.dot, color: t.ink }}>
+                <FieldIcon field="Signature" className="size-[9px]" />
+              </span>
+              <span className="flex flex-col gap-[3px]">
+                <Bar w={[46, 38, 42][i]} h={3} color="#a9adb8" />
+                <Bar w={[64, 56, 60][i]} h={3} />
+              </span>
+              <span className="h-px flex-1 bg-[#eceef2]" />
+              <span className="rounded-full border px-[4px] text-[7px] font-medium" style={{ borderColor: "#c9ccd6", color: MUTED }}>
+                {i === 0 ? "Emailed" : "Scheduled"}
+              </span>
+            </div>
+          ))}
+
+          <span className="absolute inset-x-0 top-[238px] h-px bg-[#eceef2]" />
+          <motion.span
+            className="absolute top-[246px] left-[12px] flex h-[24px] w-[104px] items-center justify-center gap-[4px] rounded-[7px] border text-[9.5px] font-medium"
+            initial={false}
+            animate={{ borderColor: s === 1 || s === 2 ? "#9bb6f6" : "#d9dce4", backgroundColor: s === 2 ? PRIMARY_SOFT : "#ffffff" }}
+            transition={{ duration: 0.2 }}
+          >
+            Send another
+            <ArrowPathIcon className="size-[9px]" style={{ color: MUTED }} />
+          </motion.span>
+          <span className="absolute top-[246px] right-[12px] flex h-[24px] w-[104px] items-center justify-center gap-[4px] rounded-[7px] text-[9.5px] font-medium text-white" style={{ background: PRIMARY }}>
+            Track on listings
+            <ArrowRightIcon className="size-[9px]" />
+          </span>
+        </div>
+      </motion.div>
+      <motion.div className="absolute inset-0" style={{ background: SCRIM }} initial={false} animate={{ opacity: dialog ? 1 : 0 }} transition={{ duration: 0.35 }} />
+
+      {/* What would you like to send? */}
+      <motion.div
+        className="absolute rounded-[14px] bg-white"
+        style={{ ...DIALOG, left: DIALOG.left - 24, top: DIALOG.top - 24, boxShadow: SHADOW }}
+        initial={false}
+        animate={{ opacity: dialog ? 1 : 0, scale: dialog ? 1 : 0.94, y: dialog ? 0 : 8 }}
+        transition={{ duration: 0.35, ease: EASE }}
+      >
+        <span className="absolute inset-x-0 top-[16px] text-center text-[13px] font-semibold">What would you like to send?</span>
+        <div className="absolute inset-x-0 top-[38px] flex flex-col items-center gap-[4px]">
+          <Bar w={150} h={3} />
+          <Bar w={100} h={3} />
+        </div>
+        {AGAIN_OPTIONS.map((label, i) => {
+          const on = picked === i;
+          return (
+            <motion.div
+              key={label}
+              className="absolute inset-x-[12px] flex h-[26px] items-center gap-[7px] rounded-[7px] border px-[7px] text-[9.5px]"
+              style={{ top: 68 + i * 30 }}
+              initial={false}
+              animate={{
+                backgroundColor: on ? PRIMARY_SOFT : (s === 3 && i === 1 ? "#eceef2" : CANVAS),
+                borderColor: on ? "#8fb0f7" : "#e6e8ee",
+                color: on ? "#1f2a8f" : "#55575f",
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              <span className="flex size-[11px] shrink-0 items-center justify-center rounded-full border" style={{ borderColor: on ? "#4d6ff0" : "#d3d6de", background: on ? "#70a2ff" : "#ffffff" }} />
+              {label}
+            </motion.div>
+          );
+        })}
+        <span className="absolute inset-x-0 top-[156px] h-px bg-[#eceef2]" />
+        <span className="absolute top-[164px] left-[12px] flex h-[24px] w-[98px] items-center justify-center rounded-[7px] border text-[10px] font-medium" style={{ borderColor: "#d9dce4" }}>
+          Cancel
+        </span>
+        <motion.span
+          className="absolute top-[164px] right-[12px] flex h-[24px] w-[98px] items-center justify-center rounded-[7px] text-[10px] font-semibold text-white"
           initial={false}
-          animate={{ opacity: choosing ? 0 : 1 }}
+          animate={{ backgroundColor: s === 6 ? "#2c3bd6" : PRIMARY }}
           transition={{ duration: 0.2 }}
         >
-          <span className="mt-[2px] flex size-[38px] items-center justify-center rounded-full" style={{ background: TINT.green.bg, color: TINT.green.fg }}>
-            <CheckIcon className="size-[20px]" />
-          </span>
-          <span className="mt-[10px] text-[16px] font-semibold">Sent</span>
-          <span className="mt-[4px] text-[12px]" style={{ color: MUTED }}>
-            To 3 recipients
-          </span>
-          <div className="mt-auto flex w-full gap-[8px]">
-            <span className="flex h-[34px] w-[90px] items-center justify-center rounded-lg border border-[#e3e6ef] text-[13px] font-semibold">Done</span>
-            <span className="flex h-[34px] flex-1 items-center justify-center gap-[6px] rounded-lg text-[13px] font-semibold text-white" style={{ background: PRIMARY }}>
-              <ArrowPathIcon className="size-[14px]" />
-              Send another
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Three ways to keep going. */}
-        <motion.div
-          className="absolute inset-x-0 top-0 p-[18px]"
-          initial={false}
-          animate={{ opacity: choosing ? 1 : 0 }}
-          transition={{ duration: 0.25, delay: choosing ? 0.15 : 0 }}
-        >
-          <ModalHead title="Send another" />
-          <div className="mt-[14px] flex flex-col gap-[8px]">
-            {AGAIN_OPTIONS.map((o, i) => {
-              const on = picked && i === 1;
-              return (
-                <motion.div
-                  key={o.label}
-                  className="flex h-[44px] items-center gap-[10px] rounded-xl border px-[10px] text-[13px] font-medium"
-                  initial={false}
-                  animate={{ borderColor: on ? PRIMARY : "#e3e6ef", backgroundColor: on ? "#eef0ff" : "#ffffff" }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <span className="flex size-[24px] shrink-0 items-center justify-center rounded-md" style={{ background: TINT.blue.bg, color: TINT.blue.fg }}>
-                    <o.icon className="size-[14px]" />
-                  </span>
-                  {o.label}
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
+          Continue
+        </motion.span>
       </motion.div>
-    </>
+
+      {/* The next step: a new file for the same people. */}
+      <motion.div
+        className="absolute inset-0 flex flex-col items-center justify-center"
+        initial={false}
+        animate={{ opacity: upload ? 1 : 0, y: upload ? 0 : 8 }}
+        transition={{ duration: 0.4, ease: EASE, delay: upload ? 0.2 : 0 }}
+      >
+        <svg viewBox="0 0 40 40" fill="none" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" className="size-[44px]">
+          <path d="M8 4h16l6 6v8M8 4v30h12" stroke="#1d2140" />
+          <path d="M12 12h9M12 16h12M12 20h8" stroke="#1d2140" />
+          <path d="M23 31.5a4.5 4.5 0 0 1 1-8.9 5.5 5.5 0 0 1 10.6 1.4 3.8 3.8 0 0 1-.6 7.5M29 25v9M26 28l3-3 3 3" stroke={PRIMARY} />
+        </svg>
+        <span className="mt-[10px] text-[13px] font-semibold">Drag and drop a file, or</span>
+        <span className="mt-[8px] flex h-[24px] items-center rounded-[7px] px-[12px] text-[10px] font-semibold text-white" style={{ background: PRIMARY }}>
+          Browse your device
+        </span>
+        <div className="mt-[10px] flex flex-col items-center gap-[4px]">
+          <Bar w={180} h={3} />
+          <Bar w={130} h={3} />
+        </div>
+      </motion.div>
+    </AppWindow>
   );
 }
 
 /* ------------------------------------------------------------------------ */
 
 const REST: [number, number] = [430, 330];
-// Just clear of the Send button, so the countdown on it stays readable.
-const ASIDE: [number, number] = [206, 318];
 
 const LOOPS: Record<DecisionLoopName, Loop> = {
   recipients: {
@@ -1079,18 +1477,18 @@ const LOOPS: Record<DecisionLoopName, Loop> = {
     Scene: SidebarScene,
   },
   fields: {
-    label: "A grid of twelve field types collapses down to just Signature, Text and Date, with a More fields link.",
+    label: "A recipient's list of six field types collapses down to just Signature, Text and Date, with More field types tucked underneath.",
     steps: [{ ms: 1800 }, { ms: 1200 }, { ms: 2200 }, { ms: 1100 }],
     still: 2,
     Scene: FieldsScene,
   },
   panel: {
-    label: "Selecting a field on the page turns the sidebar into its editor and brings up a formatting toolbar; clicking away puts both back.",
+    label: "Selecting a Text field on the page turns the Recipients & Fields sidebar into that field's Content editor and brings up a formatting toolbar; clicking the page puts both back.",
     steps: [
-      { ms: 1000, cursor: [318, 284] },
-      { ms: 2000, cursor: [318, 284], click: true },
-      { ms: 800, cursor: [388, 300] },
-      { ms: 1300, cursor: [388, 300], click: true },
+      { ms: 1100, cursor: TEXT_FIELD_AT },
+      { ms: 2400, cursor: TEXT_FIELD_AT, click: true },
+      { ms: 800, cursor: PAGE_BLANK_AT },
+      { ms: 1300, cursor: PAGE_BLANK_AT, click: true },
       { ms: 700, cursor: REST },
     ],
     still: 1,
@@ -1112,37 +1510,36 @@ const LOOPS: Record<DecisionLoopName, Loop> = {
     Scene: ModalsScene,
   },
   send: {
-    label: "A greyed-out Send button explains a signature field is missing; once one is placed, Send counts down from five with a Cancel option, then shows Sent.",
+    label: "Hovering the greyed-out Send Document button explains a signature is required; once a signature field is placed it says it's ready, and clicking it counts down from five with a Cancel option before sending.",
     steps: [
-      { ms: 1000, cursor: CHIP_AT },
-      { ms: 300, cursor: CHIP_AT, click: true },
-      { ms: 800, cursor: DROP_AT },
-      { ms: 700, cursor: DROP_AT },
-      { ms: 650, cursor: SEND_AT },
-      { ms: 450, cursor: SEND_AT, click: true },
-      { ms: 450, cursor: ASIDE },
-      { ms: 450, cursor: ASIDE },
-      { ms: 450, cursor: ASIDE },
-      { ms: 450, cursor: ASIDE },
-      { ms: 1700, cursor: REST },
-      { ms: 600, cursor: REST },
+      { ms: 900, cursor: [250, 190] },
+      { ms: 1900, cursor: SEND_AT },
+      { ms: 800, cursor: SIGN_AT },
+      { ms: 900, cursor: SIGN_AT, click: true },
+      { ms: 1700, cursor: SEND_AT },
+      { ms: TICK, cursor: SEND_AT, click: true },
+      { ms: TICK, cursor: SEND_AT },
+      { ms: TICK, cursor: SEND_AT },
+      { ms: TICK, cursor: SEND_AT },
+      { ms: TICK, cursor: SEND_AT },
+      { ms: 1500, cursor: REST },
     ],
-    still: 6,
+    still: 7,
     Scene: SendScene,
-    carry: SendCarry,
   },
   again: {
-    label: "After sending, Send another offers three ways to go again; choosing the same document clears the recipients but keeps the document and its fields.",
+    label: "On the Sent screen, Send another opens a choice of the same document to different recipients, the same recipients with a different document, or a new send; picking the second goes straight to choosing a new file.",
     steps: [
-      { ms: 1300, cursor: SEND_ANOTHER_BTN },
-      { ms: 1000, cursor: SEND_ANOTHER_BTN, click: true },
-      { ms: 700, cursor: PICK_AT },
-      { ms: 700, cursor: PICK_AT, click: true },
-      { ms: 1100, cursor: REST },
-      { ms: 1700, cursor: REST },
-      { ms: 900, cursor: REST },
+      { ms: 1000, cursor: REST },
+      { ms: 1000, cursor: SEND_ANOTHER_AT },
+      { ms: 1100, cursor: SEND_ANOTHER_AT, click: true },
+      { ms: 900, cursor: OPTION_AT(1) },
+      { ms: 900, cursor: OPTION_AT(1), click: true },
+      { ms: 650, cursor: CONTINUE_AT },
+      { ms: 500, cursor: CONTINUE_AT, click: true },
+      { ms: 2000, cursor: REST },
     ],
-    still: 3,
+    still: 4,
     Scene: AgainScene,
   },
 };
