@@ -750,7 +750,7 @@ export const projects: Project[] = [
         type: "flow",
         eyebrow: "Design-to-dev handoff",
         heading: "Every route mapped, and annotated for the build.",
-        body: "The full user flow, from the dashboard to sent, with every route and contingency mapped. Annotations throughout explain how each function should be built, and anything that isn't obvious from the screens alone. The developers built from it alongside the prototypes.",
+        body: "The full user flow, from the dashboard to sent, with every route and contingency mapped. High fidelity, with annotations on every step, function and feature: how each should behave, its interaction states, and anything that isn't obvious from the screens alone. The developers built from it alongside the prototypes.",
         image: { src: null, w: 54268, h: 4623, alt: "The annotated Quick Send user flow, screen by screen" },
         figma: {
           embed: "https://embed.figma.com/design/908pAUCNH0GwKBsGkxnN5i/Quick-Send-Flow?node-id=0-1&embed-host=share",
@@ -758,7 +758,7 @@ export const projects: Project[] = [
           preview: "/work/quick-send/flow-preview.webp",
         },
         notes: [
-          { icon: "NumberedList", title: "One component, built in sequence", body: "The document editor component has three modes: viewer, compose and editor. Quick Send only needed compose, so we built that first and proved it with real senders. Editor mode, used where templates are made, came next and built on what compose had already settled." },
+          { icon: "InboxStack", title: "Linked where the devs work", body: "The design file and the flow were linked from every Jira ticket, so the developers always found the right file, in the place they already worked." },
           { icon: "UserGroup", title: "Design and engineering aligned", body: "Regular sessions with the developers settled dependencies and trade-offs early, so we stayed on the same page throughout." },
         ],
       },
@@ -809,8 +809,8 @@ export const projects: Project[] = [
           { goal: "No barriers", icon: "HandRaised", title: "Nothing to set up first.", body: "No template to make, nothing left in the library after sending, and nothing the rest of the team can see." },
           { goal: "One clean flow", icon: "ArrowLongRight", title: "Decluttered, and easier to follow.", body: "Users found it far more intuitive and sent without needing help, so support queries went down." },
           { goal: "Beyond the brief", icon: "UserPlus", title: "Smoother onboarding, cleaner demos.", body: "New users got going faster, and the whole flow, upload to sent, is short enough to show in a sales demo." },
-          { goal: "Beyond the brief", icon: "Beaker", title: "Tested live, without the risk.", body: "Quick Send launched as a beta, so the new editor got real feedback without touching anyone's everyday sending." },
-          { goal: "Beyond the brief", icon: "PuzzlePiece", title: "It also led to Compose.", body: "The same editor now powers Compose, which customers embed in their own products, and the redesigned main editor." },
+          { goal: "Beyond the brief", icon: "Beaker", title: "A safe test for Compose.", body: "I saw that Quick Send could run on Compose, a mode of the new editor component. Launching it as a beta got the component real feedback before it went into the new template editor, a high-risk part of the app we couldn't afford to break." },
+          { goal: "Beyond the brief", icon: "PuzzlePiece", title: "One component, in more places.", body: "The same component now runs the redesigned template editor, and customers embed Compose in their own products." },
         ],
         // Placeholder numbers, to be swapped for the real ones.
         stats: [

@@ -199,10 +199,7 @@ function PrototypeCard({ action, image }: { action: NonNullable<Project["actions
         <span className="block" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
           <Image src={image.src} alt="" fill sizes="352px" className="object-cover object-top" />
         </span>
-        {/* A click mark in the corner; on hover the picture softens and invites a play. */}
-        <span className="absolute top-3 right-3 flex size-12 items-center justify-center rounded-full bg-white/95 text-[#2b3bd6] shadow-lg transition-opacity group-hover:opacity-0">
-          <Icon name={action.icon} className="size-6" />
-        </span>
+        {/* On hover the picture softens and invites a play. */}
         <span className="absolute inset-0 flex items-center justify-center bg-bg/25 opacity-0 backdrop-blur-[1.5px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
           <span className="inline-flex h-11 items-center gap-2 rounded-full bg-fg px-5 font-medium text-bg shadow-lg">
             <Icon name={action.icon} className="size-5" />
@@ -219,7 +216,7 @@ function PrototypeCard({ action, image }: { action: NonNullable<Project["actions
 /** A handwritten note with a sketched arrow, pointing down at what follows, or `up` at what's above. */
 function Scribble({ label, up, className = "" }: { label: string; up?: boolean; className?: string }) {
   return (
-    <p aria-hidden className={`pointer-events-none flex items-center gap-1 font-hand text-[1.75rem] leading-none whitespace-nowrap text-accent-ink ${up ? "flex-row-reverse" : ""} ${className}`}>
+    <p aria-hidden className={`pointer-events-none flex items-center gap-1 font-hand text-[1.75rem] leading-none whitespace-nowrap text-accent ${up ? "flex-row-reverse" : ""} ${className}`}>
       <svg
         viewBox="0 0 70 56"
         className={`h-12 w-14 shrink-0 ${up ? "-mt-10" : "mt-10 -scale-y-100"}`}
