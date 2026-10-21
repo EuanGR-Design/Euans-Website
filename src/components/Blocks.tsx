@@ -466,6 +466,11 @@ function BlockView({
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">{b.body}</p>
+            </Reveal>
+          )}
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {b.items.map((p, i) => (
               <Reveal key={p.name} delay={0.08 * (i % 3)} className="rounded-3xl border border-line bg-raised p-7">
@@ -484,12 +489,18 @@ function BlockView({
               </Reveal>
             ))}
           </div>
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "journey-map":
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">{b.body}</p>
+            </Reveal>
+          )}
           <Reveal className="mt-12 -mx-5 overflow-x-auto px-5 md:-mx-10 md:px-10">
             <table className="w-full min-w-[720px] border-separate border-spacing-2 text-left text-sm">
               <thead>

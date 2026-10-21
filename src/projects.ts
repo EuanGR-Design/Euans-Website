@@ -186,13 +186,16 @@ export type Block =
       type: "personas";
       eyebrow?: string;
       heading: string;
+      body?: string;
       items: { name: string; role: string; goals: string; frustrations: string }[];
       draft?: boolean;
+      deeper?: Deeper;
     }
   | {
       type: "journey-map";
       eyebrow?: string;
       heading: string;
+      body?: string;
       stages: string[];
       // One row per lane, one cell per stage.
       lanes: { label: string; cells: string[] }[];
@@ -458,13 +461,14 @@ export const projects: Project[] = [
     era: "legalesign",
     title: "Support Hub",
     summary: "Help, tickets and support stats, inside the product.",
-    role: "Design lead",
+    year: "2025",
+    role: "Lead designer, joint product owner",
     tags: ["Discovery", "Personas", "Story mapping"],
     cover: null,
     intro:
       "Help, ticket tracking and support stats inside Console, for the people who use Legalesign every day and the admins who answer for it.",
     statement: "Help, tickets and support stats, inside the product.",
-    context: legalesignContext("Daily users, team and enterprise admins", "Design lead"),
+    context: legalesignContext("Daily users, team and enterprise admins", "Lead designer, joint product owner"),
     // The Quick Send format, with the discovery this project had: who it's
     // for, how they get help today, and the directions considered.
     blocks: caseStudy({
@@ -489,14 +493,14 @@ export const projects: Project[] = [
           deeper: {
             label: "the discovery",
             heading: "The discovery behind it.",
-            body: "How support worked before, what we found, and the directions we weighed before choosing one.",
+            body: "How I led it, and how support worked before.",
             blocks: [
               {
                 type: "points",
                 eyebrow: "My approach",
                 heading: "How I led the discovery.",
                 items: [
-                  { icon: "UserGroup", title: "A workshop with support and dev", body: "What users need from support, how help is given today, and what each team would change." },
+                  { icon: "UserGroup", title: "A workshop with support and dev", body: "What users need from support, how help is given today, and what each team would change. I ran the research with a second designer, then designed it on my own." },
                   { icon: "Users", title: "Six personas", body: "From the daily user to the API developer and procurement, each with their goals, pains and how they like to get help." },
                   { icon: "QueueList", title: "Stories into story maps", body: "User stories for each persona, grouped by theme, then mapped from task to step to detail." },
                   { icon: "Flag", title: "An MVP line", body: "Every story placed above or below the line, with must, should and could have behind it." },
@@ -529,19 +533,6 @@ export const projects: Project[] = [
                   },
                 ],
               },
-              {
-                type: "options",
-                eyebrow: "Directions",
-                heading: "Six directions, weighed against effort and what each user needed.",
-                items: [
-                  { title: "Ticket tracking and stats", body: "Every ticket's status in Console, with escalation, and the support stats enterprise customers asked for.", image: null, chosen: true },
-                  { title: "A help section", body: "The most common questions, search and the onboarding video, edited by support without a developer.", image: null, chosen: true },
-                  { title: "Tooltips and contextual help", body: "Quick to write, but they clutter the UI and the current tooltip library couldn't link out.", image: null },
-                  { title: "Clearer error messages", body: "Error-specific fixes and a link to the right help, logged so users can quote them.", image: null },
-                  { title: "Better bug reports", body: "Screenshots, recordings and diagnostic data attached, so support asks fewer follow-up questions.", image: null },
-                  { title: "A full help centre", body: "One searchable home for every guide, video and release note. The right end goal, too big to start with.", image: null },
-                ],
-              },
             ],
           },
         },
@@ -549,6 +540,7 @@ export const projects: Project[] = [
           type: "personas",
           eyebrow: "Personas",
           heading: "Six personas, and the three the MVP was for.",
+          body: "I wrote six detailed personas. These are the three the MVP served, cut to what they wanted and what got in their way. The full write-ups are behind Dig deeper.",
           items: [
             {
               name: "Taylor, daily user",
@@ -569,6 +561,46 @@ export const projects: Project[] = [
               frustrations: "No view across departments, unclear pricing, and constantly fixing problems for end users.",
             },
           ],
+          deeper: {
+            label: "the full personas",
+            heading: "The three personas in full.",
+            body: "Each one's goals, day and pains, and how they like to get help, which shaped the support they'd find in the product.",
+            blocks: [
+              {
+                type: "points",
+                eyebrow: "Taylor, daily user",
+                heading: "Administrative assistant. Send, track, chase, store.",
+                items: [
+                  { icon: "Flag", title: "Goals", body: "Send high volumes of documents accurately, keep track of every status, and work independently without bothering senior management." },
+                  { icon: "QueueList", title: "Their day", body: "Preparing contracts, NDAs and onboarding forms, using templates, chasing recipients who've stalled, and filing completed documents." },
+                  { icon: "HandRaised", title: "Pain points", body: "A steep learning curve, keeping up with new features, slow replies from support, and self-service help that isn't obvious." },
+                  { icon: "ChatBubbleLeftRight", title: "How they get help", body: "In-app tooltips and guided tours, quick-reference guides and FAQs, short videos, and live chat when they're stuck." },
+                ],
+              },
+              {
+                type: "points",
+                eyebrow: "Olivia, team admin",
+                heading: "Operations manager. Keeps the team productive and reports upwards.",
+                items: [
+                  { icon: "Flag", title: "Goals", body: "Manage access and permissions, monitor the team through reports and KPIs, and raise problems on the team's behalf." },
+                  { icon: "QueueList", title: "Their day", body: "Adding and removing members, reviewing usage and completion times, and fixing basic issues before escalating the rest." },
+                  { icon: "HandRaised", title: "Pain points", body: "Limited insight into team performance, data pulled together by hand from several places, and little control over daily users' workflows." },
+                  { icon: "ChatBubbleLeftRight", title: "How they get help", body: "Short tutorials and tooltips in the admin area, guided tours to train the team, and resources they can circulate internally." },
+                ],
+              },
+              {
+                type: "points",
+                eyebrow: "Tony, enterprise admin",
+                heading: "Enterprise IT administrator. Answers for the contract.",
+                items: [
+                  { icon: "Flag", title: "Goals", body: "Keep the rollout secure and compliant, track spend and billing, make sure Legalesign keeps to its SLA, and report on key metrics." },
+                  { icon: "QueueList", title: "Their day", body: "Evaluating and rolling out software, managing access and data security, and keeping integrations with SSO, CRM and document systems working." },
+                  { icon: "HandRaised", title: "Pain points", body: "No visibility across departments, unclear pricing as the organisation grows, and constantly resolving technical issues for end users." },
+                  { icon: "ShieldCheck", title: "What they need to see", body: "Compliance certifications, clear pricing, uptime and SLA guarantees, and detailed technical documentation." },
+                ],
+              },
+            ],
+          },
         },
         {
           type: "journey-map",
@@ -614,17 +646,17 @@ export const projects: Project[] = [
         type: "brief",
         eyebrow: "The brief",
         heading: "Let customers get help and track it inside Console, and give enterprise admins the numbers.",
-        body: "I turned the discovery into personas, user stories and a story map, and drew the MVP line across it.",
+        body: "Product ownership was changing hands, so I shared the role with the outgoing product owner and took the product and design side. I turned the discovery into personas, user stories and a story map, and drew the MVP line across it.",
         recreation: "A simplified recreation of the brief. The original stayed with Legalesign.",
         notes: [
           { icon: "QueueList", title: "Story maps for three personas", body: "Each persona's tasks, steps and details, with the MVP line drawn across them." },
-          { icon: "PuzzlePiece", title: "Built on what support used", body: "Tickets stayed in Freshdesk. Console reads them through its API, so support's process didn't change." },
+          { icon: "PuzzlePiece", title: "Built beside what support used", body: "A standalone support microsite, linked to the ticketing tool the support team already worked in, so their process didn't change." },
         ],
         title: "Support Hub MVP",
         meta: [
-          { label: "Owner", value: "Euan Robertson, design" },
+          { label: "Owner", value: "Euan Robertson, design and product" },
           { label: "For", value: "Daily users, team admins and enterprise admins" },
-          { label: "Built on", value: "Freshdesk, which support already used" },
+          { label: "Built as", value: "A standalone support microsite" },
         ],
         sections: [
           {
@@ -650,6 +682,19 @@ export const projects: Project[] = [
           },
           { label: "Success looks like", body: "Enterprise stats no longer made by hand, and fewer follow-ups asking where a ticket has got to." },
         ],
+      },
+      outcome: {
+        type: "outcome",
+        eyebrow: "The outcome",
+        heading: "Every direction from discovery shipped.",
+        items: [
+          { icon: "QueueList", title: "Ticket tracking", body: "A support microsite where customers raise tickets, follow their status and escalate them, and admins see their team's." },
+          { icon: "MagnifyingGlass", title: "A rebuilt help site", body: "The support and help site was rebuilt from the ground up, into one place to find answers." },
+          { icon: "CursorArrowRays", title: "Tooltips and guided tours", body: "Tooltips across the whole product, and guided tours that walk people through it." },
+          { icon: "Flag", title: "Error messages that say what went wrong", body: "So users can send support the right details, and support can tell what they can fix and what goes to the developers." },
+          { icon: "PaperAirplane", title: "Feedback and bug reports", body: "Report a bug or send feedback from inside the product, straight to support and into the team's Jira channel." },
+        ],
+        todo: "Numbers to add: ticket volume, response and resolution times, or how many questions the help site now answers.",
       },
     }),
   },
