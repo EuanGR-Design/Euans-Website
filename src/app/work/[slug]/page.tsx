@@ -8,9 +8,8 @@ import { ProjectLink } from "@/components/ProjectTransition";
 import { SectionNav } from "@/components/SectionNav";
 import { Icon } from "@/components/Icon";
 import { HeroPrototype, PlayLink } from "@/components/HeroPrototype";
-import { LoopVideo } from "@/components/LoopVideo";
+import { HeroLoop } from "@/components/HeroLoop";
 import { ArrowUpRightIcon } from "@heroicons/react/20/solid";
-import { basePath } from "@/lib/basePath";
 
 const titleClass = "mt-4 text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.04em]";
 
@@ -162,25 +161,6 @@ export default async function ProjectPage({ params }: Props) {
   );
 }
 
-/**
- * The finished product playing in a browser window on the hero's blue panel,
- * laid out like Euan's video template. The window is sized to the recording,
- * so it fills the window with no gap, and takes most of the panel's width.
- */
-function HeroLoop({ loop }: { loop: NonNullable<Project["heroLoop"]> }) {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #5185ff, #4456f6)" }}>
-      <div className="w-[90%] overflow-hidden rounded-[clamp(8px,1.6vw,20px)] bg-[#f4f5f8] shadow-[0_18px_40px_-10px_rgba(0,0,0,0.3)] ring-2 ring-[#79adfc]">
-        {/* The browser's tab and address bars, from the template. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`${basePath}/work/quick-send/browser-bar.svg`} alt="" width={1440} height={79} className="block h-auto w-full" />
-        <div className="aspect-[1280/714]">
-          <LoopVideo src={loop.src} poster={loop.poster} label={loop.label} className="block h-full w-full object-cover" wrapperClassName="h-full w-full" button={false} />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /**
  * The prototype as a picture of the hero beside the title, set at a playful
