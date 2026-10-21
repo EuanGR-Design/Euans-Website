@@ -50,11 +50,14 @@ export function Deeper({ d, children }: { d: DeeperData; children: React.ReactNo
         ref={ref}
         aria-label={d.heading}
         onClose={() => setOpen(false)}
+        // Clipped rather than hidden: focusing the close button while the
+        // sheet is still sliding up would otherwise scroll the dialog itself,
+        // leaving the sheet's top above the screen.
         onClick={(e) => {
           // A click on the dimmed backdrop lands on the dialog itself.
           if (e.target === e.currentTarget) setOpen(false);
         }}
-        className="inset-x-0 top-auto bottom-0 m-0 h-[calc(100dvh-1.25rem)] max-h-none w-full max-w-none overflow-hidden bg-transparent p-0 text-fg backdrop:bg-[#1c2463]/45"
+        className="inset-x-0 top-auto bottom-0 m-0 h-[calc(100dvh-1.25rem)] max-h-none w-full max-w-none overflow-clip bg-transparent p-0 text-fg backdrop:bg-[#1c2463]/45"
       >
         {open && (
           <motion.div
