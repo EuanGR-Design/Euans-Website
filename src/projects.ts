@@ -5,7 +5,7 @@ import type { IconName } from "./components/Icon";
 
 import { oldDims } from "./oldImageSizes";
 import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
-import { caseStudy, todo } from "./caseStudy";
+import { caseStudy } from "./caseStudy";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -457,42 +457,200 @@ export const projects: Project[] = [
     slug: "support-hub",
     era: "legalesign",
     title: "Support Hub",
-    summary: "One place for customers and the support team to find answers and track tickets.",
+    summary: "Help, tickets and support stats, inside the product.",
     role: "Design lead",
-    tags: ["Research", "Service design", "UX"],
+    tags: ["Discovery", "Personas", "Story mapping"],
     cover: null,
     intro:
-      "A customer support and ticketing hub serving both Legalesign users and the internal support team.",
-    statement: "One place for customers and the support team to find answers and track tickets.",
-    context: legalesignContext("Customers and the support team", "Design lead"),
-    // The Quick Send format, with the research stage this project had.
+      "Help, ticket tracking and support stats inside Console, for the people who use Legalesign every day and the admins who answer for it.",
+    statement: "Help, tickets and support stats, inside the product.",
+    context: legalesignContext("Daily users, team and enterprise admins", "Design lead"),
+    // The Quick Send format, with the discovery this project had: who it's
+    // for, how they get help today, and the directions considered.
     blocks: caseStudy({
       problem: [
-        todo("problem", "Customers couldn't find answers on their own, so simple questions turned into support tickets."),
+        {
+          type: "voices",
+          id: "problem",
+          eyebrow: "The problem",
+          heading: "Getting help happened outside the product, and nobody could see where it had got to.",
+          body: "Two needs started it. Enterprise customers wanted proof that support was meeting their SLA, and accessibility standards meant Console users had to be able to get help. I ran a discovery workshop with the people who give support and the developers who'd build it. This is what customers were asking for.",
+          // Paraphrased from what the support team heard again and again.
+          items: [
+            { quote: "I have no idea what I'm doing.", need: "Help they can find inside Console, starting with the most common questions." },
+            { quote: "What does this option even mean?", need: "Answers about what a setting does, without leaving the page they're on." },
+            { quote: "Something unexpected happened.", need: "A way to report it, with the details support needs captured for them." },
+            { quote: "Has my ticket been escalated? When?", need: "Every ticket's status in one place, and a way to raise its priority." },
+            { quote: "I'd rather not talk to anyone.", need: "To solve it themselves first, with a person as the last step, not the first." },
+            { quote: "I need to see my team's tickets and chase them.", need: "A team view of every ticket, and escalation on someone else's behalf." },
+            { quote: "How many tickets, and how fast were they answered?", need: "Ticket counts and response and resolution times for any period, in the product." },
+            { quote: "Is Legalesign keeping to our SLA?", need: "Those times set against the SLA agreed for each priority." },
+          ],
+          deeper: {
+            label: "the discovery",
+            heading: "The discovery behind it.",
+            body: "How support worked before, what we found, and the directions we weighed before choosing one.",
+            blocks: [
+              {
+                type: "points",
+                eyebrow: "My approach",
+                heading: "How I led the discovery.",
+                items: [
+                  { icon: "UserGroup", title: "A workshop with support and dev", body: "What users need from support, how help is given today, and what each team would change." },
+                  { icon: "Users", title: "Six personas", body: "From the daily user to the API developer and procurement, each with their goals, pains and how they like to get help." },
+                  { icon: "QueueList", title: "Stories into story maps", body: "User stories for each persona, grouped by theme, then mapped from task to step to detail." },
+                  { icon: "Flag", title: "An MVP line", body: "Every story placed above or below the line, with must, should and could have behind it." },
+                ],
+              },
+              {
+                type: "insights",
+                eyebrow: "What we found",
+                heading: "How support worked, and what it meant for the design.",
+                items: [
+                  {
+                    found: "To understand a case, support pieced it together from the CRM, Slack and past tickets.",
+                    so: "Capture the user, team, organisation, page, time and error codes with every ticket.",
+                  },
+                  {
+                    found: "Support thought about 30% of questions could have been answered by documentation alone.",
+                    so: "Put help before the ticket form, starting with the most common questions.",
+                  },
+                  {
+                    found: "Some customers will do anything to avoid talking to a person, and nobody wanted a chatbot.",
+                    so: "Make self-service and a clear form the way in, with no bot in between.",
+                  },
+                  {
+                    found: "Enterprise support stats were made by hand, whenever a customer asked.",
+                    so: "Build ticket counts and response and resolution times into the product.",
+                  },
+                  {
+                    found: "Users wanted to know whether their issue had been escalated, and when.",
+                    so: "Show each ticket's status and priority, and let people raise it.",
+                  },
+                ],
+              },
+              {
+                type: "options",
+                eyebrow: "Directions",
+                heading: "Six directions, weighed against effort and what each user needed.",
+                items: [
+                  { title: "Ticket tracking and stats", body: "Every ticket's status in Console, with escalation, and the support stats enterprise customers asked for.", image: null, chosen: true },
+                  { title: "A help section", body: "The most common questions, search and the onboarding video, edited by support without a developer.", image: null, chosen: true },
+                  { title: "Tooltips and contextual help", body: "Quick to write, but they clutter the UI and the current tooltip library couldn't link out.", image: null },
+                  { title: "Clearer error messages", body: "Error-specific fixes and a link to the right help, logged so users can quote them.", image: null },
+                  { title: "Better bug reports", body: "Screenshots, recordings and diagnostic data attached, so support asks fewer follow-up questions.", image: null },
+                  { title: "A full help centre", body: "One searchable home for every guide, video and release note. The right end goal, too big to start with.", image: null },
+                ],
+              },
+            ],
+          },
+        },
         {
           type: "personas",
           eyebrow: "Personas",
-          heading: "Who we were designing for.",
+          heading: "Six personas, and the three the MVP was for.",
           items: [
-            { name: "Org admin", role: "Runs Legalesign for their organisation", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
-            { name: "Everyday sender", role: "Sends documents for signing", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
-            { name: "Support agent", role: "Answers customer questions", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
+            {
+              name: "Taylor, daily user",
+              role: "Sends documents for signing all day",
+              goals: "Get documents sent, tracked and stored without errors, and work things out without bothering anyone senior.",
+              frustrations: "A steep learning curve, slow replies from support, and self-service help that's hard to find.",
+            },
+            {
+              name: "Olivia, team admin",
+              role: "Runs a team's access, templates and reports",
+              goals: "Keep the team productive, fix the basic issues and escalate the rest, and report on it to leadership.",
+              frustrations: "Little insight into how the team is doing, and pulling data together by hand from several places.",
+            },
+            {
+              name: "Tony, enterprise admin",
+              role: "IT administrator at a large, regulated organisation",
+              goals: "Prove Legalesign is keeping to its SLA, keep track of costs, and report the key numbers.",
+              frustrations: "No view across departments, unclear pricing, and constantly fixing problems for end users.",
+            },
           ],
-          draft: true,
         },
         {
           type: "journey-map",
           eyebrow: "Journey map",
-          heading: "Getting help, step by step.",
-          stages: ["Hits a problem", "Looks for help", "Raises a ticket", "Gets an answer"],
+          heading: "Getting help today, step by step.",
+          stages: ["Gets stuck", "Looks for help", "Asks support", "Waits", "Gets an answer"],
           lanes: [
-            { label: "Doing", cells: ["What they do here.", "What they do here.", "What they do here.", "What they do here."] },
-            { label: "Thinking", cells: ["What they're thinking.", "What they're thinking.", "What they're thinking.", "What they're thinking."] },
-            { label: "Pain point", cells: ["What goes wrong.", "What goes wrong.", "What goes wrong.", "What goes wrong."] },
+            {
+              label: "Doing",
+              cells: [
+                "Hits an option they don't understand, or an error.",
+                "Searches the website's help articles, outside Console.",
+                "Emails, calls or starts a chat, and explains the problem.",
+                "Checks their inbox, then chases.",
+                "Follows a link to an article support picked for them.",
+              ],
+            },
+            {
+              label: "Thinking",
+              cells: [
+                "I have no idea what I'm doing.",
+                "There's so much here, and none of it is about my problem.",
+                "I'd rather not have to talk to someone.",
+                "Has anyone picked this up? Is it escalated?",
+                "Was that the fix, or will it happen again?",
+              ],
+            },
+            {
+              label: "Pain point",
+              cells: [
+                "Nothing in the product explains what went wrong.",
+                "Leaving the app breaks their flow, and the articles have no search.",
+                "Support has to ask questions to understand the problem.",
+                "No way to see a ticket's status or raise its priority.",
+                "Admins have no record to report on, so stats are made by hand.",
+              ],
+            },
           ],
           draft: true,
         },
       ],
+      brief: {
+        type: "brief",
+        eyebrow: "The brief",
+        heading: "Let customers get help and track it inside Console, and give enterprise admins the numbers.",
+        body: "I turned the discovery into personas, user stories and a story map, and drew the MVP line across it.",
+        recreation: "A simplified recreation of the brief. The original stayed with Legalesign.",
+        notes: [
+          { icon: "QueueList", title: "Story maps for three personas", body: "Each persona's tasks, steps and details, with the MVP line drawn across them." },
+          { icon: "PuzzlePiece", title: "Built on what support used", body: "Tickets stayed in Freshdesk. Console reads them through its API, so support's process didn't change." },
+        ],
+        title: "Support Hub MVP",
+        meta: [
+          { label: "Owner", value: "Euan Robertson, design" },
+          { label: "For", value: "Daily users, team admins and enterprise admins" },
+          { label: "Built on", value: "Freshdesk, which support already used" },
+        ],
+        sections: [
+          {
+            label: "Background",
+            body: "Enterprise customers need support stats to hold us to our SLA, and Console users need a way to get help that meets accessibility standards.",
+          },
+          { label: "Who it's for", body: "Daily users raising and tracking their own tickets, and the team and enterprise admins who answer for them." },
+          { label: "Objective", body: "Help, tickets and support stats in Console, so customers can see where their issue is and admins can report on it." },
+          {
+            label: "Requirements",
+            items: [
+              { icon: "MagnifyingGlass", title: "Help first", body: "The most common questions, search and the onboarding video." },
+              { icon: "PencilSquare", title: "Tickets with context", body: "Title, description and priority, with the details support needs captured." },
+              { icon: "Eye", title: "Status at a glance", body: "Every ticket's status, and updates by email and in the app." },
+              { icon: "HandRaised", title: "Escalation", body: "Raise a ticket's priority, for yourself or for your team." },
+              { icon: "ListBullet", title: "Support stats", body: "Ticket counts and response and resolution times, by team, for any period." },
+              { icon: "ShieldCheck", title: "The right people only", body: "Team and organisation views for admins with permission, exportable for audits." },
+            ],
+          },
+          {
+            label: "Out of scope",
+            body: "Custom dashboards, automated escalation rules, Slack alerts, chatbots and contextual tooltips, until the MVP has been used.",
+          },
+          { label: "Success looks like", body: "Enterprise stats no longer made by hand, and fewer follow-ups asking where a ticket has got to." },
+        ],
+      },
     }),
   },
   {
