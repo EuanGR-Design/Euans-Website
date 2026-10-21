@@ -17,6 +17,7 @@ const INTERACTIVE = [
 
 const SIZE = 20; // the resting circle's diameter
 const GAP = 6; // space between a hovered element and its outline
+const THUMB = 12; // half a slider handle's width (see .scrubber in globals.css)
 
 type Box = { x: number; y: number; w: number; h: number; r: number; a: number };
 
@@ -119,6 +120,22 @@ export function Cursor() {
     const goal = (): Box => {
       if (target?.isConnected) {
         const b = target.getBoundingClientRect();
+        // A slider is outlined in parts: its handle when the pointer is on
+        // it, otherwise the step under the pointer.
+        if (target instanceof HTMLInputElement && target.type === "range" && b.width) {
+          const min = Number(target.min) || 0;
+          const max = Number(target.max) || 100;
+          const span = Math.max(1, max - min);
+          const track = b.width - THUMB * 2;
+          const at = (v: number) => b.left + THUMB + ((v - min) / span) * track;
+          const cy = b.top + b.height / 2;
+          const handle = at(Number(target.value));
+          const onHandle = Math.abs(mx - handle) <= THUMB + 2;
+          const step = Math.round(((mx - b.left - THUMB) / track) * span) + min;
+          const cx = onHandle ? handle : at(Math.max(min, Math.min(max, step)));
+          const size = (onHandle ? THUMB * 2 : 6) + (down ? GAP - 3 : GAP) * 2;
+          return { x: cx - size / 2, y: cy - size / 2, w: size, h: size, r: size / 2, a: 0 };
+        }
         if (b.width && b.height) {
           const gap = down ? GAP - 3 : GAP;
           // A turned element is outlined at its own size, turned to match,

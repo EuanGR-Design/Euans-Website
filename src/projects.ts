@@ -554,8 +554,8 @@ export const projects: Project[] = [
       "A send flow built around trial users, with an editor customers can embed in their own products at its centre.",
     statement:
       "I designed one focused flow that cuts trial bounce and gets new users sending, first time.",
-    roleStatement:
-      "As designer and product owner, I found the problem, wrote the brief, tested 25 versions with users and launched one flow from upload to sent.",
+    // The statement says it all; the story below fills in the rest.
+    roleStatement: "",
     actions: [{ label: "Try the final prototype", href: "https://peach-comma-28912996.figma.site", icon: "CursorArrowRays", play: true, card: true }],
     heroLoop: {
       src: "/work/quick-send/hero-loop.mp4",

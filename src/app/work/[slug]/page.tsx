@@ -295,7 +295,7 @@ function StoryHeader({ p }: { p: Project }) {
         </div>
       )}
       {p.context && (
-        <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 md:grid-cols-4">
+        <dl className={`mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 md:grid-cols-4 ${card ? "md:mt-20" : ""}`}>
           {p.context.map((c) => (
             <div key={c.label}>
               <dt className="eyebrow">{c.label}</dt>
