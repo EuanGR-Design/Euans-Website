@@ -1,4 +1,4 @@
-// Support Hub's research: the six personas, the three story maps and how
+// Getting Unstuck's research: the six personas, the three story maps and how
 // the help directions were ranked. Used by its project page (src/projects.ts).
 
 import type { Block, PersonaCard, StoryMap } from "./projects";
@@ -276,16 +276,6 @@ export const supportThemes: Extract<Block, { type: "themes" }>["items"] = [
     ],
   },
   {
-    title: "Custom documentation",
-    body: "Help shaped around who you are and what you do.",
-    directions: [
-      status("Demos"),
-      status("Personalised five-step getting started guides"),
-      status("Demo documents and templates"),
-      status("Custom documentation packs"),
-    ],
-  },
-  {
     title: "Self-service",
     body: "Finding the answer yourself, before you need a person.",
     directions: [
@@ -293,6 +283,16 @@ export const supportThemes: Extract<Block, { type: "themes" }>["items"] = [
       status("Clearer error messages"),
       status("In-app decision tree to triage problems"),
       status("External and community help"),
+    ],
+  },
+  {
+    title: "Documentation",
+    body: "Guides, demos and templates to learn from.",
+    directions: [
+      status("Demos"),
+      status("Personalised five-step getting started guides"),
+      status("Demo documents and templates"),
+      status("Custom documentation packs"),
     ],
   },
   {
@@ -306,7 +306,7 @@ export const supportThemes: Extract<Block, { type: "themes" }>["items"] = [
 // of 10; `meets` lists the directions (by index) that meet it.
 const tooltips = 0, helpCentre = 1, errors = 2, tickets = 3;
 export const supportObjectives: Pick<Extract<Block, { type: "objectives" }>, "directions" | "items"> = {
-  directions: ["Tooltips", "Help centre", "Clearer error messages", "Ticket monitoring"],
+  directions: ["Tooltips", "Help centre", "Clearer error messages", "Ticket tracking"],
   items: [
     { objective: "Increase brand loyalty", weight: 5, meets: [helpCentre, tickets] },
     { objective: "Increase brand recognition", weight: 6, meets: [helpCentre] },
@@ -345,7 +345,7 @@ const totals = (d: number) => {
   ];
 };
 export const supportShortlist: Extract<Block, { type: "shortlist" }>["items"] = [
-  { title: "Ticket monitoring", tag: "Built first, by me", stats: totals(tickets), chosen: true },
+  { title: "Ticket tracking", tag: "Built first, by me", stats: totals(tickets), chosen: true },
   { title: "Help centre", tag: "Handed to another team", stats: totals(helpCentre) },
   { title: "Tooltips", tag: "Added every sprint", stats: totals(tooltips) },
   { title: "Clearer error messages", tag: "Built by the developers", stats: totals(errors) },

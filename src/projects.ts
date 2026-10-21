@@ -536,17 +536,17 @@ export const projects: Project[] = [
     blocks: [],
   },
   {
-    slug: "support-hub",
+    slug: "getting-unstuck",
     era: "legalesign",
-    title: "Support Hub",
-    summary: "From fifteen ideas to one roadmap, and the ticket tracking I designed first.",
+    title: "Getting Unstuck",
+    summary: "What should happen when a user hits a problem? Fifteen answers, one priority, and the ticket tracking I designed.",
     year: "2025",
     role: "Lead designer, joint product owner",
-    tags: ["Discovery", "Product strategy", "Roadmapping"],
+    tags: ["Discovery", "Product strategy", "Ticket tracking"],
     cover: null,
     intro:
-      "A research project that set Legalesign's support roadmap: fifteen ways to help customers, weighed against the business's goals, and the ticket tracking I then designed and shipped.",
-    statement: "From fifteen ideas to one roadmap, and the ticket tracking I designed first.",
+      "Research into what users do when something goes wrong: report it, fix it themselves or work out what to do next. It found fifteen ways to help, set the roadmap, and narrowed to the ticket tracking I then designed.",
+    statement: "What should happen when a user hits a problem?",
     context: legalesignContext("Daily users, team and enterprise admins", "Lead designer, joint product owner"),
     // Told as a double diamond: what was wrong, how wide the research went,
     // how one direction was chosen, and how it was built.
@@ -556,14 +556,18 @@ export const projects: Project[] = [
           type: "voices",
           id: "problem",
           eyebrow: "The problem",
-          heading: "Support was stretched, and customers couldn't see what was happening.",
-          body: "Support spent its days answering questions people could have answered themselves. Enterprise customers wanted proof we were meeting their SLA, and admins couldn't see what their team was stuck on. There was no obvious fix, so I started with research.",
+          heading: "When users hit a problem, there was no good next step.",
+          body: "They couldn't easily report it, fix it themselves or tell what to do next. So support spent its days answering questions people could have answered alone, enterprise customers couldn't see whether we met their SLA, and admins couldn't see what their team was stuck on. There was no obvious fix, so I started with research.",
           // Paraphrased from what the support team heard again and again.
           items: [
             { quote: "I have no idea what I'm doing.", need: "Help they can find inside Console, starting with the most common questions." },
+            { quote: "What does this option even mean?", need: "Answers about what a setting does, without leaving the page they're on." },
+            { quote: "Something unexpected happened.", need: "A way to report it, with the details support needs captured for them." },
             { quote: "Has my ticket been escalated? When?", need: "Every ticket's status in one place, and a way to raise its priority." },
+            { quote: "I'd rather not talk to anyone.", need: "To solve it themselves first, with a person as the last step, not the first." },
             { quote: "I need to see my team's tickets and chase them.", need: "A team view of every ticket, and escalation on someone else's behalf." },
-            { quote: "Is Legalesign keeping to our SLA?", need: "Response and resolution times, set against the SLA for each priority." },
+            { quote: "How many tickets, and how fast were they answered?", need: "Ticket counts and response and resolution times for any period, in the product." },
+            { quote: "Is Legalesign keeping to our SLA?", need: "Those times set against the SLA agreed for each priority." },
           ],
           deeper: {
             label: "the research",
@@ -573,9 +577,9 @@ export const projects: Project[] = [
             {
               type: "journey-map",
               eyebrow: "Journey map",
-              heading: "Getting help, before Support Hub.",
+              heading: "What happened when something went wrong.",
               stages: ["Gets stuck", "Looks for help", "Asks support", "Waits", "Gets an answer"],
-              body: "The road from getting stuck to getting an answer, before Support Hub. Every stage either left the product or left the user waiting.",
+              body: "The road from getting stuck to getting an answer. Every stage either left the product or left the user waiting.",
               lanes: [
                 {
                   label: "Touchpoint",
@@ -647,12 +651,12 @@ export const projects: Project[] = [
         {
           type: "double-diamond",
           eyebrow: "My approach",
-          heading: "Go wide, then narrow it down to one thing worth building.",
+          heading: "Understand the problem first, then design the solution.",
           stages: [
-            { name: "Discover", count: "15 directions", body: "Six personas and fifteen ways we might help, in four themes." },
-            { name: "Define", count: "1 priority", body: "Each direction weighed against goals I set with the CEO and leadership." },
-            { name: "Develop", count: "1 MVP", body: "Ticket monitoring, mapped story by story, with an MVP line." },
-            { name: "Deliver", count: "Support Hub", body: "Shipped, with the other directions on the roadmap." },
+            { name: "Discover", count: "15 directions", body: "Everything a user might do when they hit a problem, and every way we might help." },
+            { name: "Define", count: "1 problem to solve", body: "Every direction weighed against goals I set with the CEO and leadership. Ticket tracking won." },
+            { name: "Develop", count: "Stories and flows", body: "Ticket tracking mapped story by story for three personas, then designed." },
+            { name: "Deliver", count: "An MVP", body: "Scoped down to what mattered most, and released." },
           ],
         },
         {
@@ -665,7 +669,7 @@ export const projects: Project[] = [
         {
           type: "themes",
           eyebrow: "Discover",
-          heading: "Fifteen ways we could help them, in four themes.",
+          heading: "Fifteen ways we could help, in four themes.",
           body: "I cast the net wide on purpose, for anything that might solve one of the problems, or several.",
           items: supportThemes,
           statuses: false,
@@ -673,10 +677,10 @@ export const projects: Project[] = [
         {
           type: "shortlist",
           eyebrow: "Define",
-          heading: "Four made the shortlist. One went first.",
+          heading: "Four made the shortlist. Ticket tracking went first.",
           body: "Taking on product ownership, I worked with the CEO and leadership to set the business's objectives and weight each out of 10, then scored every direction against them.",
           items: supportShortlist,
-          call: "The help centre scored highest overall, but ticket monitoring met all three of the goals leadership put first: enterprise KPIs, the SLA and UK enterprise sales. So it went first, and I recommended the help centre to another team.",
+          call: "The help centre scored highest overall, but ticket tracking met all three of the goals leadership put first: enterprise KPIs, the SLA and UK enterprise sales. So it went first, and I recommended the help centre to another team.",
           deeper: {
             label: "the scoring",
             heading: "How the four were scored.",
@@ -712,9 +716,9 @@ export const projects: Project[] = [
         type: "brief",
         eyebrow: "The brief",
         heading: "Let customers get help and track it inside Console, and give enterprise admins the numbers.",
-        body: "With ticket monitoring chosen, I wrote its brief as product owner, then picked up the design.",
+        body: "With ticket tracking chosen, I wrote its brief as product owner, then picked up the design.",
         recreation: "A simplified recreation of the brief. The original stayed with Legalesign.",
-        title: "Support Hub MVP",
+        title: "Ticket Tracking MVP",
         meta: [
           { label: "Owner", value: "Euan Robertson, design and product" },
           { label: "For", value: "Daily users, team admins and enterprise admins" },
@@ -745,7 +749,7 @@ export const projects: Project[] = [
           type: "story-map",
           eyebrow: "Develop",
           heading: "Every story mapped, and a line drawn for the MVP.",
-          body: "A map for each of the three personas ticket monitoring served. Stories above the line shipped first. Turn on MVP only to see how much I held back.",
+          body: "A map for each of the three personas ticket tracking served. Stories above the line shipped first. Turn on MVP only to see how much I held back.",
           maps: supportStoryMaps,
         },
         todo("versions"),
@@ -754,9 +758,9 @@ export const projects: Project[] = [
         {
           type: "outcome",
           eyebrow: "The outcome",
-          heading: "Support Hub shipped, and the research set the roadmap.",
+          heading: "Ticket tracking shipped, and the research set the roadmap.",
           items: [
-            { goal: "Designed and led by me", icon: "QueueList", title: "Support Hub", body: "Customers raise tickets, follow their status and escalate them, and admins see their team's." },
+            { goal: "Designed and led by me", icon: "QueueList", title: "Ticket tracking", body: "Customers raise tickets, follow their status and escalate them, and admins see their team's." },
             { goal: "My recommendation, built by another team", icon: "MagnifyingGlass", title: "A help centre", body: "One place for help that used to be scattered." },
             { goal: "Started here, added every sprint", icon: "CursorArrowRays", title: "Tooltips and guided tours", body: "Help where people need it, across the product." },
             { goal: "From the feedback theme", icon: "PaperAirplane", title: "Bug reports and feature requests", body: "Sent from inside the product, straight to support and the team's Jira channel." },
@@ -768,7 +772,7 @@ export const projects: Project[] = [
           eyebrow: "What I learned",
           heading: "Put the priorities in the numbers.",
           body: [
-            "The scoring put the help centre first, and leadership's priorities put ticket monitoring first. The call was right, but the numbers didn't show it. Next time I'd weight the business's top goals so the score and the decision agree.",
+            "The scoring put the help centre first, and leadership's priorities put ticket tracking first. The call was right, but the numbers didn't show it. Next time I'd weight the business's top goals so the score and the decision agree.",
           ],
         },
       ],
