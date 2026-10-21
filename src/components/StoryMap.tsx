@@ -66,7 +66,7 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
         role="tabpanel"
         aria-labelledby={`story-tab-${active}`}
         tabIndex={0}
-        className="mt-4 overflow-x-auto rounded-3xl border border-line bg-raised p-4 md:p-6"
+        className="relative mt-4 overflow-x-auto rounded-3xl border border-line bg-raised p-4 md:p-6"
       >
         <div className="flex w-max gap-3">
           {m.tasks.map((t) => (

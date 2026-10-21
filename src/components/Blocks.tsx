@@ -26,6 +26,7 @@ import { StoryMap } from "./StoryMap";
 import { Priorities } from "./Priorities";
 import { ObjectivesMatrix } from "./ObjectivesMatrix";
 import { Themes } from "./Themes";
+import { Shortlist } from "./Shortlist";
 import { DoubleDiamond } from "./DoubleDiamond";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
@@ -473,6 +474,7 @@ function BlockView({
     case "priorities":
     case "objectives":
     case "themes":
+    case "shortlist":
     case "double-diamond":
       return (
         <Section>
@@ -486,7 +488,8 @@ function BlockView({
           {b.type === "story-map" && <StoryMap maps={b.maps} />}
           {b.type === "priorities" && <Priorities items={b.items} value={b.value} effort={b.effort} />}
           {b.type === "objectives" && <ObjectivesMatrix directions={b.directions} items={b.items} high={b.high} />}
-          {b.type === "themes" && <Themes items={b.items} />}
+          {b.type === "themes" && <Themes items={b.items} statuses={b.statuses} />}
+          {b.type === "shortlist" && <Shortlist items={b.items} call={b.call} />}
           {b.type === "double-diamond" && <DoubleDiamond stages={b.stages} />}
           {b.type !== "double-diamond" && <More d={b.deeper} name={name} />}
         </Section>

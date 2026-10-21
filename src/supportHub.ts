@@ -333,3 +333,20 @@ export const supportObjectives: Pick<Extract<Block, { type: "objectives" }>, "di
     { objective: "Capture API customers", weight: 8, meets: [helpCentre] },
   ],
 };
+
+// The four shortlisted directions, totalled from the objectives table.
+const totals = (d: number) => {
+  const met = supportObjectives.items.filter((it) => it.meets.includes(d));
+  const top = supportObjectives.items.filter((it) => it.top);
+  return [
+    { label: "Objectives met", value: `${met.length} of ${supportObjectives.items.length}` },
+    { label: "Weighted score", value: String(met.reduce((n, it) => n + it.weight, 0)) },
+    { label: "Top priorities met", value: `${met.filter((it) => it.top).length} of ${top.length}` },
+  ];
+};
+export const supportShortlist: Extract<Block, { type: "shortlist" }>["items"] = [
+  { title: "Ticket monitoring", tag: "Built first, by me", stats: totals(tickets), chosen: true },
+  { title: "Help centre", tag: "Handed to another team", stats: totals(helpCentre) },
+  { title: "Tooltips", tag: "Added every sprint", stats: totals(tooltips) },
+  { title: "Clearer error messages", tag: "Built by the developers", stats: totals(errors) },
+];

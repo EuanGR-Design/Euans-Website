@@ -3,8 +3,8 @@ import { Status } from "./Status";
 
 type Item = Extract<Block, { type: "themes" }>["items"][number];
 
-/** Directions sorted into themes, one card each, with where each one ended up. */
-export function Themes({ items }: { items: Item[] }) {
+/** Directions sorted into themes, one card each, optionally with where each one ended up. */
+export function Themes({ items, statuses = true }: { items: Item[]; statuses?: boolean }) {
   return (
     <div className="mt-12 grid gap-4 sm:grid-cols-2">
       {items.map((t) => (
@@ -15,7 +15,7 @@ export function Themes({ items }: { items: Item[] }) {
             {t.directions.map((d) => (
               <li key={d.title} className="flex items-center justify-between gap-4 py-2.5 text-sm">
                 <span>{d.title}</span>
-                <Status status={d.status} />
+                {statuses && <Status status={d.status} />}
               </li>
             ))}
           </ul>
