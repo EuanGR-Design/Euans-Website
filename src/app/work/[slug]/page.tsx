@@ -8,7 +8,11 @@ import { ProjectLink } from "@/components/ProjectTransition";
 import { SectionNav } from "@/components/SectionNav";
 import { Icon } from "@/components/Icon";
 import { HeroPrototype, PlayLink } from "@/components/HeroPrototype";
+import { LoopVideo } from "@/components/LoopVideo";
 import { ArrowUpRightIcon } from "@heroicons/react/20/solid";
+import { basePath } from "@/lib/basePath";
+
+const titleClass = "mt-4 text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.04em]";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -36,9 +40,10 @@ export default async function ProjectPage({ params }: Props) {
   // A headless grid of clips sits tight under the hero, as one run of images.
   const first = p.blocks[0];
   const leadsWithClips = first?.type === "bento" && !first.heading;
+  const sections = sectionLinks(p);
 
   return (
-    <article>
+    <article className={sections.length >= 3 ? "has-toc" : undefined}>
       <header className="pt-32 md:pt-44">
         <div className="container-x">
           <Link
@@ -51,12 +56,11 @@ export default async function ProjectPage({ params }: Props) {
             {era?.label}
             {p.year && ` · ${p.year}`}
           </p>
-          <h1 className="mt-4 text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-[-0.04em]">
-            {p.title}
-          </h1>
           {p.statement ? (
             <StoryHeader p={p} />
           ) : (
+          <>
+          <h1 className={titleClass}>{p.title}</h1>
           <div className="mt-8 grid gap-10 md:grid-cols-12">
             <p className="text-lg leading-relaxed text-fg/80 md:col-span-7 md:text-xl">{p.intro}</p>
             <dl className="grid grid-cols-2 gap-6 text-sm md:col-span-4 md:col-start-9 md:grid-cols-1">
@@ -82,6 +86,7 @@ export default async function ProjectPage({ params }: Props) {
               </div>
             </dl>
           </div>
+          </>
           )}
         </div>
         {hero?.src && (
@@ -93,6 +98,7 @@ export default async function ProjectPage({ params }: Props) {
               style={{ aspectRatio: `${hero.w} / ${hero.h}` }}
             >
               <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
+              {p.heroLoop && <HeroLoop loop={p.heroLoop} />}
               {p.play && <HeroPrototype play={p.play} image={hero} title={p.title} />}
             </div>
             {p.scrollCue && (
@@ -151,8 +157,81 @@ export default async function ProjectPage({ params }: Props) {
           )}
         </div>
       </nav>
-      <SectionNav links={sectionLinks(p)} />
+      <SectionNav links={sections} />
     </article>
+  );
+}
+
+/**
+ * The finished product playing in a browser window on the hero's blue panel,
+ * laid out like Euan's video template. The window is sized to the recording,
+ * so it fills the window with no gap, and takes most of the panel's width.
+ */
+function HeroLoop({ loop }: { loop: NonNullable<Project["heroLoop"]> }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #5185ff, #4456f6)" }}>
+      <div className="w-[90%] overflow-hidden rounded-[clamp(8px,1.6vw,20px)] bg-[#f4f5f8] shadow-[0_18px_40px_-10px_rgba(0,0,0,0.3)] ring-2 ring-[#79adfc]">
+        {/* The browser's tab and address bars, from the template. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`${basePath}/work/quick-send/browser-bar.svg`} alt="" width={1440} height={79} className="block h-auto w-full" />
+        <div className="aspect-[1280/714]">
+          <LoopVideo src={loop.src} poster={loop.poster} label={loop.label} className="block h-full w-full object-cover" wrapperClassName="h-full w-full" button={false} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The prototype as a picture of the hero beside the title, set at a playful
+ * tilt that straightens on hover, when it asks you to have a play. A note
+ * scribbled beside it, with a sketched arrow, says what it is.
+ */
+function PrototypeCard({ action, image }: { action: NonNullable<Project["actions"]>[number]; image: { src: string; w: number; h: number } }) {
+  return (
+    <div className="relative shrink-0 max-md:ml-2 md:mb-2">
+      {/* On phones the note sits above the card; wider, it hangs below, pointing up. */}
+      <Scribble label={action.label} className="mb-2 ml-6 md:hidden" />
+      <PlayLink
+        href={action.href}
+        className="group relative block w-72 rotate-3 overflow-hidden rounded-3xl bg-raised shadow-[0_24px_50px_-20px_rgba(20,20,60,0.5)] transition-[rotate,translate,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:rotate-0 hover:shadow-[0_32px_60px_-22px_rgba(20,20,60,0.55)] lg:w-[22rem]"
+      >
+        <span className="block" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
+          <Image src={image.src} alt="" fill sizes="352px" className="object-cover object-top" />
+        </span>
+        {/* On hover the picture softens and invites a play. */}
+        <span className="absolute inset-0 flex items-center justify-center bg-bg/25 opacity-0 backdrop-blur-[1.5px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+          <span className="inline-flex h-11 items-center gap-2 rounded-full bg-fg px-5 font-medium text-bg shadow-lg">
+            <Icon name={action.icon} className="size-5" />
+            Have a play
+          </span>
+        </span>
+        <span className="sr-only">{action.label}</span>
+      </PlayLink>
+      <Scribble label={action.label} up className="absolute top-full right-4 mt-3 hidden md:flex" />
+    </div>
+  );
+}
+
+/** A handwritten note with a sketched arrow, pointing down at what follows, or `up` at what's above. */
+function Scribble({ label, up, className = "" }: { label: string; up?: boolean; className?: string }) {
+  return (
+    <p aria-hidden className={`pointer-events-none flex items-center gap-1 font-hand text-[1.75rem] leading-none whitespace-nowrap text-accent ${up ? "flex-row-reverse" : ""} ${className}`}>
+      <svg
+        viewBox="0 0 70 56"
+        className={`h-12 w-14 shrink-0 ${up ? "-mt-10" : "mt-10 -scale-y-100"}`}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.4}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* A loose, slightly wobbly curve up to a quick two-stroke head. */}
+        <path d="M6 50c9-2 19-6 27-13 7-6 12-14 15-22 1-3 2-6 2.5-9" />
+        <path d="M41.5 12.5c3.5-3 6.5-6 9.2-8.3 1.4 4 3.3 7.4 6.2 10.8" />
+      </svg>
+      <span className="-rotate-3">{label}</span>
+    </p>
   );
 }
 
@@ -162,17 +241,26 @@ export default async function ProjectPage({ params }: Props) {
  */
 function StoryHeader({ p }: { p: Project }) {
   const role = p.roleStatement ?? p.intro;
+  const hero = projectImage(p);
+  const card = hero?.src ? p.actions?.find((a) => a.card) : undefined;
+  const actions = p.actions?.filter((a) => a !== card);
   return (
     <>
-      <p className="mt-10 max-w-5xl text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
-        {p.statement}
-      </p>
-      {(role || p.actions) && (
+      <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between md:gap-12">
+        <div className="min-w-0">
+          <h1 className={titleClass}>{p.title}</h1>
+          <p className="mt-10 max-w-[16em] text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance md:mt-14">
+            {p.statement}
+          </p>
+        </div>
+        {card && hero?.src && <PrototypeCard action={card} image={{ ...hero, src: hero.src }} />}
+      </div>
+      {(role || !!actions?.length) && (
         <div className="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-12">
           {role && <p className="max-w-3xl text-lg leading-relaxed text-fg/75 md:text-xl">{role}</p>}
-          {p.actions && (
+          {!!actions?.length && (
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row md:flex-col">
-              {p.actions.map((a, i) => {
+              {actions.map((a, i) => {
                 const external = !a.href.startsWith("#");
                 const className = `group inline-flex h-12 items-center gap-2.5 rounded-full pr-5 pl-4 font-medium transition-colors ${
                   i === 0 ? "bg-fg text-bg hover:bg-fg/85" : "border border-line hover:border-fg/30"
@@ -183,7 +271,7 @@ function StoryHeader({ p }: { p: Project }) {
                     {a.label}
                   </>
                 );
-                if (a.play && p.play)
+                if (a.play)
                   return (
                     <PlayLink key={a.href} href={a.href} className={className}>
                       {label}
@@ -207,7 +295,7 @@ function StoryHeader({ p }: { p: Project }) {
         </div>
       )}
       {p.context && (
-        <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 md:grid-cols-4">
+        <dl className={`mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 md:grid-cols-4 ${card ? "md:mt-20" : ""}`}>
           {p.context.map((c) => (
             <div key={c.label}>
               <dt className="eyebrow">{c.label}</dt>

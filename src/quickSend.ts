@@ -316,16 +316,30 @@ export const quickSendIterations: Extract<Block, { type: "iterations" }>["items"
   prototype: quickSendPrototypes[i + 1],
 }));
 
-// How the prototypes were tested, and what happened after launch.
+// How every version was tested, and what happened after launch.
+const quickSendScreens = (from: number, to: number) =>
+  quickSendIterations.slice(from - 1, to).map((it, i) => ({
+    version: from + i,
+    image: it.image,
+    marked: !!quickSendPrototypes[from + i] && from + i < 25,
+  }));
+
 export const quickSendTesting: Block = {
-  type: "points",
+  type: "testing",
   eyebrow: "Testing",
-  heading: "How I tested it.",
-  items: [
-    { title: "Designs, not releases", body: "Every version was a Figma design, so testing cost my time, not the developers'. Four became clickable prototypes." },
-    { title: "Interviews with real users", body: "Video calls with the people whose feedback started it, set up by their account managers." },
-    { title: "Internal workshops", body: "Colleagues walked the flows and left comments. I worked through every one before the next version." },
-    { title: "A beta, then the data", body: "Launched as an MVP with a beta label, then refined with Hotjar and PostHog." },
+  heading: "One loop, 25 times.",
+  cycle: [
+    { icon: "PencilSquare", title: "Design it", body: "Each version was a Figma design, so testing cost my time, not the developers'." },
+    { icon: "ChatBubbleLeftRight", title: "Test it with users", body: "Video calls with the people whose feedback started it, set up by their account managers." },
+    { icon: "UserGroup", title: "Workshop it", body: "Colleagues walked the flow and left comments." },
+    { icon: "ArrowPath", title: "Change it", body: "I worked through every comment before the next version." },
+  ],
+  repeat: "Every version went round this loop.",
+  mark: "Clickable prototype",
+  bands: [
+    { label: "Versions 1 to 14", title: "Screens, shared for feedback", body: "Figma screens walked through with users and in workshops.", screens: quickSendScreens(1, 14) },
+    { label: "Versions 15 to 24", title: "Prototypes users could click", body: "Close to the real thing, so users could try the flow, not just look at it.", screens: quickSendScreens(15, 24) },
+    { label: "Version 25", title: "A beta, then the data", body: "Launched as an MVP with a beta label, then refined with Hotjar and PostHog.", screens: quickSendScreens(25, 25) },
   ],
 };
 

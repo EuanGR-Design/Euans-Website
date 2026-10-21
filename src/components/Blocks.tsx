@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useRef } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { sectionAnchor, type Block, type Deeper as DeeperData, type Img } from "@/projects";
+import { sectionAnchor, type Block, type Deeper as DeeperData, type Img, type Notes as NotesData } from "@/projects";
 import { Reveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
 import { Journey } from "./Journey";
@@ -16,6 +16,10 @@ import { Bento } from "./Bento";
 import { FlowPan } from "./FlowPan";
 import { BrowserFrame } from "./BrowserFrame";
 import { BriefPreview } from "./Brief";
+import { HeroPrototype } from "./HeroPrototype";
+import { DecisionLoop } from "./DecisionLoop";
+import { Voices } from "./Voices";
+import { Testing } from "./Testing";
 import { Deeper, useInPanel } from "./Deeper";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
@@ -57,6 +61,26 @@ function More({ d, name }: { d?: DeeperData; name: string }) {
   );
 }
 
+/** A few short points with icons, under a section's main content. */
+function Notes({ items }: { items?: NotesData }) {
+  if (!items) return null;
+  return (
+    <ul className="mt-10 grid gap-6 sm:grid-cols-2">
+      {items.map((n, i) => (
+        <Reveal key={n.title} delay={0.06 * i}>
+          <li className="flex gap-4">
+            <IconTile name={n.icon} size="sm" />
+            <div>
+              <p className="font-semibold">{n.title}</p>
+              <p className="mt-1 leading-relaxed text-muted">{n.body}</p>
+            </div>
+          </li>
+        </Reveal>
+      ))}
+    </ul>
+  );
+}
+
 // Copy that is still a prompt for the real words.
 const draftText = (draft?: boolean) => (draft ? "text-muted italic" : "");
 
@@ -91,6 +115,32 @@ function BlockView({
         </Section>
       );
     case "points":
+      // Items with a loop lead with it, as a card each.
+      if (b.items.some((p) => p.loop))
+        return (
+          <Section>
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {b.items.map((p, i) => {
+                // A last card on its own takes the whole row, side by side.
+                const last = i === b.items.length - 1;
+                const wide = last && b.items.length % 2 === 1 && b.items.length % 3 === 1;
+                return (
+                  <Reveal key={p.title} delay={0.08 * (i % 3)} className={`h-full ${wide ? "sm:col-span-2 lg:col-span-3" : ""}`}>
+                    <li className={`h-full overflow-hidden rounded-3xl border border-line bg-raised ${wide ? "sm:flex sm:items-center" : ""}`}>
+                      <div className={`aspect-[4/3] overflow-hidden ${wide ? "sm:w-1/2 lg:w-1/3" : ""}`}>{p.loop && <DecisionLoop name={p.loop} className="rounded-none" />}</div>
+                      <div className={`p-6 md:p-7 ${wide ? "sm:flex-1 lg:px-12" : ""}`}>
+                        <h3 className={`font-semibold ${wide ? "text-xl lg:text-2xl" : "text-xl"}`}>{p.title}</h3>
+                        <p className="mt-2 max-w-xl leading-relaxed text-muted">{p.body}</p>
+                      </div>
+                    </li>
+                  </Reveal>
+                );
+              })}
+            </ul>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
@@ -116,6 +166,18 @@ function BlockView({
             ))}
           </div>
           <More d={b.deeper} name={name} />
+        </Section>
+      );
+    case "testing":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <Testing b={b} />
         </Section>
       );
     case "image":
@@ -179,8 +241,8 @@ function BlockView({
               )}
             </div>
           )}
-          <div className={b.surface ? `container-x ${b.heading ? "mt-12" : ""}` : "mx-auto mt-12 max-w-[1440px] px-3 md:px-6"}>
-            <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} surface={b.surface} />
+          <div className={b.surface || b.lifted ? `container-x ${b.heading ? "mt-12" : ""}` : "mx-auto mt-12 max-w-[1440px] px-3 md:px-6"}>
+            <Bento feature={b.feature} tiles={b.tiles} bare={b.bare} surface={b.surface} lifted={b.lifted} />
           </div>
           {b.principle && (
             <Reveal className="container-x mt-20 grid gap-8 md:mt-28 md:grid-cols-12 md:gap-12">
@@ -197,7 +259,9 @@ function BlockView({
                   </p>
                 ))}
                 {b.principle.quote && (
-                  <figure className="!mt-10 border-l-2 border-accent pl-5">
+                  <figure className={`!mt-10 flex gap-5 ${b.principle.quote.logo ? "" : "border-l-2 border-accent pl-5"}`}>
+                    {b.principle.quote.logo === "linear" && <LinearMark />}
+                    <div>
                     <blockquote className="text-xl leading-snug font-semibold tracking-[-0.01em] md:text-2xl">
                       &ldquo;{b.principle.quote.text}&rdquo;
                     </blockquote>
@@ -206,6 +270,7 @@ function BlockView({
                         {b.principle.quote.by}
                       </a>
                     </figcaption>
+                    </div>
                   </figure>
                 )}
               </div>
@@ -243,6 +308,59 @@ function BlockView({
           <div className="mt-10">
             <Journey j={{ ...b, name, hasPrototype }} />
           </div>
+        </Section>
+      );
+    case "voices":
+      return (
+        <Section id={b.id}>
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end md:gap-12">
+            <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="max-w-md text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
+          </div>
+          <div className="mt-12">
+            <Voices items={b.items} />
+          </div>
+          <More d={b.deeper} name={name} />
+        </Section>
+      );
+    case "play":
+      // The prototype in the hero's browser window, to try at the end.
+      return (
+        <Section id={b.id}>
+          <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <p className="eyebrow">{b.eyebrow}</p>
+              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{b.heading}</h2>
+            </div>
+            {b.body && <p className="max-w-sm text-muted">{b.body}</p>}
+          </Reveal>
+          {b.image.src && (
+            <Reveal className="mt-12">
+              <div
+                className="relative overflow-hidden rounded-[1.75rem] bg-raised md:rounded-panel"
+                style={{ aspectRatio: `${b.image.w} / ${b.image.h}` }}
+              >
+                <Image src={b.image.src} alt={b.image.alt} fill sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" />
+                <HeroPrototype play={b.play} image={b.image} title={name} />
+              </div>
+              {/* Too small to use on a phone, so it opens full screen there. */}
+              <a
+                href={b.play.url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-6 inline-flex h-12 items-center gap-2 rounded-full bg-fg pr-5 pl-4 font-medium text-bg md:hidden"
+              >
+                <Icon name="CursorArrowRays" className="size-5" />
+                Open the prototype
+                <ArrowTopRightOnSquareIcon aria-hidden className="size-4 opacity-60" />
+              </a>
+            </Reveal>
+          )}
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "todo":
@@ -689,6 +807,7 @@ function BlockView({
                   <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
                 </Reveal>
               )}
+              <Notes items={b.notes} />
             </div>
             <Reveal className="md:col-span-6">
               <BriefPreview b={b} />
@@ -707,42 +826,49 @@ function BlockView({
             </Reveal>
           )}
           <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {b.items.map((it, i) => (
-              <Reveal key={it.version} delay={0.06 * i} className="h-full">
-                <li className="flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised">
-                  {it.image.src && (
-                    <div className="relative aspect-[2000/1425] border-b border-line bg-bg">
-                      <Image
-                        src={it.image.src}
-                        alt={it.image.alt}
-                        fill
-                        sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover object-top"
-                      />
+            {b.items.map((it, i) => {
+              const links = it.links.map((l, j) => (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium shadow-lg transition-transform hover:scale-[1.04] ${
+                    j === 0 ? "bg-fg text-bg" : "bg-bg text-fg"
+                  }`}
+                >
+                  {it.links.length > 1 ? l.label : "Open the prototype"}
+                  <ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
+                </a>
+              ));
+              return (
+                <Reveal key={it.version} delay={0.06 * i} className="h-full">
+                  {/* The card lifts on hover and its buttons appear over the screen. Touch screens show them below. */}
+                  <li className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-raised transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-24px_rgba(20,20,60,0.4)] focus-within:-translate-y-1.5">
+                    {it.image.src && (
+                      <div className="relative aspect-[2000/1425] border-b border-line bg-bg">
+                        <Image
+                          src={it.image.src}
+                          alt={it.image.alt}
+                          fill
+                          sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+                          className="object-cover object-top"
+                        />
+                        <div className="absolute inset-0 hidden flex-col items-center justify-center gap-2 bg-bg/25 opacity-0 backdrop-blur-[1.5px] transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:hover)]:flex">
+                          {links}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex flex-1 flex-col p-5">
+                      <span className="font-mono text-xs text-accent-ink">Version {it.version}</span>
+                      <h3 className="mt-2 text-lg leading-snug font-semibold">{it.title}</h3>
+                      <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{it.body}</p>
+                      <div className="mt-auto flex flex-wrap gap-2 pt-5 [@media(hover:hover)]:hidden">{links}</div>
                     </div>
-                  )}
-                  <div className="flex flex-1 flex-col p-6">
-                    <span className="font-mono text-sm text-accent-ink">Version {it.version}</span>
-                    <h3 className="mt-3 text-xl leading-snug font-semibold">{it.title}</h3>
-                    <p className="mt-2 leading-relaxed text-muted">{it.body}</p>
-                    <div className="mt-auto flex flex-wrap gap-2 pt-6">
-                      {it.links.map((l) => (
-                        <a
-                          key={l.url}
-                          href={l.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03]"
-                        >
-                          {it.links.length > 1 ? l.label : "Open the prototype"}
-                          <ArrowTopRightOnSquareIcon aria-hidden className="size-4" />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </li>
-              </Reveal>
-            ))}
+                  </li>
+                </Reveal>
+              );
+            })}
           </ol>
           {b.note && (
             <Reveal>
@@ -808,7 +934,7 @@ function BlockView({
         </Section>
       );
     case "flow":
-      return <FlowPan b={b} />;
+      return <FlowPan b={b} after={b.notes && <Notes items={b.notes} />} />;
     case "outcome": {
       // On a surface it's a card in the page, so it reads as part of the
       // story rather than the band that closes it.
@@ -841,7 +967,8 @@ function BlockView({
                   ) : (
                     <span className={`font-mono text-sm ${soft}`}>{String(i + 1).padStart(2, "0")}</span>
                   )}
-                  <p className="mt-6 text-2xl leading-[1.2] font-semibold tracking-tight text-balance md:text-[1.75rem]">
+                  {it.goal && <p className={`eyebrow mt-6 ${card ? "!text-white/70" : "!text-on-tertiary/60"}`}>{it.goal}</p>}
+                  <p className={`${it.goal ? "mt-2" : "mt-6"} text-2xl leading-[1.2] font-semibold tracking-tight text-balance md:text-[1.75rem]`}>
                     {it.title}
                   </p>
                   <p className={`mt-4 text-lg leading-relaxed ${body}`}>{it.body}</p>
@@ -1101,5 +1228,16 @@ function Timeline({ b }: { b: Extract<Block, { type: "timeline" }> }) {
         </ol>
       </div>
     </Section>
+  );
+}
+
+/** Linear's mark, beside a quote from Linear. */
+function LinearMark() {
+  return (
+    <span aria-hidden className="mt-1 flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#08090a] text-white shadow-md">
+      <svg viewBox="0 0 100 100" className="size-5" fill="currentColor">
+        <path d="M1.22541 61.5228c-.2225-.9485.90748-1.5459 1.59638-.857L39.3342 97.1782c.6889.6889.0915 1.8189-.857 1.5964C20.0515 94.4522 5.54779 79.9485 1.22541 61.5228ZM.00189135 46.8891c-.01764375.2833.08887215.5599.28957165.7606L52.3503 99.7085c.2007.2007.4773.3075.7606.2896 2.3692-.1476 4.6938-.46 6.9624-.9259.7645-.157 1.0301-1.0963.4782-1.6481L2.57595 39.4485c-.55186-.5519-1.49117-.2863-1.648174.4782-.465915 2.2686-.77832 4.5932-.92588465 6.9624ZM4.21093 29.7054c-.16649.3738-.08169.8106.20765 1.1l64.77602 64.776c.2894.2894.7262.3742 1.1.2077 1.7861-.7956 3.5171-1.6927 5.1855-2.684.5521-.328.6373-1.0867.1832-1.5407L8.43566 24.3367c-.45409-.4541-1.21271-.3689-1.54074.1832-.99132 1.6684-1.88843 3.3994-2.68399 5.1855ZM12.6587 18.074c-.3701-.3701-.393-.9637-.0443-1.3541C21.7795 6.45931 35.1114 0 49.9519 0 77.5927 0 100 22.4073 100 50.0481c0 14.8405-6.4593 28.1724-16.7199 37.3375-.3903.3487-.984.3258-1.3542-.0443L12.6587 18.074Z" />
+      </svg>
+    </span>
   );
 }

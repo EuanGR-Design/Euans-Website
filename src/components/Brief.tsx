@@ -16,7 +16,9 @@ function Paper({ b }: { b: BriefData }) {
   return (
     <article className="relative rounded-md bg-white px-6 py-8 text-fg shadow-[0_1px_2px_rgba(0,0,0,0.06),0_30px_60px_-30px_rgba(0,0,0,0.35)] ring-1 ring-black/5 sm:px-10 md:px-14 md:py-14">
       <header className="border-b-2 border-fg pb-6">
-        <p className="font-mono text-xs tracking-[0.2em] text-muted uppercase">Product brief</p>
+        <p className="font-mono text-xs tracking-[0.2em] text-muted uppercase">
+          Product brief{b.recreation && <span className="text-accent-ink"> · Recreated</span>}
+        </p>
         <h3 className="mt-3 text-3xl font-bold tracking-[-0.03em] md:text-5xl">{b.title}</h3>
         <dl className="mt-6 grid gap-4 sm:grid-cols-3">
           {b.meta.map((m) => (
@@ -111,12 +113,13 @@ export function BriefPreview({ b }: { b: BriefData }) {
           See the full brief
         </span>
       </button>
+      {b.recreation && <p className="mt-3 text-sm text-muted">{b.recreation}</p>}
 
       <dialog
         ref={dialog}
         aria-label={`${b.title}: product brief`}
         onClose={() => setOpen(false)}
-        className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-black/55 backdrop:backdrop-blur-sm"
+        className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-[#1c2463]/45"
       >
         {open && (
           <div
@@ -139,8 +142,9 @@ export function BriefPreview({ b }: { b: BriefData }) {
               initial={{ opacity: 0, y: 24, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto max-w-4xl"
+              className="mx-auto max-w-4xl rounded-xl shadow-[0_30px_80px_-20px_rgba(42,33,28,0.45)]"
             >
+              {b.recreation && <p className="mb-4 text-center text-sm text-white/85">{b.recreation}</p>}
               <Paper b={b} />
             </motion.div>
           </div>

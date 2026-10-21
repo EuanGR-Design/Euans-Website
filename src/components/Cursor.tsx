@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 /** Anything you can click or interact with. */
 const INTERACTIVE = [
@@ -17,8 +17,29 @@ const INTERACTIVE = [
 
 const SIZE = 20; // the resting circle's diameter
 const GAP = 6; // space between a hovered element and its outline
+const THUMB = 12; // half a slider handle's width (see .scrubber in globals.css)
 
-type Box = { x: number; y: number; w: number; h: number; r: number };
+type Box = { x: number; y: number; w: number; h: number; r: number; a: number };
+
+/**
+ * How far an element is turned, in degrees, from its own rotate and
+ * transform and those of the few elements around it, so the outline can
+ * turn with a card set at an angle.
+ */
+function angleOf(el: Element) {
+  let deg = 0;
+  let node: Element | null = el;
+  for (let i = 0; node && i < 4; i++, node = node.parentElement) {
+    const style = getComputedStyle(node);
+    if (style.rotate && style.rotate !== "none") deg += parseFloat(style.rotate.split(" ").pop()!) || 0;
+    const m = style.transform.match(/^matrix(?:3d)?\(([^)]+)\)/);
+    if (m) {
+      const [a, b] = m[1].split(",").map(Number);
+      deg += (Math.atan2(b, a) * 180) / Math.PI;
+    }
+  }
+  return Math.abs(deg) < 0.1 ? 0 : deg;
+}
 
 const radiusOf = (el: Element, width: number) => {
   const raw = getComputedStyle(el).borderTopLeftRadius;
@@ -58,11 +79,21 @@ function cornerOf(el: Element, b: DOMRect) {
  * screens keep their usual behaviour.
  */
 export function Cursor() {
-  const ring = useRef<HTMLDivElement>(null);
-  const dot = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    // Made here rather than rendered, so they can move into an open modal
+    // dialog: a dialog sits in the top layer, above anything outside it.
+    const make = (className: string) => {
+      const el = document.createElement("div");
+      el.setAttribute("aria-hidden", "true");
+      el.className = className;
+      document.body.append(el);
+      return el;
+    };
+    const r = make(
+      "pointer-events-none fixed top-0 left-0 z-[2147483000] border-[1.5px] border-accent opacity-0 transition-opacity duration-200 [will-change:transform,width,height]",
+    );
+    const d = make("pointer-events-none fixed top-0 left-0 z-[2147483000] size-1 rounded-full bg-accent opacity-0 transition-opacity duration-200");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const root = document.documentElement;
     root.classList.add("has-cursor");
@@ -72,7 +103,7 @@ export function Cursor() {
     let shown = false;
     let down = false;
     let target: Element | null = null;
-    const cur: Box = { x: mx, y: my, w: SIZE, h: SIZE, r: SIZE / 2 };
+    const cur: Box = { x: mx, y: my, w: SIZE, h: SIZE, r: SIZE / 2, a: 0 };
 
     const find = (el: Element | null) => {
       if (!el || el.tagName === "IFRAME") return null;
@@ -89,20 +120,42 @@ export function Cursor() {
     const goal = (): Box => {
       if (target?.isConnected) {
         const b = target.getBoundingClientRect();
+        // A slider is outlined in parts: its handle when the pointer is on
+        // it, otherwise the step under the pointer.
+        if (target instanceof HTMLInputElement && target.type === "range" && b.width) {
+          const min = Number(target.min) || 0;
+          const max = Number(target.max) || 100;
+          const span = Math.max(1, max - min);
+          const track = b.width - THUMB * 2;
+          const at = (v: number) => b.left + THUMB + ((v - min) / span) * track;
+          const cy = b.top + b.height / 2;
+          const handle = at(Number(target.value));
+          const onHandle = Math.abs(mx - handle) <= THUMB + 2;
+          const step = Math.round(((mx - b.left - THUMB) / track) * span) + min;
+          const cx = onHandle ? handle : at(Math.max(min, Math.min(max, step)));
+          const size = (onHandle ? THUMB * 2 : 6) + (down ? GAP - 3 : GAP) * 2;
+          return { x: cx - size / 2, y: cy - size / 2, w: size, h: size, r: size / 2, a: 0 };
+        }
         if (b.width && b.height) {
           const gap = down ? GAP - 3 : GAP;
+          // A turned element is outlined at its own size, turned to match,
+          // around the middle of the box it covers.
+          const a = target instanceof HTMLElement ? angleOf(target) : 0;
+          const w = a && target instanceof HTMLElement ? target.offsetWidth : b.width;
+          const h = a && target instanceof HTMLElement ? target.offsetHeight : b.height;
           // Concentric with the element's corners: its radius plus the gap.
           return {
-            x: b.left - gap,
-            y: b.top - gap,
-            w: b.width + gap * 2,
-            h: b.height + gap * 2,
-            r: Math.min(corner(target, b), b.width / 2, b.height / 2) + gap,
+            x: b.left + b.width / 2 - w / 2 - gap,
+            y: b.top + b.height / 2 - h / 2 - gap,
+            w: w + gap * 2,
+            h: h + gap * 2,
+            r: Math.min(corner(target, b), w / 2, h / 2) + gap,
+            a,
           };
         }
       }
       const s = down ? SIZE * 0.7 : SIZE;
-      return { x: mx - s / 2, y: my - s / 2, w: s, h: s, r: s / 2 };
+      return { x: mx - s / 2, y: my - s / 2, w: s, h: s, r: s / 2, a: 0 };
     };
 
     let raf = 0;
@@ -112,10 +165,12 @@ export function Cursor() {
       (Object.keys(cur) as (keyof Box)[]).forEach((key) => {
         cur[key] += (g[key] - cur[key]) * k;
       });
-      const r = ring.current;
-      const d = dot.current;
-      if (r && d) {
-        r.style.transform = `translate3d(${cur.x}px, ${cur.y}px, 0)`;
+      // Follow the newest open modal into the top layer, and back out.
+      const dialogs = document.querySelectorAll("dialog[open]");
+      const host = dialogs.length ? dialogs[dialogs.length - 1] : document.body;
+      if (r.parentElement !== host) host.append(r, d);
+      {
+        r.style.transform = `translate3d(${cur.x}px, ${cur.y}px, 0) rotate(${cur.a}deg)`;
         r.style.width = `${cur.w}px`;
         r.style.height = `${cur.h}px`;
         r.style.borderRadius = `${cur.r}px`;
@@ -165,6 +220,8 @@ export function Cursor() {
     return () => {
       cancelAnimationFrame(raf);
       root.classList.remove("has-cursor");
+      r.remove();
+      d.remove();
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerover", onOver);
       window.removeEventListener("scroll", onScroll);
@@ -175,18 +232,5 @@ export function Cursor() {
     };
   }, []);
 
-  return (
-    <>
-      <div
-        ref={ring}
-        aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[2147483000] border-[1.5px] border-accent opacity-0 transition-opacity duration-200 [will-change:transform,width,height]"
-      />
-      <div
-        ref={dot}
-        aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[2147483000] size-1 rounded-full bg-accent opacity-0 transition-opacity duration-200"
-      />
-    </>
-  );
+  return null;
 }

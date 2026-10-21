@@ -15,7 +15,7 @@ type Flow = Extract<Block, { type: "flow" }>;
  * in view while it moves. With reduced motion, or no room to pan, it's a
  * plain sideways scroller.
  */
-export function FlowPan({ b }: { b: Flow }) {
+export function FlowPan({ b, after }: { b: Flow; after?: React.ReactNode }) {
   const reduce = useReducedMotion();
   const outer = useRef<HTMLDivElement>(null);
   const strip = useRef<HTMLDivElement>(null);
@@ -35,6 +35,8 @@ export function FlowPan({ b }: { b: Flow }) {
   }, []);
 
   const img = b.image;
+  // Anything that follows the flow, such as notes on how it was built.
+  const more = after && <div className="container-x">{after}</div>;
   const heading = (
     <div className="container-x">
       <Reveal>
@@ -54,6 +56,7 @@ export function FlowPan({ b }: { b: Flow }) {
             <FigmaFlow figma={b.figma} />
           </Reveal>
         </div>
+        {more}
       </section>
     );
   }
@@ -67,6 +70,7 @@ export function FlowPan({ b }: { b: Flow }) {
             <span className="eyebrow rounded-full border border-line bg-bg px-3 py-1.5">Annotated user flow coming soon</span>
           </div>
         </div>
+        {more}
       </section>
     );
   }
@@ -88,6 +92,7 @@ export function FlowPan({ b }: { b: Flow }) {
       <section className="border-t border-line py-20 md:py-28">
         {heading}
         <div className="mt-12 overflow-x-auto px-5 pb-4 md:px-10">{picture}</div>
+        {more}
       </section>
     );
   }
@@ -102,6 +107,7 @@ export function FlowPan({ b }: { b: Flow }) {
           </motion.div>
         </div>
       </div>
+      {more && <div className="pb-20 md:pb-28">{more}</div>}
     </section>
   );
 }
@@ -148,19 +154,16 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
                   <div aria-hidden className="absolute inset-0 bg-bg/30" />
                 </>
               )}
-              <div className="relative">
-                <p
-                  className={`mx-auto max-w-xs text-sm md:max-w-sm md:text-base ${
-                    figma.preview ? "rounded-2xl bg-bg/85 px-4 py-2.5 text-fg/80 shadow-sm backdrop-blur" : "text-muted"
-                  }`}
-                >
+              <div className="relative rounded-3xl px-6 py-7 text-white shadow-xl md:px-9 md:py-8" style={{ background: "linear-gradient(135deg, #5185ff, #4456f6)" }}>
+                <p className="text-xl font-semibold tracking-tight md:text-2xl">See what the devs saw.</p>
+                <p className="mx-auto mt-2 max-w-sm text-sm text-white/85 md:text-base">
                   <span className="md:hidden">Every screen, from the dashboard to sent, laid out in Figma.</span>
                   <span className="max-md:hidden">Every screen, from the dashboard to sent. Drag to pan and scroll to zoom.</span>
                 </p>
                 <button
                   type="button"
                   onClick={() => setLaunched(true)}
-                  className="mt-6 hidden items-center gap-2.5 rounded-full bg-fg px-6 py-3.5 font-medium text-bg shadow-xl transition-transform hover:scale-[1.04] md:inline-flex"
+                  className="mt-6 hidden items-center gap-2.5 rounded-full bg-white px-6 py-3.5 font-medium text-[#2b3bd6] shadow-xl transition-transform hover:scale-[1.04] md:inline-flex"
                 >
                   <FigmaIcon />
                   Explore the flow
@@ -169,7 +172,7 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
                   href={figma.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-5 inline-flex items-center gap-2.5 rounded-full bg-fg px-5 py-3 text-sm font-medium text-bg shadow-xl md:hidden"
+                  className="mt-5 inline-flex items-center gap-2.5 rounded-full bg-white px-5 py-3 text-sm font-medium text-[#2b3bd6] shadow-xl md:hidden"
                 >
                   <FigmaIcon />
                   Open in Figma
@@ -195,12 +198,13 @@ function FigmaFlow({ figma }: { figma: NonNullable<Flow["figma"]> }) {
 
 function FigmaIcon() {
   return (
-    <svg aria-hidden width="11" height="16" viewBox="0 0 38 57" fill="currentColor">
-      <path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0Z" />
-      <path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0Z" />
-      <path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19Z" />
-      <path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5Z" />
-      <path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5Z" />
+    // In Figma's own colours: in one colour the shapes merge into a blob.
+    <svg aria-hidden width="11" height="16" viewBox="0 0 38 57">
+      <path fill="#1ABCFE" d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0Z" />
+      <path fill="#0ACF83" d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0Z" />
+      <path fill="#FF7262" d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19Z" />
+      <path fill="#F24E1E" d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5Z" />
+      <path fill="#A259FF" d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5Z" />
     </svg>
   );
 }

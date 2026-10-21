@@ -163,7 +163,7 @@ export const stages: Stage[] = [
         type: "iterations",
         eyebrow: "25 versions",
         heading: "From Figma screens to prototypes to the final design.",
-        body: "Versions 1 to 14 were screens I shared for feedback, and from version 15 users tried clickable prototypes. Nothing was built until the design settled, and only the final design went live. Drag the bar to step through them, hover it to see what changed and why, or click a numbered pin on the screen.",
+        body: "Versions 1 to 14 were screens I shared for feedback, and from version 15 users tried clickable prototypes. Nothing was built until the design settled, and only the final design went live. Drag the bar, use the arrows or swipe to step through them. What changed and why sits beside the screen.",
         items: quickSendIterations,
       },
       {

@@ -72,6 +72,8 @@
   /* One typeface throughout, Awwwards-style; "mono" text keeps even figures. */
   --font-sans: var(--font-inter-tight);
   --font-mono: var(--font-inter-tight);
+  /* The one exception: handwritten notes on the page. */
+  --font-hand: var(--font-caveat);
   /* A little tighter than Tailwind's defaults. `panel` is for the big blue
      panels and screens, rounded to suit how far their contents sit inside. */
   --radius-2xl: 0.875rem;
@@ -112,6 +114,14 @@ body {
 @media (min-width: 768px) {
   .container-x {
     padding-inline: 2.5rem;
+  }
+}
+
+/* On wide screens a case study's section list sits in the left margin, so
+   its content moves over to clear it. Panels opened over the page don't. */
+@media (min-width: 1280px) {
+  .has-toc .container-x:not(dialog .container-x) {
+    padding-left: max(2.5rem, calc(14rem - (100vw - 1280px) / 2));
   }
 }
 
@@ -238,15 +248,6 @@ h2 {
 }
 .has-cursor iframe {
   cursor: auto !important;
-}
-/* A modal panel sits in the top layer, above the custom cursor, so it gets
-   the normal pointer back. */
-.has-cursor dialog[open],
-.has-cursor dialog[open] * {
-  cursor: auto !important;
-}
-.has-cursor dialog[open] :is(a, button) {
-  cursor: pointer !important;
 }
 
 /* The ring on the scrubber's play button, filling until the next version. */
