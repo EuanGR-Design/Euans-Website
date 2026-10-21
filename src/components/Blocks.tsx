@@ -24,6 +24,7 @@ import { Deeper, useInPanel } from "./Deeper";
 import { PersonaCards } from "./PersonaCards";
 import { StoryMap } from "./StoryMap";
 import { Priorities } from "./Priorities";
+import { ObjectivesMatrix } from "./ObjectivesMatrix";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -468,6 +469,7 @@ function BlockView({
     case "persona-cards":
     case "story-map":
     case "priorities":
+    case "objectives":
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
@@ -478,7 +480,8 @@ function BlockView({
           )}
           {b.type === "persona-cards" && <PersonaCards items={b.items} />}
           {b.type === "story-map" && <StoryMap maps={b.maps} />}
-          {b.type === "priorities" && <Priorities items={b.items} />}
+          {b.type === "priorities" && <Priorities items={b.items} value={b.value} effort={b.effort} />}
+          {b.type === "objectives" && <ObjectivesMatrix directions={b.directions} items={b.items} high={b.high} />}
           <More d={b.deeper} name={name} />
         </Section>
       );

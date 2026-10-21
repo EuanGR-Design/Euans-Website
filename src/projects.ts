@@ -6,7 +6,7 @@ import type { IconName } from "./components/Icon";
 import { oldDims } from "./oldImageSizes";
 import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
 import { caseStudy } from "./caseStudy";
-import { supportPersonas, supportPriorities, supportStoryMaps } from "./supportHub";
+import { supportObjectives, supportPersonas, supportPriorities, supportStoryMaps } from "./supportHub";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -217,6 +217,19 @@ export type Block =
   // A user story map per persona: tasks across, steps under them, stories
   // below, with the MVP line drawn through each step.
   | { type: "story-map"; eyebrow?: string; heading: string; body?: string; maps: StoryMap[]; deeper?: Deeper }
+  // Shortlisted directions weighed against weighted objectives. `meets`
+  // holds the indexes of the directions that meet each objective.
+  | {
+      type: "objectives";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      directions: string[];
+      items: { objective: string; weight: number; meets: number[] }[];
+      // Weights at or above this count as high value. Defaults to 8.
+      high?: number;
+      deeper?: Deeper;
+    }
   // Opportunities ranked by score, with value and effort shown as bars.
   | {
       type: "priorities";
@@ -224,6 +237,9 @@ export type Block =
       heading: string;
       body?: string;
       items: { title: string; value: number; effort: number; shipped?: boolean }[];
+      // Column names and the top of each scale, as the source scored them.
+      value: { label: string; max: number };
+      effort: { label: string; max: number };
       deeper?: Deeper;
     }
   | {
@@ -630,11 +646,25 @@ export const projects: Project[] = [
           maps: supportStoryMaps,
         },
         {
-          type: "priorities",
+          type: "objectives",
           eyebrow: "Prioritising",
-          heading: "Fifteen ways to help, scored and put in order.",
-          body: "Beyond tickets, discovery turned up fifteen ways to help people sooner. We scored each for value and effort, and the order of execution became the roadmap.",
-          items: supportPriorities,
+          heading: "Four directions, weighed against what the product needed.",
+          body: "I scored each of the product's objectives out of 10 for how much it mattered, then checked which objectives each shortlisted direction would meet. The help centre and ticket monitoring met the most, and the most high-value ones.",
+          ...supportObjectives,
+          deeper: {
+            label: "all fifteen directions",
+            heading: "The long list, and the order we planned to build it in.",
+            body: "Discovery turned up fifteen ways to help people sooner. Each was scored for how many objectives it met and for effort, and this order of execution became the roadmap.",
+            blocks: [
+              {
+                type: "priorities",
+                heading: "Fifteen directions, in order of execution.",
+                items: supportPriorities,
+                value: { label: "Objectives met", max: 15 },
+                effort: { label: "Effort, out of 10", max: 10 },
+              },
+            ],
+          },
         },
       ],
       brief: {

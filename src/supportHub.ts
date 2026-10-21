@@ -229,8 +229,8 @@ export const supportStoryMaps: StoryMap[] = [
   ),
 ];
 
-// The Order of Execution board: each help direction scored for value, with
-// its effort alongside, in the order they were planned.
+// The Order of Execution board: each direction's score (how many objectives it
+// meets) and effort out of 10, in the order they were planned.
 export const supportPriorities: Extract<Block, { type: "priorities" }>["items"] = [
   { title: "Feature requests", value: 15, effort: 7, shipped: true },
   { title: "Report a bug", value: 11, effort: 6, shipped: true },
@@ -248,3 +248,35 @@ export const supportPriorities: Extract<Block, { type: "priorities" }>["items"] 
   { title: "Keyboard shortcuts", value: 4, effort: 4 },
   { title: "External and community help", value: 7, effort: 10 },
 ];
+
+// The objectives table on the planning board. Each objective is weighted out
+// of 10; `meets` lists the directions (by index) that meet it.
+const tooltips = 0, helpCentre = 1, errors = 2, tickets = 3;
+export const supportObjectives: Pick<Extract<Block, { type: "objectives" }>, "directions" | "items"> = {
+  directions: ["Tooltips", "Help centre", "Clearer error messages", "Ticket monitoring"],
+  items: [
+    { objective: "Increase brand loyalty", weight: 5, meets: [helpCentre, tickets] },
+    { objective: "Increase brand recognition", weight: 6, meets: [helpCentre] },
+    { objective: "Build brand trust", weight: 6, meets: [helpCentre, tickets] },
+    { objective: "Reduce churn", weight: 9, meets: [tooltips, errors] },
+    { objective: "Help users move from the old app to Console", weight: 4, meets: [tooltips, helpCentre] },
+    { objective: "Increase retention", weight: 8, meets: [helpCentre, tickets] },
+    { objective: "Upsell to more personas", weight: 5, meets: [helpCentre] },
+    { objective: "Improve the user experience", weight: 8, meets: [tooltips, helpCentre, errors, tickets] },
+    { objective: "Create more capable advanced users", weight: 5, meets: [helpCentre] },
+    { objective: "Scalability", weight: 7, meets: [tooltips, helpCentre, errors, tickets] },
+    { objective: "Increase security", weight: 8, meets: [errors, tickets] },
+    { objective: "Free up time for more valuable work", weight: 8, meets: [tooltips, helpCentre, errors, tickets] },
+    { objective: "Increase productivity", weight: 6, meets: [errors, tickets] },
+    { objective: "Reduce the load on support", weight: 4, meets: [tooltips, helpCentre, errors, tickets] },
+    { objective: "Meet accessibility standards (AA)", weight: 10, meets: [tooltips, helpCentre] },
+    { objective: "UK enterprise conversions", weight: 10, meets: [helpCentre, tickets] },
+    { objective: "Embed Legalesign in how organisations work", weight: 8, meets: [] },
+    { objective: "Give enterprise users KPIs and stats", weight: 9, meets: [tickets] },
+    { objective: "Show Legalesign is meeting its SLA", weight: 9, meets: [tickets] },
+    { objective: "Encourage exploring advanced workflows", weight: 6, meets: [tooltips, helpCentre] },
+    { objective: "Cover more of every user's workflow", weight: 4, meets: [] },
+    { objective: "Encourage more integrated workflows", weight: 7, meets: [] },
+    { objective: "Capture API customers", weight: 8, meets: [helpCentre] },
+  ],
+};
