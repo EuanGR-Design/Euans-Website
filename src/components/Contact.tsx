@@ -6,7 +6,6 @@ import { Reveal } from "./motion";
 
 const site = [
   { href: "/work", label: "All work" },
-  { href: "/#approach", label: "Approach" },
   { href: "/#about", label: "About" },
   { href: "/#cv", label: "Experience" },
 ];

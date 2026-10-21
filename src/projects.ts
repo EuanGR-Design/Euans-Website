@@ -351,6 +351,8 @@ export type Project = {
   year?: string;
   role: string;
   tags: string[];
+  // What I did on it, shown on the home page's timeline. Falls back to `tags`.
+  contribution?: string[];
   cover: Img | null;
   // The big image at the top of the project page, which the full-screen
   // title card shrinks into on the way in. Falls back to the cover.
@@ -548,6 +550,7 @@ export const projects: Project[] = [
     summary: "A streamlined first send that cut trial bounce and churn.",
     role: "Designer, product owner",
     tags: ["Onboarding", "Conversion", "UX"],
+    contribution: ["Product ownership", "Research", "UX/UI design", "Prototyping", "User testing", "Dev handoff"],
     cover: quickSendHero,
     hero: quickSendHero,
     intro:

@@ -7,8 +7,7 @@ import { usePathname } from "next/navigation";
 import { person } from "@/content";
 
 const links = [
-  { href: "/work", label: "Work" },
-  { href: "/#approach", label: "Approach" },
+  { href: "/#work", label: "Work" },
   { href: "/#about", label: "About" },
   { href: "/#cv", label: "CV" },
   { href: "#contact", label: "Contact" },
@@ -18,7 +17,7 @@ export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const active = (href: string) => href === "/work" && pathname.startsWith("/work");
+  const active = (href: string) => href === "/#work" && pathname.startsWith("/work");
 
   // Close the mobile menu when moving to another page.
   useEffect(() => setOpen(false), [pathname]);

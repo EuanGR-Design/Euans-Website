@@ -9,11 +9,14 @@ export const person = {
   cv: `${basePath}/cv/Euan-Robertson-CV.pdf`,
   // Drop a photo at public/images/euan.jpg and set this to "/images/euan.jpg".
   photo: null as string | null,
-  // The big statement at the top of the home page.
-  statement: "I turn complex problems into products people find simple.",
+  // The line above the projects at the top of the home page.
+  statement: "I lead product design from research to release, and own the product decisions in between.",
   intro:
-    "From product design at Glasgow School of Art, through freelance branding, to leading design and product at Legalesign. Research and design thinking sit at the centre of everything I make.",
+    "Five years leading design at Legalesign, an enterprise e-signature platform, and more recently owning the product too. I research, prototype and test until the work holds up, then see it through to launch.",
 };
+
+// The projects the home page opens on, in order.
+export const homeCarousel = ["quick-send", "template-editor", "signer-lobby", "drafts", "rebrand", "spacebuds", "tacc", "kate-and-sam"];
 
 export const stats = [
   { value: "5+", label: "years in product design" },

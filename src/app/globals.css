@@ -158,6 +158,13 @@ h2 {
   }
 }
 
+/* The bar under the home page's carousel, filling while a project is up. */
+@keyframes carousel-fill {
+  to {
+    width: 100%;
+  }
+}
+
 @keyframes marquee {
   to {
     transform: translateX(-50%);
