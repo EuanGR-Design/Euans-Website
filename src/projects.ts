@@ -6,7 +6,7 @@ import type { IconName } from "./components/Icon";
 import { oldDims } from "./oldImageSizes";
 import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
 import { caseStudy } from "./caseStudy";
-import { supportObjectives, supportPersonas, supportPriorities, supportStoryMaps } from "./supportHub";
+import { supportObjectives, supportPersonas, supportPriorities, supportStoryMaps, supportThemes } from "./supportHub";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -89,6 +89,8 @@ export type Notes = { icon: IconName; title: string; body: string }[];
 
 // `draft: true` shows the copy as a muted prompt until the real words are in.
 // More detail behind a section, opened in a panel so the page stays short.
+export type DirectionStatus = "Shipped" | "Partly" | "Designed" | "Not built" | "Cut";
+
 export type PersonaCard = {
   name: string;
   label: string;
@@ -225,9 +227,21 @@ export type Block =
       heading: string;
       body?: string;
       directions: string[];
-      items: { objective: string; weight: number; meets: number[] }[];
+      // `top` marks the objectives leadership put first.
+      items: { objective: string; weight: number; meets: number[]; top?: boolean }[];
       // Weights at or above this count as high value. Defaults to 8.
       high?: number;
+      deeper?: Deeper;
+    }
+  // The double diamond: what each stage widened or narrowed to.
+  | { type: "double-diamond"; eyebrow?: string; heading: string; body?: string; stages: { name: string; count: string; body: string }[] }
+  // Directions grouped into themes, each with what happened to it.
+  | {
+      type: "themes";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      items: { title: string; body: string; directions: { title: string; status: DirectionStatus }[] }[];
       deeper?: Deeper;
     }
   // Opportunities ranked by score, with value and effort shown as bars.
@@ -236,7 +250,9 @@ export type Block =
       eyebrow?: string;
       heading: string;
       body?: string;
-      items: { title: string; value: number; effort: number; shipped?: boolean }[];
+      // `value` is left out where the source never scored it. `status` is
+      // what happened to the direction in the end.
+      items: { title: string; value?: number; effort: number; status: DirectionStatus; note?: string }[];
       // Column names and the top of each scale, as the source scored them.
       value: { label: string; max: number };
       effort: { label: string; max: number };
@@ -528,8 +544,8 @@ export const projects: Project[] = [
           type: "voices",
           id: "problem",
           eyebrow: "The problem",
-          heading: "Getting help happened outside the product, and nobody could see where it had got to.",
-          body: "Two needs started it. Enterprise customers wanted proof that support was meeting their SLA, and accessibility standards meant Console users had to be able to get help. I ran a discovery workshop with the people who give support and the developers who'd build it. This is what customers were asking for.",
+          heading: "Lots of problems with getting help, and no clear answer to any of them.",
+          body: "Support spent its time answering questions people could have found for themselves. Enterprise customers wanted to see their SLA being met, admins wanted to know what their team was stuck on, and we had nowhere to gather feedback. So it started as research, not a feature. I ran a discovery workshop with the people who give support and the developers who'd build it. This is what customers were asking for.",
           // Paraphrased from what the support team heard again and again.
           items: [
             { quote: "I have no idea what I'm doing.", need: "Help they can find inside Console, starting with the most common questions." },
@@ -588,6 +604,18 @@ export const projects: Project[] = [
           },
         },
         {
+          type: "double-diamond",
+          eyebrow: "The approach",
+          heading: "A wide net first, then one project to build.",
+          body: "Discovery went wide, looking for every way we might help. Scoring against the business's objectives narrowed it down, and the top priority became this project.",
+          stages: [
+            { name: "Discover", count: "15 directions", body: "Six personas, a journey map and fifteen ways to help, sorted into four themes." },
+            { name: "Define", count: "4 shortlisted", body: "Every direction weighed against 23 objectives I set with the CEO and leadership." },
+            { name: "Develop", count: "1 project", body: "Ticket monitoring, mapped story by story for three personas, with an MVP line." },
+            { name: "Deliver", count: "Support Hub", body: "Shipped as a support microsite. The other directions went onto the roadmap." },
+          ],
+        },
+        {
           type: "persona-cards",
           eyebrow: "Personas",
           heading: "Six people who need help in different ways.",
@@ -639,22 +667,15 @@ export const projects: Project[] = [
           draft: true,
         },
         {
-          type: "story-map",
-          eyebrow: "User story maps",
-          heading: "What each of the three would do, step by step, and where the MVP line fell.",
-          body: "One map per MVP persona: the tasks they'd set out to do, the steps in each, and every story we came up with. Stories above the line were the MVP. Turn on MVP only to see how much we left for later.",
-          maps: supportStoryMaps,
-        },
-        {
-          type: "objectives",
-          eyebrow: "Prioritising",
-          heading: "Four directions, weighed against what the product needed.",
-          body: "I scored each of the product's objectives out of 10 for how much it mattered, then checked which objectives each shortlisted direction would meet. The help centre and ticket monitoring met the most, and the most high-value ones.",
-          ...supportObjectives,
+          type: "themes",
+          eyebrow: "Discover",
+          heading: "Fifteen ways to help, in four themes.",
+          body: "I cast the net wide on purpose, for anything that might solve one of the problems, or several. Each direction had its pros and cons weighed and went into one of four themes. Most of them were eventually built, by this project or others.",
+          items: supportThemes,
           deeper: {
-            label: "all fifteen directions",
+            label: "how they were scored",
             heading: "The long list, and the order we planned to build it in.",
-            body: "Discovery turned up fifteen ways to help people sooner. Each was scored for how many objectives it met and for effort, and this order of execution became the roadmap.",
+            body: "Each direction was scored for how many objectives it met and for effort, and this order of execution became the roadmap.",
             blocks: [
               {
                 type: "priorities",
@@ -665,6 +686,20 @@ export const projects: Project[] = [
               },
             ],
           },
+        },
+        {
+          type: "objectives",
+          eyebrow: "Define",
+          heading: "Four directions, weighed against what the business needed.",
+          body: "As I took on product ownership, I worked with the CEO and leadership to set the business's objectives and weight each one out of 10. Then I checked which objectives each shortlisted direction would meet. The help centre met the most, but ticket monitoring met the enterprise objectives leadership put first, so it went first. The help centre went to another team on my recommendation.",
+          ...supportObjectives,
+        },
+        {
+          type: "story-map",
+          eyebrow: "User story maps",
+          heading: "What each of the three would do, step by step, and where the MVP line fell.",
+          body: "One map per MVP persona: the tasks they'd set out to do, the steps in each, and every story we came up with. Stories above the line were the MVP. Turn on MVP only to see how much we left for later.",
+          maps: supportStoryMaps,
         },
       ],
       brief: {
@@ -711,13 +746,13 @@ export const projects: Project[] = [
       outcome: {
         type: "outcome",
         eyebrow: "The outcome",
-        heading: "Every direction from discovery shipped.",
+        heading: "Support Hub shipped, and the research shaped the roadmap.",
         items: [
-          { icon: "QueueList", title: "Ticket tracking", body: "A support microsite where customers raise tickets, follow their status and escalate them, and admins see their team's." },
-          { icon: "MagnifyingGlass", title: "A rebuilt help site", body: "The support and help site was rebuilt from the ground up, into one place to find answers." },
-          { icon: "CursorArrowRays", title: "Tooltips and guided tours", body: "Tooltips across the whole product, and guided tours that walk people through it." },
-          { icon: "Flag", title: "Error messages that say what went wrong", body: "So users can send support the right details, and support can tell what they can fix and what goes to the developers." },
-          { icon: "PaperAirplane", title: "Feedback and bug reports", body: "Report a bug or send feedback from inside the product, straight to support and into the team's Jira channel." },
+          { goal: "Designed and led by me", icon: "QueueList", title: "Ticket monitoring, as Support Hub", body: "A support microsite where customers raise tickets, follow their status and escalate them, and admins see their team's." },
+          { goal: "My recommendation, built by another team", icon: "MagnifyingGlass", title: "A help centre", body: "One place for the help that used to be scattered, now live." },
+          { goal: "Started here, added every sprint", icon: "CursorArrowRays", title: "Tooltips and guided tours", body: "Tooltips across the product, and guided tours that walk people through it." },
+          { goal: "Built by the developers", icon: "Flag", title: "Error messages that say what went wrong", body: "So users can send support the right details, and support can tell what they can fix and what goes to the developers." },
+          { goal: "From the feedback theme", icon: "PaperAirplane", title: "Feedback and bug reports", body: "Report a bug, request a feature or send feedback from inside the product, straight to support and into the team's Jira channel." },
         ],
         todo: "Numbers to add: ticket volume, response and resolution times, or how many questions the help site now answers.",
       },

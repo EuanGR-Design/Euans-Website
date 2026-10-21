@@ -5,7 +5,8 @@ type Props = Omit<Extract<Block, { type: "objectives" }>, "type" | "eyebrow" | "
 /**
  * Shortlisted directions weighed against the product's objectives. Each
  * objective carries a weight out of 10; a dot means the direction meets it.
- * The totals underneath are what decided the order.
+ * The totals underneath are what decided the order, and the direction that
+ * met the most top priorities is picked out.
  */
 export function ObjectivesMatrix({ directions, items, high = 8 }: Props) {
   const rows = [...items].sort((a, b) => b.weight - a.weight);
@@ -15,9 +16,10 @@ export function ObjectivesMatrix({ directions, items, high = 8 }: Props) {
       count: met.length,
       weighted: met.reduce((n, it) => n + it.weight, 0),
       high: met.filter((it) => it.weight >= high).length,
+      top: met.filter((it) => it.top).length,
     };
   });
-  const best = Math.max(...totals.map((t) => t.weighted));
+  const best = Math.max(...totals.map((t) => t.top));
   const cols = `minmax(9rem,1fr) 3.5rem repeat(${directions.length}, minmax(5.5rem, 7rem))`;
 
   return (
@@ -34,7 +36,7 @@ export function ObjectivesMatrix({ directions, items, high = 8 }: Props) {
             <span
               role="columnheader"
               key={d}
-              className={`text-center text-sm leading-tight font-semibold ${totals[i].weighted === best ? "text-accent" : ""}`}
+              className={`text-center text-sm leading-tight font-semibold ${totals[i].top === best ? "text-accent" : ""}`}
             >
               {d}
             </span>
@@ -49,6 +51,11 @@ export function ObjectivesMatrix({ directions, items, high = 8 }: Props) {
           >
             <span role="cell" className="sticky left-0 z-10 -ml-6 bg-raised pl-6">
               {it.objective}
+              {it.top && (
+                <span className="ml-2 inline-block rounded-full bg-fg px-2 py-0.5 align-middle text-[10px] font-medium whitespace-nowrap text-bg">
+                  Top priority
+                </span>
+              )}
             </span>
             <span role="cell" className={`text-center tabular-nums ${it.weight >= high ? "font-semibold" : "text-muted"}`}>
               {it.weight}
@@ -69,15 +76,16 @@ export function ObjectivesMatrix({ directions, items, high = 8 }: Props) {
             ["Objectives met", (t) => t.count],
             [`High-value met (${high}+)`, (t) => t.high],
             ["Weighted score", (t) => t.weighted],
+            ["Top priorities met", (t) => t.top],
           ] as [string, (t: (typeof totals)[number]) => number][]
         ).map(([label, f], r) => (
           <div
             role="row"
             key={label}
-            className={`grid items-center gap-3 px-6 py-3 text-sm ${r === 2 ? "bg-accent-soft font-semibold" : "border-b border-line"}`}
+            className={`grid items-center gap-3 px-6 py-3 text-sm ${r === 3 ? "font-semibold text-accent" : "border-b border-line"}`}
             style={{ gridTemplateColumns: cols }}
           >
-            <span role="rowheader" className={`sticky left-0 z-10 -ml-6 pl-6 ${r === 2 ? "bg-accent-soft" : "bg-raised"}`}>
+            <span role="rowheader" className="sticky left-0 z-10 -ml-6 bg-raised pl-6">
               {label}
             </span>
             <span />

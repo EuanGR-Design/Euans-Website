@@ -1,4 +1,5 @@
 import type { Block } from "@/projects";
+import { Status } from "./Status";
 
 type B = Extract<Block, { type: "priorities" }>;
 type Item = B["items"][number];
@@ -12,7 +13,7 @@ type Scale = B["value"];
 export function Priorities({ items, value, effort }: { items: Item[]; value: Scale; effort: Scale }) {
   return (
     <div className="mt-12 overflow-hidden rounded-3xl border border-line bg-raised">
-      <div className="hidden grid-cols-[2.5rem_minmax(0,1fr)_10rem_10rem_5.5rem] gap-4 border-b border-line px-6 py-3 md:grid">
+      <div className="hidden grid-cols-[2.5rem_minmax(0,1fr)_10rem_10rem_6rem] gap-4 border-b border-line px-6 py-3 md:grid">
         <span className="eyebrow">#</span>
         <span className="eyebrow">Direction</span>
         <span className="eyebrow">{value.label}</span>
@@ -23,14 +24,15 @@ export function Priorities({ items, value, effort }: { items: Item[]; value: Sca
         {items.map((it, i) => (
           <li
             key={it.title}
-            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-line px-5 py-4 last:border-b-0 md:grid-cols-[2.5rem_minmax(0,1fr)_10rem_10rem_5.5rem] md:px-6"
+            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-line px-5 py-4 last:border-b-0 md:grid-cols-[2.5rem_minmax(0,1fr)_10rem_10rem_6rem] md:px-6"
           >
             <span className="text-sm text-muted tabular-nums">{i + 1}</span>
-            <span className="font-medium">{it.title}</span>
+            <span>
+              <span className="font-medium">{it.title}</span>
+              {it.note && <span className="block text-xs text-muted">{it.note}</span>}
+            </span>
             <span className="justify-self-end md:order-last">
-              {it.shipped && (
-                <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-on-accent">Shipped</span>
-              )}
+              <Status status={it.status} />
             </span>
             <Bar label={value.label} n={it.value} max={value.max} strong />
             <Bar label={effort.label} n={it.effort} max={effort.max} />
@@ -41,7 +43,14 @@ export function Priorities({ items, value, effort }: { items: Item[]; value: Sca
   );
 }
 
-function Bar({ label, n, max, strong }: { label: string; n: number; max: number; strong?: boolean }) {
+function Bar({ label, n, max, strong }: { label: string; n?: number; max: number; strong?: boolean }) {
+  if (n === undefined)
+    return (
+      <span className="col-span-3 col-start-2 flex items-center gap-3 text-xs text-muted md:col-span-1 md:col-start-auto">
+        <span className="w-28 shrink-0 md:sr-only">{label}</span>
+        Not scored
+      </span>
+    );
   return (
     <span className="col-span-3 col-start-2 flex items-center gap-3 text-xs md:col-span-1 md:col-start-auto">
       <span className="w-28 shrink-0 text-muted md:sr-only">{label}</span>

@@ -230,23 +230,76 @@ export const supportStoryMaps: StoryMap[] = [
 ];
 
 // The Order of Execution board: each direction's score (how many objectives it
-// meets) and effort out of 10, in the order they were planned.
-export const supportPriorities: Extract<Block, { type: "priorities" }>["items"] = [
-  { title: "Feature requests", value: 15, effort: 7, shipped: true },
-  { title: "Report a bug", value: 11, effort: 6, shipped: true },
-  { title: "Help centre", value: 15, effort: 9, shipped: true },
-  { title: "Demos", value: 10, effort: 4 },
-  { title: "Tooltips", value: 8, effort: 2, shipped: true },
-  { title: "UX and UI issue reports", value: 10, effort: 7 },
-  { title: "Clearer error messages", value: 7, effort: 3, shipped: true },
-  { title: "Personalised five-step getting started guides", value: 10, effort: 8 },
-  { title: "Popover panels with documentation for that screen", value: 10, effort: 8 },
-  { title: "In-app decision tree to triage problems", value: 8, effort: 6 },
-  { title: "Demo documents and templates", value: 6, effort: 2 },
-  { title: "Guided tours", value: 7, effort: 6, shipped: true },
-  { title: "Custom documentation packs", value: 6, effort: 8 },
-  { title: "Keyboard shortcuts", value: 4, effort: 4 },
-  { title: "External and community help", value: 7, effort: 10 },
+// meets) and effort out of 10, in the order they were planned, with what
+// happened to it in the end. Popover panels and guided tours were never scored.
+type Direction = Extract<Block, { type: "priorities" }>["items"][number];
+const d = (title: string, value: number | undefined, effort: number, status: Direction["status"], note?: string): Direction => ({
+  title,
+  value,
+  effort,
+  status,
+  note,
+});
+export const supportPriorities: Direction[] = [
+  d("Feature requests", 15, 7, "Shipped"),
+  d("Report a bug", 11, 6, "Shipped"),
+  d("Help centre", 15, 9, "Shipped", "Built by another team"),
+  d("Demos", 10, 4, "Partly", "Easier demos, few videos"),
+  d("Tooltips", 8, 2, "Shipped", "Added every sprint"),
+  d("UX and UI issue reports", 10, 7, "Partly", "Folded into bug reports"),
+  d("Clearer error messages", 7, 3, "Shipped", "Built by developers"),
+  d("Personalised five-step getting started guides", 10, 8, "Not built"),
+  d("Popover panels with documentation for that screen", undefined, 8, "Not built"),
+  d("In-app decision tree to triage problems", 8, 6, "Designed", "Cut from the MVP"),
+  d("Demo documents and templates", 6, 2, "Not built"),
+  d("Guided tours", undefined, 6, "Shipped"),
+  d("Custom documentation packs", 6, 8, "Cut", "Too much manual work"),
+  d("Keyboard shortcuts", 4, 4, "Shipped", "In the editor"),
+  d("External and community help", 7, 10, "Not built"),
+];
+
+// The same directions, in the four themes discovery sorted them into.
+const status = (title: string) => {
+  const it = supportPriorities.find((x) => x.title === title);
+  if (!it) throw new Error(`No direction called ${title}`);
+  return { title, status: it.status };
+};
+export const supportThemes: Extract<Block, { type: "themes" }>["items"] = [
+  {
+    title: "Contextual help",
+    body: "Help that appears where you are in the app.",
+    directions: [
+      status("Tooltips"),
+      status("Guided tours"),
+      status("Keyboard shortcuts"),
+      status("Popover panels with documentation for that screen"),
+    ],
+  },
+  {
+    title: "Custom documentation",
+    body: "Help shaped around who you are and what you do.",
+    directions: [
+      status("Demos"),
+      status("Personalised five-step getting started guides"),
+      status("Demo documents and templates"),
+      status("Custom documentation packs"),
+    ],
+  },
+  {
+    title: "Self-service",
+    body: "Finding the answer yourself, before you need a person.",
+    directions: [
+      status("Help centre"),
+      status("Clearer error messages"),
+      status("In-app decision tree to triage problems"),
+      status("External and community help"),
+    ],
+  },
+  {
+    title: "Feedback",
+    body: "Telling us what's broken or missing, from inside the product.",
+    directions: [status("Report a bug"), status("Feature requests"), status("UX and UI issue reports")],
+  },
 ];
 
 // The objectives table on the planning board. Each objective is weighted out
@@ -270,10 +323,10 @@ export const supportObjectives: Pick<Extract<Block, { type: "objectives" }>, "di
     { objective: "Increase productivity", weight: 6, meets: [errors, tickets] },
     { objective: "Reduce the load on support", weight: 4, meets: [tooltips, helpCentre, errors, tickets] },
     { objective: "Meet accessibility standards (AA)", weight: 10, meets: [tooltips, helpCentre] },
-    { objective: "UK enterprise conversions", weight: 10, meets: [helpCentre, tickets] },
+    { objective: "UK enterprise conversions", weight: 10, meets: [helpCentre, tickets], top: true },
     { objective: "Embed Legalesign in how organisations work", weight: 8, meets: [] },
-    { objective: "Give enterprise users KPIs and stats", weight: 9, meets: [tickets] },
-    { objective: "Show Legalesign is meeting its SLA", weight: 9, meets: [tickets] },
+    { objective: "Give enterprise users KPIs and stats", weight: 9, meets: [tickets], top: true },
+    { objective: "Show Legalesign is meeting its SLA", weight: 9, meets: [tickets], top: true },
     { objective: "Encourage exploring advanced workflows", weight: 6, meets: [tooltips, helpCentre] },
     { objective: "Cover more of every user's workflow", weight: 4, meets: [] },
     { objective: "Encourage more integrated workflows", weight: 7, meets: [] },

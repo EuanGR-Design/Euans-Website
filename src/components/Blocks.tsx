@@ -25,6 +25,8 @@ import { PersonaCards } from "./PersonaCards";
 import { StoryMap } from "./StoryMap";
 import { Priorities } from "./Priorities";
 import { ObjectivesMatrix } from "./ObjectivesMatrix";
+import { Themes } from "./Themes";
+import { DoubleDiamond } from "./DoubleDiamond";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -470,6 +472,8 @@ function BlockView({
     case "story-map":
     case "priorities":
     case "objectives":
+    case "themes":
+    case "double-diamond":
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
@@ -482,7 +486,9 @@ function BlockView({
           {b.type === "story-map" && <StoryMap maps={b.maps} />}
           {b.type === "priorities" && <Priorities items={b.items} value={b.value} effort={b.effort} />}
           {b.type === "objectives" && <ObjectivesMatrix directions={b.directions} items={b.items} high={b.high} />}
-          <More d={b.deeper} name={name} />
+          {b.type === "themes" && <Themes items={b.items} />}
+          {b.type === "double-diamond" && <DoubleDiamond stages={b.stages} />}
+          {b.type !== "double-diamond" && <More d={b.deeper} name={name} />}
         </Section>
       );
     case "personas":
