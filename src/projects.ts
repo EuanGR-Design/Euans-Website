@@ -6,6 +6,7 @@ import type { IconName } from "./components/Icon";
 import { oldDims } from "./oldImageSizes";
 import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
 import { caseStudy } from "./caseStudy";
+import { supportPersonas, supportPriorities, supportStoryMaps } from "./supportHub";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -88,6 +89,26 @@ export type Notes = { icon: IconName; title: string; body: string }[];
 
 // `draft: true` shows the copy as a muted prompt until the real words are in.
 // More detail behind a section, opened in a panel so the page stays short.
+export type PersonaCard = {
+  name: string;
+  label: string;
+  age: number;
+  role: string;
+  bio: string;
+  quote: string;
+  goals: string[];
+  frustrations: string[];
+  tech: "Low" | "Medium" | "High";
+  help: string[];
+  mvp?: boolean;
+};
+
+export type StoryMap = {
+  persona: string;
+  label: string;
+  tasks: { title: string; steps: { title: string; stories: { text: string; mvp?: boolean }[] }[] }[];
+};
+
 export type Deeper = { label: string; heading: string; body?: string; blocks: Block[] };
 
 export type Block =
@@ -189,6 +210,20 @@ export type Block =
       body?: string;
       items: { name: string; role: string; goals: string; frustrations: string }[];
       draft?: boolean;
+      deeper?: Deeper;
+    }
+  // Full persona cards, one shown at a time from a row of everyone.
+  | { type: "persona-cards"; eyebrow?: string; heading: string; body?: string; items: PersonaCard[]; deeper?: Deeper }
+  // A user story map per persona: tasks across, steps under them, stories
+  // below, with the MVP line drawn through each step.
+  | { type: "story-map"; eyebrow?: string; heading: string; body?: string; maps: StoryMap[]; deeper?: Deeper }
+  // Opportunities ranked by score, with value and effort shown as bars.
+  | {
+      type: "priorities";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      items: { title: string; value: number; effort: number; shipped?: boolean }[];
       deeper?: Deeper;
     }
   | {
@@ -537,77 +572,23 @@ export const projects: Project[] = [
           },
         },
         {
-          type: "personas",
+          type: "persona-cards",
           eyebrow: "Personas",
-          heading: "Six personas, and the three the MVP was for.",
-          body: "I wrote six detailed personas. These are the three the MVP served, cut to what they wanted and what got in their way. The full write-ups are behind Dig deeper.",
-          items: [
-            {
-              name: "Taylor, daily user",
-              role: "Sends documents for signing all day",
-              goals: "Get documents sent, tracked and stored without errors, and work things out without bothering anyone senior.",
-              frustrations: "A steep learning curve, slow replies from support, and self-service help that's hard to find.",
-            },
-            {
-              name: "Olivia, team admin",
-              role: "Runs a team's access, templates and reports",
-              goals: "Keep the team productive, fix the basic issues and escalate the rest, and report on it to leadership.",
-              frustrations: "Little insight into how the team is doing, and pulling data together by hand from several places.",
-            },
-            {
-              name: "Tony, enterprise admin",
-              role: "IT administrator at a large, regulated organisation",
-              goals: "Prove Legalesign is keeping to its SLA, keep track of costs, and report the key numbers.",
-              frustrations: "No view across departments, unclear pricing, and constantly fixing problems for end users.",
-            },
-          ],
-          deeper: {
-            label: "the full personas",
-            heading: "The three personas in full.",
-            body: "Each one's goals, day and pains, and how they like to get help, which shaped the support they'd find in the product.",
-            blocks: [
-              {
-                type: "points",
-                eyebrow: "Taylor, daily user",
-                heading: "Administrative assistant. Send, track, chase, store.",
-                items: [
-                  { icon: "Flag", title: "Goals", body: "Send high volumes of documents accurately, keep track of every status, and work independently without bothering senior management." },
-                  { icon: "QueueList", title: "Their day", body: "Preparing contracts, NDAs and onboarding forms, using templates, chasing recipients who've stalled, and filing completed documents." },
-                  { icon: "HandRaised", title: "Pain points", body: "A steep learning curve, keeping up with new features, slow replies from support, and self-service help that isn't obvious." },
-                  { icon: "ChatBubbleLeftRight", title: "How they get help", body: "In-app tooltips and guided tours, quick-reference guides and FAQs, short videos, and live chat when they're stuck." },
-                ],
-              },
-              {
-                type: "points",
-                eyebrow: "Olivia, team admin",
-                heading: "Operations manager. Keeps the team productive and reports upwards.",
-                items: [
-                  { icon: "Flag", title: "Goals", body: "Manage access and permissions, monitor the team through reports and KPIs, and raise problems on the team's behalf." },
-                  { icon: "QueueList", title: "Their day", body: "Adding and removing members, reviewing usage and completion times, and fixing basic issues before escalating the rest." },
-                  { icon: "HandRaised", title: "Pain points", body: "Limited insight into team performance, data pulled together by hand from several places, and little control over daily users' workflows." },
-                  { icon: "ChatBubbleLeftRight", title: "How they get help", body: "Short tutorials and tooltips in the admin area, guided tours to train the team, and resources they can circulate internally." },
-                ],
-              },
-              {
-                type: "points",
-                eyebrow: "Tony, enterprise admin",
-                heading: "Enterprise IT administrator. Answers for the contract.",
-                items: [
-                  { icon: "Flag", title: "Goals", body: "Keep the rollout secure and compliant, track spend and billing, make sure Legalesign keeps to its SLA, and report on key metrics." },
-                  { icon: "QueueList", title: "Their day", body: "Evaluating and rolling out software, managing access and data security, and keeping integrations with SSO, CRM and document systems working." },
-                  { icon: "HandRaised", title: "Pain points", body: "No visibility across departments, unclear pricing as the organisation grows, and constantly resolving technical issues for end users." },
-                  { icon: "ShieldCheck", title: "What they need to see", body: "Compliance certifications, clear pricing, uptime and SLA guarantees, and detailed technical documentation." },
-                ],
-              },
-            ],
-          },
+          heading: "Six people who need help in different ways.",
+          body: "Six personas, three story maps and fifteen help directions scored. I wrote a persona for everyone who'd come to support, then built the MVP around the three who needed it most: daily users, team admins and enterprise admins.",
+          items: supportPersonas,
         },
         {
           type: "journey-map",
           eyebrow: "Journey map",
           heading: "Getting help today, step by step.",
           stages: ["Gets stuck", "Looks for help", "Asks support", "Waits", "Gets an answer"],
+          body: "The road from getting stuck to getting an answer, before Support Hub. Every stage either left the product or left the user waiting.",
           lanes: [
+            {
+              label: "Touchpoint",
+              cells: ["Console", "Help articles on the website", "Email, phone or chat", "Their inbox", "A link from support"],
+            },
             {
               label: "Doing",
               cells: [
@@ -640,6 +621,20 @@ export const projects: Project[] = [
             },
           ],
           draft: true,
+        },
+        {
+          type: "story-map",
+          eyebrow: "User story maps",
+          heading: "What each of the three would do, step by step, and where the MVP line fell.",
+          body: "One map per MVP persona: the tasks they'd set out to do, the steps in each, and every story we came up with. Stories above the line were the MVP. Turn on MVP only to see how much we left for later.",
+          maps: supportStoryMaps,
+        },
+        {
+          type: "priorities",
+          eyebrow: "Prioritising",
+          heading: "Fifteen ways to help, scored and put in order.",
+          body: "Beyond tickets, discovery turned up fifteen ways to help people sooner. We scored each for value and effort, and the order of execution became the roadmap.",
+          items: supportPriorities,
         },
       ],
       brief: {

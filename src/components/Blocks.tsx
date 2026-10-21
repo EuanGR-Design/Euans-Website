@@ -21,6 +21,9 @@ import { DecisionLoop } from "./DecisionLoop";
 import { Voices } from "./Voices";
 import { Testing } from "./Testing";
 import { Deeper, useInPanel } from "./Deeper";
+import { PersonaCards } from "./PersonaCards";
+import { StoryMap } from "./StoryMap";
+import { Priorities } from "./Priorities";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -460,6 +463,23 @@ function BlockView({
               </Reveal>
             ))}
           </div>
+        </Section>
+      );
+    case "persona-cards":
+    case "story-map":
+    case "priorities":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">{b.body}</p>
+            </Reveal>
+          )}
+          {b.type === "persona-cards" && <PersonaCards items={b.items} />}
+          {b.type === "story-map" && <StoryMap maps={b.maps} />}
+          {b.type === "priorities" && <Priorities items={b.items} />}
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "personas":
