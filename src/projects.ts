@@ -105,7 +105,13 @@ export type PersonaCard = {
   mvp?: boolean;
 };
 
-export type StoryTasks = { title: string; steps: { title: string; stories: { text: string; mvp?: boolean }[] }[] }[];
+// Must have is the MVP (sprint 1); should and could have were planned for
+// sprints 2 and 3.
+export type StoryPriority = "must" | "should" | "could" | "wont";
+export type StoryTasks = {
+  title: string;
+  steps: { title: string; stories: { text: string; mvp?: boolean; priority?: StoryPriority }[] }[];
+}[];
 
 // `full` is everything mapped for a persona; `cut` is the same map after the
 // tasks that weren't needed for a first release were taken out.
@@ -756,7 +762,7 @@ export const projects: Project[] = [
           type: "story-map",
           eyebrow: "Develop",
           heading: "Every story mapped, then cut down for the MVP.",
-          body: "A map for each of the three personas ticket tracking served. I mapped everything first, then cut the tasks a first release didn't need. Stories above the line shipped first.",
+          body: "A map for each of the three personas ticket tracking served. I mapped everything first, then cut the tasks a first release didn't need. For the daily user I sorted every story into must, should, could and won't have, which set the plan for the first three sprints.",
           maps: supportStoryMaps,
         },
         {
