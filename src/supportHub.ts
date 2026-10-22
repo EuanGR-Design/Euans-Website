@@ -349,6 +349,10 @@ export const supportStoryMaps: StoryMap[] = [
 // meets) and effort out of 10, in the order they were planned, with what
 // happened to it in the end. Popover panels and guided tours weren't scored at
 // the time, so they were scored against the same objectives for this page.
+// Feature requests, UX and UI reports, demos, the decision tree, demo
+// templates, keyboard shortcuts and community help were rescored in review
+// (notes/getting-unstuck-scoring-review.md): feature requests and UX reports
+// share the bug report form, so they cost little once it exists.
 type Direction = Extract<Block, { type: "priorities" }>["items"][number];
 const d = (title: string, value: number | undefined, effort: number, status: Direction["status"], note?: string): Direction => ({
   title,
@@ -358,21 +362,21 @@ const d = (title: string, value: number | undefined, effort: number, status: Dir
   note,
 });
 export const supportPriorities: Direction[] = [
-  d("Feature requests", 15, 7, "Shipped"),
+  d("Feature requests", 9, 3, "Shipped"),
   d("Report a bug", 11, 6, "Shipped"),
   d("Help centre", 15, 9, "Shipped", "Built later on the roadmap"),
-  d("Demos", 10, 4, "Partly", "Easier demos, few videos"),
+  d("Demos", 10, 6, "Partly", "Easier demos, few videos"),
   d("Tooltips", 8, 2, "Shipped", "Added every sprint"),
-  d("UX and UI issue reports", 10, 7, "Partly", "Folded into bug reports"),
+  d("UX and UI issue reports", 8, 2, "Partly", "Folded into bug reports"),
   d("Clearer error messages", 7, 3, "Shipped", "Built by developers"),
   d("Personalised five-step getting started guides", 10, 8, "Not built"),
   d("Popover panels with documentation for that screen", 10, 8, "Not built", "Scored for this page"),
-  d("In-app decision tree to triage problems", 8, 6, "Designed", "Cut from the MVP"),
-  d("Demo documents and templates", 6, 2, "Not built"),
+  d("In-app decision tree to triage problems", 8, 8, "Designed", "Cut from the MVP"),
+  d("Demo documents and templates", 7, 5, "Not built"),
   d("Guided tours", 9, 6, "Shipped", "Scored for this page"),
   d("Custom documentation packs", 6, 8, "Cut", "Too much manual work"),
-  d("Keyboard shortcuts", 4, 4, "Shipped", "In the editor"),
-  d("External and community help", 7, 10, "Not built"),
+  d("Keyboard shortcuts", 6, 4, "Shipped", "In the editor"),
+  d("External and community help", 8, 10, "Not built"),
 ];
 
 // The same directions, in the four clusters discovery sorted them into.
