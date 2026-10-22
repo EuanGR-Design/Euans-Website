@@ -24,7 +24,7 @@ export function Priorities({ items, value, effort }: { items: Item[]; value: Sca
         {items.map((it, i) => (
           <li
             key={it.title}
-            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-line px-5 py-4 last:border-b-0 md:grid-cols-[2.5rem_minmax(0,1fr)_10rem_10rem_6rem] md:px-6"
+            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-line px-5 py-4 transition-colors last:border-b-0 hover:bg-accent-soft md:grid-cols-[2.5rem_minmax(0,1fr)_10rem_10rem_6rem] md:px-6"
           >
             <span className="text-sm text-muted tabular-nums">{i + 1}</span>
             <span>

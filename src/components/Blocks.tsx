@@ -23,6 +23,7 @@ import { Testing } from "./Testing";
 import { Deeper, useInPanel } from "./Deeper";
 import { PersonaCards } from "./PersonaCards";
 import { StoryMap } from "./StoryMap";
+import { UserStories } from "./UserStories";
 import { Priorities } from "./Priorities";
 import { ObjectivesMatrix } from "./ObjectivesMatrix";
 import { Themes } from "./Themes";
@@ -471,6 +472,7 @@ function BlockView({
       );
     case "persona-cards":
     case "story-map":
+    case "user-stories":
     case "priorities":
     case "objectives":
     case "themes":
@@ -486,6 +488,7 @@ function BlockView({
           )}
           {b.type === "persona-cards" && <PersonaCards items={b.items} />}
           {b.type === "story-map" && <StoryMap maps={b.maps} />}
+          {b.type === "user-stories" && <UserStories items={b.items} />}
           {b.type === "priorities" && <Priorities items={b.items} value={b.value} effort={b.effort} />}
           {b.type === "objectives" && <ObjectivesMatrix directions={b.directions} items={b.items} high={b.high} />}
           {b.type === "themes" && <Themes items={b.items} statuses={b.statuses} />}

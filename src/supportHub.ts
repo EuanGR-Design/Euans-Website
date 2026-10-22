@@ -1,7 +1,7 @@
 // Getting Unstuck's research: the six personas, the three story maps and how
 // the help directions were ranked. Used by its project page (src/projects.ts).
 
-import type { Block, PersonaCard, StoryMap } from "./projects";
+import type { Block, PersonaCard, StoryMap, StoryTasks, UserStories } from "./projects";
 
 export const supportPersonas: PersonaCard[] = [
   {
@@ -131,21 +131,134 @@ export const supportPersonas: PersonaCard[] = [
 
 // Each line is "[Task] > Step: story | story", copied from the story maps on
 // the planning board. A leading * marks a story above the MVP line.
-function parseMap(persona: string, label: string, raw: string): StoryMap {
-  const tasks: StoryMap["tasks"] = [];
+function parseTasks(raw: string, from: StoryTasks = []): StoryTasks {
+  const tasks: StoryTasks = [];
+  const task = (title: string) => {
+    let t = tasks.find((x) => x.title === title);
+    if (!t) tasks.push((t = { title, steps: [] }));
+    return t;
+  };
   for (const line of raw.trim().split("\n")) {
+    if (line.startsWith("@")) {
+      const [title, step] = line.slice(1).split(" > ");
+      const src = from.find((x) => x.title === title);
+      const steps = src?.steps.filter((x) => !step || x.title === step);
+      if (!steps?.length) throw new Error(`No step to copy for ${line}`);
+      task(title).steps.push(...steps);
+      continue;
+    }
     const m = line.match(/^\[(.+?)\] > (.+?): (.+)$/);
     if (!m) continue;
-    const [, task, step, rest] = m;
-    let t = tasks.find((x) => x.title === task);
-    if (!t) tasks.push((t = { title: task, steps: [] }));
-    t.steps.push({
+    const [, title, step, rest] = m;
+    task(title).steps.push({
       title: step,
       stories: rest.split(" | ").map((s) => (s.startsWith("*") ? { text: s.slice(1), mvp: true } : { text: s })),
     });
   }
-  return { persona, label, tasks };
+  return tasks;
 }
+const parseMap = (persona: string, label: string, cut: string, full: string): StoryMap => {
+  const c = parseTasks(cut);
+  return { persona, label, cut: c, full: parseTasks(full, c) };
+};
+
+// The full maps, before the cut. A line starting with @ copies a task (or one
+// "Task > Step") from the persona's cut-down map, where it carried over as is.
+const fullTaylor = `@Create Support Enquiry
+@Track a Support Ticket
+@Escalate Ticket Priority > Select Ticket
+[Escalate Ticket Priority] > Edit Ticket Details: Make an edit to the ticket | Add details and uploads | Drill into the ticket to make an edit | Edit the ticket from the list | Save edits
+@Escalate Ticket Priority > Increase Priority Level of Ticket
+@Support Ticket Updates
+[Provide More Details on an Issue] > Add Extra Information to Ticket: Drill into the ticket to add more information | Add information in the ticket thread
+[Provide More Details on an Issue] > Save and Send Updated Information: Send directly to support | Send to internal management | Get approval from management
+[Track Progress of All Open Tickets] > Navigate to Ticket Listings: *Navigate to ticket listings
+[Track Progress of All Open Tickets] > Select How to View all Tickets: *Select List view | Select Dashboard view | Select ticket display view (Dashboard, Overview, List, Kanban)
+[Track Progress of All Open Tickets] > Filter Tickets by Open/Closed Status: Filter by open or closed status
+[Track Progress of All Open Tickets] > Sort Open Tickets by Progress: Sort by progress status (pending, in progress, blocked, done) | View tickets grouped by progress
+@Track Progress of All Open Tickets > View Progress Status
+@Check Recently Resolved Tickets
+[Give Feedback on a Solution] > Give Feedback on the Ticket: Rate how well the solution worked | Update the ticket with new information | Leave a review
+[Give Feedback on a Solution] > Send Feedback to Those Involved: Tell support how well the solution worked
+@Mark Success of Ticket
+@Check Previously Resolved Inquiries
+@Open a New Ticket From a Previous Issue
+[Compare Similar Tickets and Solutions] > Find Similar Tickets: Search by issue tag/category | Filter by issue location | Search by URL | Search by issue title | Search by issue description | Find similar issues using AI
+[Compare Similar Tickets and Solutions] > Review & Compare Tickets: Open ticket details in new tabs | Open tickets side by side | Reveal several tickets' details from the list
+[Link Related Tickets] > Locate Similar Ticket: Search by issue tag/category | Filter by issue location | Search by URL | Search by issue title | Search by issue description | Find similar issues using AI
+[Link Related Tickets] > View Ticket(s): Enter ticket | Preview ticket details
+[Link Related Tickets] > Link Ticket(s): Add several tickets to a category or label | Select several and link them in one action | Copy reference code | Paste the reference code into a related ticket | Mark a similar ticket as linked | Search inside a ticket for similar ones
+[Link Related Tickets] > View Linked Tickets: Drill into the parent ticket | Filter by category or label | Search inside a ticket for linked tickets | Linked or grouped view
+[Organise Support Tickets] > Label Support Tickets: Give tickets a label | Create a ticket category | Create categories automatically from a metric (e.g. satisfaction rating)
+[Organise Support Tickets] > View Categorised Tickets: Filter tickets by category/label | Select ticket display view (Dashboard, Overview, List, Kanban)`;
+
+const fullOlivia = `[Edit Team Notification Settings] > Open Notification Settings: Navigate to settings
+[Edit Team Notification Settings] > Set Up Notification Preferences: Choose how to receive notifications | Get notified of urgent updates only | Get notified of every update | Get notified when a ticket's status changes | Send all notifications to one place (email) | Receive or mute notifications for specific actions | Receive or mute notifications for specific users
+[Edit Team Notification Settings] > Receive Chosen Notifications: Email | Toasts | In-app notification centre | Send chosen notifications to a specific place | Alert indicator in the UI | Another app (e.g. Slack) | Phone | Text message
+[Control Team Support Permissions] > Open User Permissions: Navigate to team permissions | Go to user permissions from a link in a notification
+[Control Team Support Permissions] > Select User: Scroll through users | Select one user | Search for a user | Sort users | Filter users | Select several users
+[Control Team Support Permissions] > Update Permission Settings: Change a user's support access level | Update permissions in bulk | Ask the enterprise admin to grant access to a blocked user
+[Customise Ticket Preset Options] > View Ticket Preset Options: Navigate to ticket preferences
+[Customise Ticket Preset Options] > Set Up Custom Labels and Categories: Add a label name | Choose from recommended label groups | Describe how to use each label | Create label sets (e.g. size, or where in the app) | Set label colour | Set label icon | Make certain label sets required
+[Customise Ticket Preset Options] > Save Customisations: Save to your own team | Publish to the organisation | Publish to chosen teams
+@View/Track All Team Tickets in One Place
+[Bulk Manage Team Tickets] > Select Tickets: Select several tickets by hand | Select all tickets sharing a priority or status | Select several tickets at once
+[Bulk Manage Team Tickets] > Complete Bulk Actions: Bulk reminders | Bulk escalate | Bulk update | Link tickets | Bulk remove | Bulk group | Merge tickets into one | Bulk clone
+[Bulk Manage Team Tickets] > Get Confirmation: See that the action is complete | Receive in-app notification | Receive an email of the actions | See the action in an audit log | Receive notification in another app (e.g. Slack)
+@Follow Up on Blocking/Urgent Issues
+@Escalate on Behalf of a Team Member
+[Step In on a Team Member's Ticket] > Find Issues That Need Help: Get notified when an SLA is breached | Find tickets to escalate | Get notified by team members
+[Step In on a Team Member's Ticket] > Add Help to the Ticket: Give internal support | Assign the ticket to an advanced user | Link resources to the issue | Add to the ticket thread | Link similar past or current tickets
+[Step In on a Team Member's Ticket] > Save Additions: Save updates
+[Assign a Ticket to a Team Member] > Assess the Issue: Expand ticket details | Read ticket thread | Read ticket log | View preview of tickets | View summary of tickets
+[Assign a Ticket to a Team Member] > Check Who Raised It: View the team member's ticket
+[Assign a Ticket to a Team Member] > Assign to an Advanced User: Search for a team member | @ mention a team member
+@Change Ticket Listings View
+[Customise the Ticket Dashboard] > Choose What to Highlight: High-impact issues by urgency | Organise by status | Organise by label/category | Set a date range | Pick stats and metrics to focus on | Set an SLA | Pick team members
+[Customise the Ticket Dashboard] > Add Widgets: Choose from a fixed set | Choose widgets the enterprise admin made | Choose from recommendations for the data | Choose from AI recommendations | Choose charts and graphs
+[Customise the Ticket Dashboard] > Edit Widgets: Edit existing widgets | Rearrange the layout | Resize widgets
+[Customise the Ticket Dashboard] > Save Custom Settings: Save new settings | Apply settings to the existing dashboard | Save widgets as presets | Save the dashboard as a preset
+[Customise the Ticket Dashboard] > Share the Set-up: Share with all team members | Share with chosen team members | Offer the widget as a preset across teams
+@Review Updated Tickets
+[Contribute to Updated Tickets] > Edit Ticket Info: Drill into the ticket to edit | Edit title | Edit description | Edit labels | Edit category/type label | Edit uploads | Edit logs/error codes | Edit automated escalation rules | Edit the ticket from the list
+[Contribute to Updated Tickets] > Add More Details: Add labels | Add details and uploads | Add links | Add a comment | Add logs/error codes | Link similar tickets across teams | Apply automated escalation rules
+@Check Resolved Enquiries Across Teams
+@Compare Similar Tickets Across Teams
+[Link Related Tickets Across Teams] > Locate Similar Ticket: Search by issue title | Search by issue description | Search by issue tag/category | Filter by issue location | Search by URL | Find similar issues using AI
+[Link Related Tickets Across Teams] > View Ticket(s): Enter ticket | Reveal more ticket details from the list | Preview ticket details
+[Link Related Tickets Across Teams] > Link Ticket(s): Add several tickets to a category or label | Select several and link them in one action | Copy reference code | Paste the reference code into a related ticket | Mark a similar ticket as linked | Search inside a ticket for similar ones
+[Link Related Tickets Across Teams] > View Linked Tickets: Filter by linked tickets | View tickets in a linked or grouped view | Search inside a ticket for linked tickets
+[Organise Support Tickets] > Categorise Tickets: Assign a type or label | Create a ticket category | Assign to a team member | Create categories automatically from a metric (e.g. satisfaction rating)
+[Organise Support Tickets] > View Categorised Tickets: Filter tickets by category/label | Separate tickets per team member | Select ticket display view (Dashboard, Overview, List, Kanban)
+@Analyse Support Performance
+@Export Reports`;
+
+const fullTony = `[Control Team Support Access] > View All Team Members: See all members across the organisation's teams | Scroll through members | Search team members | See members grouped by team
+[Control Team Support Access] > Set Permission per Member: Change each member's permission individually | Set permissions for several members at once
+[Set Up Integrations With Other Tools] > Choose Integration: View possible integrations | Request an integration from support | Integrate using a third-party tool
+[Set Up Integrations With Other Tools] > Set Up Integration: Follow the set-up documentation | Hire Legalesign to set it up | Set up integration rules and conditions | Test the integration | Get a tailored set-up plan from AI
+[Customise the Ticket Form] > Access Ticket Preferences: Navigate to ticket preferences
+[Customise the Ticket Form] > Set Up a Custom Ticket Form: Make specific fields required | Remove input options (e.g. block screenshots for security) | Create custom label options | Create custom field options | Customise the ticket layout | Add and remove field options from presets
+[Customise the Ticket Form] > Save the Form to Teams: Save the form as a preset | Save the form to specific teams | Save as suggested or mandatory | Save the form to specific users
+[Create Ticket Automation Rules] > Access Automation Preferences: Navigate to automation preferences | Request automation access from support | Add automation to your plan
+[Create Ticket Automation Rules] > Define Automation Rules: Escalation automation | Reminder automation | Escalate after a set time | Notify support after a set time | Notify me or admins after a set time | Ask support to set up automations | When an SLA is missed, act on it | Quarterly or annual checks
+[Create Ticket Automation Rules] > Confirm the Rules: Visual indicator in the UI | In-app success notification | Send the confirmation to my email | Trial with a dummy ticket | Test rules in a sandbox
+[Create Report Presets for Metrics and SLAs] > Access Report Set-up: Navigate to report settings | Request reporting access from support | Add reporting to your plan
+[Create Report Presets for Metrics and SLAs] > Select Metrics to Report On: Select all tickets under the team | Specify date range | Select specific ticket type | Organise data by user | Select specific teams | Select a time period | By a specific metric | Specific SLA
+[Create Report Presets for Metrics and SLAs] > Set Report Terms: Specify date range | By a specific metric (e.g. only when the SLA is missed) | Organise data by user
+[Create Report Presets for Metrics and SLAs] > Choose How to Display Data: XLS/CSV | PDF | Table | Graph or chart
+[Create Report Presets for Metrics and SLAs] > Save Preset: Save as an export option | Create it automatically on a schedule (e.g. every quarter, to my email) | Save as a widget
+@Generate Reports
+@View Report Metrics and SLAs
+@Manage Metrics and SLAs
+[Manage Metrics and SLAs] > Escalate Areas to Support: Send a section of a report to support | Alert support automatically when a red line is near or crossed
+[Manage Metrics and SLAs] > Follow Up: Send a report as a ticket | Chat thread on reports | Highlight and comment on parts of a report for support to answer
+@Customise the Report View
+@View Report Backlog
+[Bulk Ticket Management] > Find Tickets: Search by issue tag/category | Filter by issue location | Search by URL | Search by issue title | Search by issue description | Find similar issues using AI
+[Bulk Ticket Management] > Select Several Tickets: Select tickets by hand | Select all tickets sharing a priority or status | Select several tickets at once | Select everything a search or filter returns
+[Bulk Ticket Management] > Act on the Selection: Bulk update | Bulk remove | Bulk group | Bulk reminders | Link tickets | Merge tickets into one | Bulk escalate | Bulk clone
+@Export Report Data for Analysis/Audits`;
 
 export const supportStoryMaps: StoryMap[] = [
   parseMap(
@@ -179,6 +292,7 @@ export const supportStoryMaps: StoryMap[] = [
 [Open a New Ticket From a Previous Issue] > Check Solutions Still Work: *View ticket thread/log of previous solutions | View solutions alongside live UI to test them
 [Open a New Ticket From a Previous Issue] > Open New Issue: *Choose Create Support Ticket Inquiry | Reopen Ticket | Open new ticket linked to existing issue | Clone Ticket
 [Open a New Ticket From a Previous Issue] > Provide Additional Details: *Add details through email | *View all communications in one place (ticket thread) | *Add information in the ticket thread | Update issue description/title | Upload new evidence: screenshots, recordings, files | Update current Console version`,
+    fullTaylor,
   ),
   parseMap(
     "Olivia",
@@ -209,6 +323,7 @@ export const supportStoryMaps: StoryMap[] = [
 [Analyse Support Performance] > View Stats: *Basic number outputs | *Charts and graphs | *Tables/spreadsheets | Dashboard | Widgets
 [Export Reports] > Export Findings: *Export as XLS/CSV | Export as PDF | Export as raw data | Bulk export reports | Export a specific section of data | Live link to a spreadsheet
 [Export Reports] > Share Findings with the Enterprise Admin: *Send report through another channel | Tag admin in reports | @ mention admin on reports | Send report to enterprise admins in the support app`,
+    fullOlivia,
   ),
   parseMap(
     "Tony",
@@ -226,6 +341,7 @@ export const supportStoryMaps: StoryMap[] = [
 [Export Report Data for Analysis/Audits] > Generate Report: *Specify date range | *Select all tickets under team | Organise data by user | By a specific metric | Specific SLA | By location, label or category | Select specific ticket type | Compare reports across teams/departments
 [Export Report Data for Analysis/Audits] > Review Report: Preview final report | Check all desired data is included | Check filters are right (date range, team, user) | View summary of report | View highlights of report | AI scan and summary of the report
 [Export Report Data for Analysis/Audits] > Export Report: *Export as XLS/CSV | *Basic number outputs | *Charts and graphs | *Tables/spreadsheets | Dashboard | Widgets | Bulk export reports | Export a specific section of data | Live link to a spreadsheet | Export as PDF | Export as raw data`,
+    fullTony,
   ),
 ];
 
@@ -350,4 +466,182 @@ export const supportShortlist: Extract<Block, { type: "shortlist" }>["items"] = 
   { title: "Help centre", tag: "Later on the roadmap", stats: totals(helpCentre) },
   { title: "Tooltips", tag: "Added every sprint", stats: totals(tooltips) },
   { title: "Clearer error messages", tag: "Built by the developers", stats: totals(errors) },
+];
+
+// The user stories behind each map, grouped by feature as they were on the
+// planning board. A leading * marks a story kept for the MVP; the rest were
+// greyed out. These became the tickets the developers built from.
+function parseStories(persona: string, label: string, raw: string): UserStories {
+  const groups: UserStories["groups"] = [];
+  for (const line of raw.trim().split("\n")) {
+    if (line.startsWith("# ")) groups.push({ title: line.slice(2), stories: [] });
+    else if (line.startsWith("* ")) groups.at(-1)!.stories.push({ text: line.slice(2), mvp: true });
+    else if (line.startsWith("- ")) groups.at(-1)!.stories.push({ text: line.slice(2) });
+  }
+  return { persona, label, groups };
+}
+
+export const supportUserStories: UserStories[] = [
+  parseStories(
+    "Taylor",
+    "Daily user",
+    `# Notifications and alerts
+* As a Daily User, I want to receive notifications for any updates or changes in the ticket status, so I can stay informed without manual checks.
+* As a Daily User, I want to receive notifications for any updates or changes in the status of my support tickets, so I can stay informed in real time.
+# Email and chat integrations
+* As a Daily User, I want the dashboard to integrate with communication tools like email and chat for seamless updates on ticket progress, so I can keep clear communication with the support team.
+* As a Daily User, I want the dashboard to integrate with email to sync communication about support tickets, so all the information is in one place.
+- As a Daily User, I want integration with messaging tools like Slack to streamline communication about ticket updates and resolutions.
+# Search and filtering
+- As a Daily User, I want the dashboard to include a search function so I can quickly find specific support tickets.
+- As a Daily User, I want to search and filter the dashboard by keywords or criteria, so I can quickly locate specific tickets or inquiries.
+- As a Daily User, I want to filter support tickets by date, category or priority to focus on relevant tasks.
+# Ticket display
+* As a Daily User, I want a visual representation of ticket statuses (e.g. colour-coded indicators) for quick identification and prioritisation.
+# Live ticket status
+* As a Daily User, I want a visual dashboard displaying key metrics and pending tickets.
+* As a Daily User, I want the dashboard to provide real-time updates on ticket statuses and resolutions, so I always have the latest information.
+* As a Daily User, I want real-time updates on ticket resolutions and response times, so I can track progress and anticipate when tickets will be resolved.
+* As a Daily User, I need a clear overview of all open tickets and their current status, so I can quickly see which tickets need my attention.
+* As a Daily User, I want to easily track the status of all the support tickets I've raised, including pending, in progress and resolved.
+# A simple dashboard
+* As a Daily User, I value a user-friendly interface to view and track my open tickets.
+* As a Daily User, I want to easily track the status of every support ticket I've submitted, so I can follow up as needed.
+# Organising and prioritising
+- As a Daily User, I want to categorise and prioritise my support tickets by urgency, department or issue type, for better organisation.
+- As a Daily User, I want to categorise tickets by their nature (e.g. technical issue, general inquiry) for better organisation and prioritisation.
+- As a Daily User, I want multiple ticket views, such as a list, a Kanban board or a calendar.
+# Ticket history
+* As a Daily User, I want a history log of ticket actions and communications for reference and audit purposes.
+* As a Daily User, I want to track my submitted tickets in real time, get notified of updates, and see a history of the actions taken on each one.
+# Self-service resources
+- As a Daily User, I want a knowledge base or FAQ section for common issues, so I can troubleshoot without depending on support.
+- As a Daily User, I want easy access to support resources, for a seamless self-service experience.
+# Rating solutions
+- As a Daily User, I want a way to rate how effective the solution to each ticket was.
+- As a Daily User, I want to rate the resolution of my tickets, so my line manager (the Team Admin) knows how effective the solutions are.
+# Creating a ticket
+* As a Daily User, I want to create a ticket and fill out its details in a form, to capture the information relevant to my support request.
+- As a Daily User, I want to create custom ticket fields to capture information specific to different types of support request.
+# Collaboration
+- As a Daily User, I want to add notes or comments to support tickets to give more context or updates.
+- As a Daily User, I want to attach relevant documents or notes to individual tickets for full context.
+- As a Daily User, I need to attach files, screenshots and screen recordings to individual tickets for full context.
+- As a Daily User, I want to collaborate with team members within tickets, leaving comments and sharing updates.
+# Escalations
+* As a Daily User, I want to prioritise tickets by urgency and their impact on my work, so I can escalate the right ones to my admin or follow up with support.
+- As a Daily User, I need to set up automated escalations for unresolved tickets to ensure they're resolved in time.`,
+  ),
+  parseStories(
+    "Olivia",
+    "Team admin",
+    `# Search and filtering
+- As a Team Admin, I want to filter tickets by priority level for efficient handling.
+- As a Team Admin, I want to filter tickets by category (e.g. type, status, urgency) for better organisation.
+- As a Team Admin, I want to filter tickets by specific criteria for targeted analysis.
+- As a Team Admin, I want to create custom filters for ticket data to analyse specific trends or issues.
+# Categorising
+- As a Team Admin, I want to categorise support tickets by urgency to prioritise resolution.
+- As a Team Admin, I want a customisable ticket categorisation system to organise support tickets effectively.
+- As a Team Admin, I want tickets organised automatically by keywords or categories for efficient handling.
+# Prioritisation
+* As a Team Admin, I want to set priority levels for support tickets to ensure critical issues are addressed promptly.
+* As a Team Admin, I want to set priority levels for tickets based on urgency to ensure critical issues are addressed promptly.
+# Access control
+- As a Team Admin, I want user-specific access controls on the dashboard to maintain data security and privacy.
+- As a Team Admin, I want ticket tracking tied to user permissions to control access.
+# SLA and escalation rules
+- As a Team Admin, I want tickets prioritised automatically against the SLA to streamline resolution.
+- As a Team Admin, I want to create customisable ticket escalation rules based on priority levels.
+- As a Team Admin, I want automated escalations based on ticket age or unresolved status.
+- As a Team Admin, I want SLA reminders and escalations for overdue tickets.
+# Collaboration
+- As a Team Admin, I want team members to add notes and updates to tickets for collaboration.
+- As a Team Admin, I want collaboration features in the dashboard to share knowledge on ticketed issues.
+# Notifications and alerts
+* As a Team Admin, I want to be notified of new tickets from my team members to ensure prompt attention.
+* As a Team Admin, I want real-time notifications for critical updates or escalations on my team's tickets.
+* As a Team Admin, I want to be notified of all overdue support tickets so I can act on them.
+- As a Team Admin, I want automated notifications for ticket updates and escalations to keep stakeholders informed.
+- As a Team Admin, I want automated notifications for critical ticket updates to ensure timely responses.
+- As a Team Admin, I want automated alerts for critical ticket statuses.
+- As a Team Admin, I want automated reminders for unresolved tickets to ensure timely follow-up.
+# Reporting
+* As a Team Admin, I want reports on ticket resolution rates, response times and trends for performance analysis.
+* As a Team Admin, I want to export ticket data for further analysis, or to share with stakeholders.
+- As a Team Admin, I want reports on ticket trends to identify recurring issues.
+- As a Team Admin, I want to schedule automated ticket reports for regular updates.
+# Email and Slack integrations
+* As a Team Admin, I want ticket tracking connected to email for seamless communication and updates.
+- As a Team Admin, I want ticket tracking connected to tools like Slack for seamless collaboration.
+- As a Team Admin, I want real-time collaboration on ticket resolutions within the dashboard.
+# Ticket tracking
+* As a Team Admin, I want to easily track the status of all my team members' support tickets to ensure timely resolution.
+* As a Team Admin, I want to track the status of support tickets in real time.
+* As a Team Admin, I want to track the status of escalated tickets.
+* As a Team Admin, I want to track resolution times and response rates to ensure service level agreements are met.
+# The team dashboard
+* As a Team Admin, I want a central dashboard showing real-time ticket status and how tickets are spread across the team.
+* As a Team Admin, I want a dashboard overview showing ticket volume and resolution status.
+* As a Team Admin, I want an overview of key ticket metrics like open tickets, resolved tickets and average resolution time.
+* As a Team Admin, I want a visual representation of ticket statuses for quick monitoring.
+* As a Team Admin, I want to view a summary of open and closed support tickets.
+- As a Team Admin, I want a dashboard view of ticket trends and patterns for proactive support.
+- As a Team Admin, I want to track each team member's ticket resolution rate.
+- As a Team Admin, I want to see ticket volume by team or urgency level.
+# Customising the dashboard
+- As a Team Admin, I want customisable dashboard widgets showing ticket trends and performance metrics.
+- As a Team Admin, I want custom dashboards with key ticket metrics for different team members or departments.
+- As a Team Admin, I want to customise the dashboard to show metrics like resolution rate and average response time.
+- As a Team Admin, I want to arrange the dashboard so the most relevant ticket metrics come first.
+# Ticket structure
+- As a Team Admin, I want to customise ticket status labels for better tracking.
+- As a Team Admin, I want templates for common ticket types to streamline ticket creation.
+- As a Team Admin, I want custom ticket fields to capture specific information for each ticket.
+# Ticket history
+* As a Team Admin, I want to track the history of ticket updates and resolutions for auditing purposes.`,
+  ),
+  parseStories(
+    "Tony",
+    "Enterprise admin",
+    `# Customising the dashboard
+- As an Enterprise IT Administrator, I need customisable widgets for personalised views and quick access to critical ticket information.
+- As an Enterprise IT Administrator, I need customisable views for different stakeholders, with role-based access for different team members.
+# Ticket status across teams
+* As an Enterprise IT Administrator, I need insights into common ticket categories.
+* As an Enterprise IT Administrator, I want a dashboard with real-time updates on the status of support tickets and inquiries across teams.
+* As an Enterprise IT Administrator, I want to track the status of support tickets in real time to monitor progress.
+* As an Enterprise IT Administrator, I need real-time updates on ticket statuses, and the ability to escalate.
+* As an Enterprise IT Administrator, I need a summary of open and resolved tickets.
+* As an Enterprise IT Administrator, I need a summary of ticket statuses, including open, pending, resolved, closed and overdue.
+# Bulk ticket management
+- As an Enterprise IT Administrator, I want bulk actions on support tickets for efficient management.
+# Time tracking
+* As an Enterprise IT Administrator, I want to track the average resolution time to ensure efficient responses and resolutions.
+* As an Enterprise IT Administrator, I need to see how long tickets have been open, to prioritise by age.
+# Reporting
+* As an Enterprise IT Administrator, I want reports on response times, resolution rates and overall support performance.
+- As an Enterprise IT Administrator, I want reports on ticket trends and historical patterns to identify recurring issues.
+- As an Enterprise IT Administrator, I want customisable reporting on ticket performance, metrics and KPIs.
+- As an Enterprise IT Administrator, I need insights on ticket volume trends and peak support hours.
+- As an Enterprise IT Administrator, I want to track ticket escalations and how critical issues are handled.
+- As an Enterprise IT Administrator, I expect customisable reporting templates to track SLA compliance and performance.
+# Exporting
+* As an Enterprise IT Administrator, I want to export ticket data for further analysis or reporting.
+* As an Enterprise IT Administrator, I require exports of the data for further analysis or audits.
+# Search and filtering
+- As an Enterprise IT Administrator, I want to filter and prioritise tickets by urgency, priority, team or other criteria.
+- As an Enterprise IT Administrator, I want support tickets prioritised by how critical they are to the business.
+- As an Enterprise IT Administrator, I want to search the dashboard to quickly find specific tickets or inquiries.
+# Notifications and alerts
+* As an Enterprise IT Administrator, I expect to be told about critical ticket updates or escalations.
+- As an Enterprise IT Administrator, I want automated alerts for high-priority tickets that need immediate attention.
+- As an Enterprise IT Administrator, I want to be notified when a support ticket becomes overdue.
+- As an Enterprise IT Administrator, I want integration with tools like Slack or Microsoft Teams to collaborate on ticket resolutions.
+# Collaboration
+- As an Enterprise IT Administrator, I want internal notes and updates on tickets for team visibility.
+- As an Enterprise IT Administrator, I need comments and notes on specific tickets.
+# Self-service resources
+- As an Enterprise IT Administrator, I expect access to solutions and troubleshooting guides from the dashboard.`,
+  ),
 ];

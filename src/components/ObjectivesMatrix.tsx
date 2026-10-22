@@ -46,10 +46,10 @@ export function ObjectivesMatrix({ directions, items, high = 8 }: Props) {
           <div
             role="row"
             key={it.objective}
-            className={`grid items-center gap-3 border-b border-line px-6 py-2.5 text-sm ${it.meets.length ? "" : "text-muted"}`}
+            className={`group grid items-center gap-3 border-b border-line px-6 py-2.5 text-sm transition-colors hover:bg-accent-soft ${it.meets.length ? "" : "text-muted"}`}
             style={{ gridTemplateColumns: cols }}
           >
-            <span role="cell" className="sticky left-0 z-10 -ml-6 bg-raised pl-6">
+            <span role="cell" className="sticky left-0 z-10 -ml-6 bg-raised pl-6 transition-colors group-hover:bg-[color-mix(in_srgb,var(--accent)_12%,var(--bg-raised))]">
               {it.objective}
               {it.top && (
                 <span className="ml-2 inline-block rounded-full bg-fg px-2 py-0.5 align-middle text-[10px] font-medium whitespace-nowrap text-bg">

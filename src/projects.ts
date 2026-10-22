@@ -6,7 +6,7 @@ import type { IconName } from "./components/Icon";
 import { oldDims } from "./oldImageSizes";
 import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
 import { caseStudy, todo } from "./caseStudy";
-import { supportObjectives, supportPersonas, supportPriorities, supportShortlist, supportStoryMaps, supportThemes } from "./supportHub";
+import { supportObjectives, supportPersonas, supportPriorities, supportShortlist, supportStoryMaps, supportThemes, supportUserStories } from "./supportHub";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -105,10 +105,16 @@ export type PersonaCard = {
   mvp?: boolean;
 };
 
-export type StoryMap = {
+export type StoryTasks = { title: string; steps: { title: string; stories: { text: string; mvp?: boolean }[] }[] }[];
+
+// `full` is everything mapped for a persona; `cut` is the same map after the
+// tasks that weren't needed for a first release were taken out.
+export type StoryMap = { persona: string; label: string; full: StoryTasks; cut: StoryTasks };
+
+export type UserStories = {
   persona: string;
   label: string;
-  tasks: { title: string; steps: { title: string; stories: { text: string; mvp?: boolean }[] }[] }[];
+  groups: { title: string; stories: { text: string; mvp?: boolean }[] }[];
 };
 
 export type Deeper = { label: string; heading: string; body?: string; blocks: Block[] };
@@ -219,6 +225,7 @@ export type Block =
   // A user story map per persona: tasks across, steps under them, stories
   // below, with the MVP line drawn through each step.
   | { type: "story-map"; eyebrow?: string; heading: string; body?: string; maps: StoryMap[]; deeper?: Deeper }
+  | { type: "user-stories"; eyebrow?: string; heading: string; body?: string; items: UserStories[]; deeper?: Deeper }
   // Shortlisted directions weighed against weighted objectives. `meets`
   // holds the indexes of the directions that meet each objective.
   | {
@@ -748,9 +755,16 @@ export const projects: Project[] = [
         {
           type: "story-map",
           eyebrow: "Develop",
-          heading: "Every story mapped, and a line drawn for the MVP.",
-          body: "A map for each of the three personas ticket tracking served. Stories above the line shipped first. Turn on MVP only to see how much I held back.",
+          heading: "Every story mapped, then cut down for the MVP.",
+          body: "A map for each of the three personas ticket tracking served. I mapped everything first, then cut the tasks a first release didn't need. Stories above the line shipped first.",
           maps: supportStoryMaps,
+        },
+        {
+          type: "user-stories",
+          eyebrow: "Product owner",
+          heading: "From user stories to sprint tickets.",
+          body: "I wrote the user stories for each persona and grouped them by feature, then marked the ones the MVP needed. As product owner I turned those into the Jira tickets the developers built from, and as the designer they were my list of what every screen had to do.",
+          items: supportUserStories,
         },
         todo("versions"),
       ],
