@@ -545,7 +545,7 @@ export const projects: Project[] = [
     tags: ["Discovery", "Product strategy", "Ticket tracking"],
     cover: null,
     intro:
-      "Research into what users do when something goes wrong: report it, fix it themselves or work out what to do next. It found fifteen ways to help, set the roadmap, and narrowed to the ticket tracking I then designed.",
+      "Research into what users do when something goes wrong: report it, fix it themselves or work out what to do next. I found fifteen ways to help, turned them into a roadmap, and narrowed it to the ticket tracking I then designed.",
     statement: "What should happen when a user hits a problem?",
     context: legalesignContext("Daily users, team and enterprise admins", "Lead designer, joint product owner"),
     // Told as a double diamond: what was wrong, how wide the research went,
@@ -653,7 +653,7 @@ export const projects: Project[] = [
           eyebrow: "My approach",
           heading: "Understand the problem first, then design the solution.",
           stages: [
-            { name: "Discover", count: "15 directions", body: "Everything a user might do when they hit a problem, and every way we might help." },
+            { name: "Discover", count: "15 directions", body: "Everything a user might do when they hit a problem, and every way we might help, in four clusters." },
             { name: "Define", count: "1 problem to solve", body: "Every direction weighed against goals I set with the CEO and leadership. Ticket tracking won." },
             { name: "Develop", count: "Stories and flows", body: "Ticket tracking mapped story by story for three personas, then designed." },
             { name: "Deliver", count: "An MVP", body: "Scoped down to what mattered most, and released." },
@@ -668,8 +668,8 @@ export const projects: Project[] = [
         },
         {
           type: "themes",
-          eyebrow: "Discover",
-          heading: "Fifteen ways we could help, in four themes.",
+          eyebrow: "Directions",
+          heading: "Fifteen ways we could help, in four clusters.",
           body: "I cast the net wide on purpose, for anything that might solve one of the problems, or several.",
           items: supportThemes,
           statuses: false,
@@ -680,7 +680,7 @@ export const projects: Project[] = [
           heading: "Four made the shortlist. Ticket tracking went first.",
           body: "Taking on product ownership, I worked with the CEO and leadership to set the business's objectives and weight each out of 10, then scored every direction against them.",
           items: supportShortlist,
-          call: "The help centre scored highest overall, but ticket tracking met all three of the goals leadership put first: enterprise KPIs, the SLA and UK enterprise sales. So it went first, and I recommended the help centre to another team.",
+          call: "The help centre scored highest overall, but ticket tracking met all three of the goals leadership put first: enterprise KPIs, the SLA and UK enterprise sales. So it went first, and the help centre was planned for later on the roadmap.",
           deeper: {
             label: "the scoring",
             heading: "How the four were scored.",
@@ -704,11 +704,11 @@ export const projects: Project[] = [
         {
           type: "points",
           eyebrow: "The roadmap",
-          heading: "One plan for every team.",
+          heading: "One plan for every department.",
           items: [
             { icon: "NumberedList", title: "An order of execution", body: "All fifteen directions ranked by value and effort, so the quick wins went first." },
-            { icon: "ViewColumns", title: "A roadmap across teams", body: "Design, development, support and marketing, each with their part, sprint by sprint." },
-            { icon: "ArrowsSplit", title: "Work handed to the right owners", body: "The help centre to another team, error messages to the developers, and tooltips into every sprint." },
+            { icon: "ViewColumns", title: "A roadmap across departments", body: "Design, development, support and marketing, each with their part, sprint by sprint." },
+            { icon: "ArrowsSplit", title: "A place for every direction", body: "Ticket tracking first, the help centre later on the roadmap, error messages with the developers, and tooltips added every sprint." },
           ],
         },
       ],
@@ -761,7 +761,7 @@ export const projects: Project[] = [
           heading: "Ticket tracking shipped, and the research set the roadmap.",
           items: [
             { goal: "Designed and led by me", icon: "QueueList", title: "Ticket tracking", body: "Customers raise tickets, follow their status and escalate them, and admins see their team's." },
-            { goal: "My recommendation, built by another team", icon: "MagnifyingGlass", title: "A help centre", body: "One place for help that used to be scattered." },
+            { goal: "My recommendation, built later on the roadmap", icon: "MagnifyingGlass", title: "A help centre", body: "One place for help that used to be scattered, now live." },
             { goal: "Started here, added every sprint", icon: "CursorArrowRays", title: "Tooltips and guided tours", body: "Help where people need it, across the product." },
             { goal: "From the feedback theme", icon: "PaperAirplane", title: "Bug reports and feature requests", body: "Sent from inside the product, straight to support and the team's Jira channel." },
           ],

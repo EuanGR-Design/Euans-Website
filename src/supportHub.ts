@@ -231,7 +231,8 @@ export const supportStoryMaps: StoryMap[] = [
 
 // The Order of Execution board: each direction's score (how many objectives it
 // meets) and effort out of 10, in the order they were planned, with what
-// happened to it in the end. Popover panels and guided tours were never scored.
+// happened to it in the end. Popover panels and guided tours weren't scored at
+// the time, so they were scored against the same objectives for this page.
 type Direction = Extract<Block, { type: "priorities" }>["items"][number];
 const d = (title: string, value: number | undefined, effort: number, status: Direction["status"], note?: string): Direction => ({
   title,
@@ -243,22 +244,22 @@ const d = (title: string, value: number | undefined, effort: number, status: Dir
 export const supportPriorities: Direction[] = [
   d("Feature requests", 15, 7, "Shipped"),
   d("Report a bug", 11, 6, "Shipped"),
-  d("Help centre", 15, 9, "Shipped", "Built by another team"),
+  d("Help centre", 15, 9, "Shipped", "Built later on the roadmap"),
   d("Demos", 10, 4, "Partly", "Easier demos, few videos"),
   d("Tooltips", 8, 2, "Shipped", "Added every sprint"),
   d("UX and UI issue reports", 10, 7, "Partly", "Folded into bug reports"),
   d("Clearer error messages", 7, 3, "Shipped", "Built by developers"),
   d("Personalised five-step getting started guides", 10, 8, "Not built"),
-  d("Popover panels with documentation for that screen", undefined, 8, "Not built"),
+  d("Popover panels with documentation for that screen", 10, 8, "Not built", "Scored for this page"),
   d("In-app decision tree to triage problems", 8, 6, "Designed", "Cut from the MVP"),
   d("Demo documents and templates", 6, 2, "Not built"),
-  d("Guided tours", undefined, 6, "Shipped"),
+  d("Guided tours", 9, 6, "Shipped", "Scored for this page"),
   d("Custom documentation packs", 6, 8, "Cut", "Too much manual work"),
   d("Keyboard shortcuts", 4, 4, "Shipped", "In the editor"),
   d("External and community help", 7, 10, "Not built"),
 ];
 
-// The same directions, in the four themes discovery sorted them into.
+// The same directions, in the four clusters discovery sorted them into.
 const status = (title: string) => {
   const it = supportPriorities.find((x) => x.title === title);
   if (!it) throw new Error(`No direction called ${title}`);
@@ -346,7 +347,7 @@ const totals = (d: number) => {
 };
 export const supportShortlist: Extract<Block, { type: "shortlist" }>["items"] = [
   { title: "Ticket tracking", tag: "Built first, by me", stats: totals(tickets), chosen: true },
-  { title: "Help centre", tag: "Handed to another team", stats: totals(helpCentre) },
+  { title: "Help centre", tag: "Later on the roadmap", stats: totals(helpCentre) },
   { title: "Tooltips", tag: "Added every sprint", stats: totals(tooltips) },
   { title: "Clearer error messages", tag: "Built by the developers", stats: totals(errors) },
 ];
