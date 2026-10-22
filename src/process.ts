@@ -40,9 +40,9 @@ export const stages: Stage[] = [
     approach:
       "I start by finding out who has the problem and what it actually is, from the people living with it and from the data, before anything gets designed.",
     question: "How I find the real problem",
-    project: "support-hub",
+    project: "getting-unstuck",
     problem: "Customers couldn't find answers on their own, so simple questions turned into support tickets.",
-    why: "Support Hub had the deepest research of anything I worked on, so I use it to show how I work at this stage.",
+    why: "Getting Unstuck had the deepest research of anything I worked on, so I use it to show how I work at this stage.",
     blocks: [
       {
         type: "text",
@@ -351,7 +351,7 @@ export const legalesign = {
     { title: "Bulk Sending", body: "Sending many documents out for signing at once, from a CSV." },
     { title: "Reporting", body: "Usage data for org admins and team users to review and export." },
     { title: "Workflow configuration", body: "Admin controls for how documents move through an organisation." },
-    { title: "Support Hub", body: "Customer support and ticketing for users and the support team.", project: "support-hub" },
+    { title: "Ticket tracking", body: "Raising, following and escalating support tickets, for users and their admins.", project: "getting-unstuck" },
     { title: "Drafts", body: "Pre-filled, locked-down sending that admins set up for their teams.", project: "drafts" },
     { title: "Template Editor", body: "Placing and assigning fields, faster and harder to get wrong.", project: "template-editor" },
     { title: "Quick Send", body: "A streamlined first send that cut trial bounce and churn.", project: "quick-send" },

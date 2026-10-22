@@ -21,6 +21,14 @@ import { DecisionLoop } from "./DecisionLoop";
 import { Voices } from "./Voices";
 import { Testing } from "./Testing";
 import { Deeper, useInPanel } from "./Deeper";
+import { PersonaCards } from "./PersonaCards";
+import { StoryMap } from "./StoryMap";
+import { UserStories } from "./UserStories";
+import { Priorities } from "./Priorities";
+import { ObjectivesMatrix } from "./ObjectivesMatrix";
+import { Themes } from "./Themes";
+import { Shortlist } from "./Shortlist";
+import { DoubleDiamond } from "./DoubleDiamond";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -462,10 +470,42 @@ function BlockView({
           </div>
         </Section>
       );
+    case "persona-cards":
+    case "story-map":
+    case "user-stories":
+    case "priorities":
+    case "objectives":
+    case "themes":
+    case "shortlist":
+    case "double-diamond":
+      return (
+        <Section>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">{b.body}</p>
+            </Reveal>
+          )}
+          {b.type === "persona-cards" && <PersonaCards items={b.items} />}
+          {b.type === "story-map" && <StoryMap maps={b.maps} />}
+          {b.type === "user-stories" && <UserStories items={b.items} />}
+          {b.type === "priorities" && <Priorities items={b.items} value={b.value} effort={b.effort} />}
+          {b.type === "objectives" && <ObjectivesMatrix directions={b.directions} items={b.items} high={b.high} />}
+          {b.type === "themes" && <Themes items={b.items} statuses={b.statuses} />}
+          {b.type === "shortlist" && <Shortlist items={b.items} call={b.call} />}
+          {b.type === "double-diamond" && <DoubleDiamond stages={b.stages} />}
+          {b.type !== "double-diamond" && <More d={b.deeper} name={name} />}
+        </Section>
+      );
     case "personas":
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">{b.body}</p>
+            </Reveal>
+          )}
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {b.items.map((p, i) => (
               <Reveal key={p.name} delay={0.08 * (i % 3)} className="rounded-3xl border border-line bg-raised p-7">
@@ -484,12 +524,18 @@ function BlockView({
               </Reveal>
             ))}
           </div>
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "journey-map":
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">{b.body}</p>
+            </Reveal>
+          )}
           <Reveal className="mt-12 -mx-5 overflow-x-auto px-5 md:-mx-10 md:px-10">
             <table className="w-full min-w-[720px] border-separate border-spacing-2 text-left text-sm">
               <thead>
