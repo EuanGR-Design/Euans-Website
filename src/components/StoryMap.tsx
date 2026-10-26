@@ -5,13 +5,13 @@ import type { StoryMap as StoryMapData, StoryPriority, StoryTasks } from "@/proj
 
 // MoSCoW, as on the scoped maps. Must have is the MVP that shipped; should and
 // could have were scoped for later versions. The theme is one orange, so the
-// bands differ by fill and border rather than shade: solid, outlined, dashed,
-// then grey. The key uses the same card styles as the map.
+// bands differ by fill and border rather than shade: tinted, outlined, dashed,
+// then plain text. The key uses the same card styles as the map.
 const BANDS: { key: StoryPriority; label: string; when: string; card: string }[] = [
-  { key: "must", label: "Must have", when: "the MVP", card: "border-2 border-accent bg-accent text-on-accent" },
-  { key: "should", label: "Should have", when: "a next version", card: "border-2 border-accent bg-bg" },
-  { key: "could", label: "Could have", when: "a later version", card: "border-2 border-dashed border-accent/70 bg-bg" },
-  { key: "wont", label: "Won't have", when: "not planned", card: "border-2 border-transparent bg-line/60 text-muted" },
+  { key: "must", label: "Must have", when: "the MVP", card: "border border-accent/60 bg-accent-soft" },
+  { key: "should", label: "Should have", when: "a next version", card: "border border-accent/60 bg-raised" },
+  { key: "could", label: "Could have", when: "a later version", card: "border border-dashed border-accent/60 bg-raised" },
+  { key: "wont", label: "Won't have", when: "not planned", card: "border border-line text-muted" },
 ];
 const order = (p?: StoryPriority) => BANDS.findIndex((b) => b.key === p);
 
@@ -127,7 +127,7 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
         role="tabpanel"
         aria-labelledby={`story-tab-${active}`}
         tabIndex={0}
-        className="relative mt-4 overflow-x-auto rounded-3xl border border-line bg-raised p-4 md:p-6"
+        className={`relative mt-4 overflow-x-auto rounded-3xl border border-line p-4 md:p-6 ${n.scoped ? "bg-bg" : "bg-raised"}`}
       >
         <div className="flex w-max gap-3">
           {tasks.map((t) => (
@@ -139,19 +139,21 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
                   const below = s.stories.filter((x) => !x.mvp).sort((a, b) => order(a.priority) - order(b.priority));
                   return (
                     <div key={s.title} className="flex w-44 flex-col gap-2">
-                      <div className="min-h-14 rounded-xl border border-accent/40 bg-accent-soft px-3 py-2 text-sm font-medium">
+                      <div
+                        className={`min-h-14 px-3 py-2 text-sm font-medium ${
+                          n.scoped ? "border-b-2 border-fg/15" : "rounded-xl border border-accent/40 bg-accent-soft"
+                        }`}
+                      >
                         {s.title}
                       </div>
                       {above.map((x) => (
                         <Story key={x.text} text={x.text} mvp priority={n.scoped ? x.priority : undefined} focus={focus} />
                       ))}
-                      <div aria-hidden className="my-1 border-t-2 border-dashed border-accent" />
+                      {/* On a scoped map must have is the MVP, so its tint marks the cut and a gap is enough. */}
+                      <div aria-hidden className={n.scoped ? "h-2" : "my-1 border-t-2 border-dashed border-accent"} />
                       {!mvpOnly &&
-                        below.map((x, i) => (
-                          <div key={x.text} className="flex flex-col gap-2">
-                            {n.scoped && x.priority !== below[i - 1]?.priority && <BandDivider priority={x.priority} first={i === 0} />}
-                            <Story text={x.text} priority={n.scoped ? x.priority : undefined} focus={focus} />
-                          </div>
+                        below.map((x) => (
+                          <Story key={x.text} text={x.text} priority={n.scoped ? x.priority : undefined} focus={focus} />
                         ))}
                     </div>
                   );
@@ -162,14 +164,10 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
         </div>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted">
-        <span className="flex items-center gap-2">
-          <span aria-hidden className="inline-block w-6 border-t-2 border-dashed border-accent" />
-          The MVP line. Stories above it shipped first.
-        </span>
-        {n.scoped && (
-          <span className="basis-full">
-            A task marked should, could or won&apos;t have can&apos;t be done in full in the MVP, even where some of its steps
-            are.
+        {!n.scoped && (
+          <span className="flex items-center gap-2">
+            <span aria-hidden className="inline-block w-6 border-t-2 border-dashed border-accent" />
+            The MVP line. Stories above it shipped first.
           </span>
         )}
         {n.scoped && (
@@ -181,28 +179,16 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
                 aria-pressed={focus === b.key}
                 onClick={() => setFocus((f) => (f === b.key ? null : b.key))}
                 className={`rounded-lg px-3 py-1.5 text-left text-xs transition-opacity ${b.card} ${
-                  focus && focus !== b.key ? "opacity-30" : ""
-                } ${focus === b.key ? "ring-2 ring-fg ring-offset-2 ring-offset-bg" : ""}`}
+                  focus && focus !== b.key ? "opacity-40" : ""
+                } ${focus === b.key ? "ring-1 ring-fg/40 ring-offset-2 ring-offset-bg" : ""}`}
               >
-                <span className="font-semibold">{b.label}</span> <span className="opacity-80">{b.when}</span>
+                <span className="font-medium text-fg">{b.label}</span> <span className="text-muted">{b.when}</span>
               </button>
             ))}
-            <span>Pick one to highlight it on the map.</span>
+            <span className="ml-1">Tasks use the same key. Select one to highlight it.</span>
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// Where one band ends and the next starts below the MVP line.
-function BandDivider({ priority, first }: { priority?: StoryPriority; first: boolean }) {
-  const band = BANDS.find((b) => b.key === priority);
-  if (!band) return null;
-  return (
-    <div aria-hidden className={`flex items-center gap-2 text-[10px] font-semibold tracking-wide text-muted uppercase ${first ? "" : "mt-2"}`}>
-      {band.label}
-      <span className="flex-1 border-t border-line" />
     </div>
   );
 }
@@ -249,14 +235,12 @@ function TaskTitle({ title, priority, focus }: { title: string; priority?: Story
   const band = BANDS.find((b) => b.key === priority);
   return (
     <div
-      className={`flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-opacity ${
+      className={`rounded-xl px-3 py-2 text-sm font-semibold transition-opacity ${
         band?.card ?? "bg-accent text-on-accent"
       } ${band && focus && focus !== band.key ? "opacity-20" : ""}`}
     >
+      {band && <span className="sr-only">{band.label}: </span>}
       {title}
-      {band && band.key !== "must" && (
-        <span className="shrink-0 rounded-full bg-bg/70 px-2 py-0.5 text-[10px] font-medium text-fg">{band.label}</span>
-      )}
     </div>
   );
 }
