@@ -4,13 +4,13 @@ import { useState } from "react";
 import type { StoryMap as StoryMapData, StoryPriority, StoryTasks } from "@/projects";
 
 // MoSCoW, as on the scoped maps. Must have is the MVP that shipped; should and
-// could have were scoped for later versions. A story's outline gets lighter and
-// thinner down the bands, and won't have is grey and dashed.
+// could have were scoped for later versions. MVP stories are solid orange;
+// everything below the line is dashed, fading from orange to grey.
 const BANDS: { key: StoryPriority; label: string; when: string; outline: string; task: string }[] = [
-  { key: "must", label: "Must have", when: "the MVP", outline: "border-2 border-accent", task: "bg-accent text-on-accent" },
-  { key: "should", label: "Should have", when: "a next version", outline: "border-[1.5px] border-accent/60", task: "bg-accent/65 text-on-accent" },
-  { key: "could", label: "Could have", when: "a later version", outline: "border border-accent/35", task: "bg-accent/25" },
-  { key: "wont", label: "Won't have", when: "not planned", outline: "border border-dashed border-fg/30", task: "bg-line text-muted" },
+  { key: "must", label: "Must have", when: "the MVP", outline: "border border-accent bg-accent text-white", task: "bg-fg text-white" },
+  { key: "should", label: "Should have", when: "a next version", outline: "border-[1.5px] border-dashed border-accent bg-raised", task: "bg-fg/60 text-white" },
+  { key: "could", label: "Could have", when: "a later version", outline: "border-[1.5px] border-dashed border-accent/40 bg-raised", task: "bg-fg/30" },
+  { key: "wont", label: "Won't have", when: "not planned", outline: "border-[1.5px] border-dashed border-fg/25 text-muted", task: "bg-line text-muted" },
 ];
 
 const count = (tasks: StoryTasks) => {
@@ -135,7 +135,7 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
                   const below = s.stories.filter((x) => !x.mvp);
                   return (
                     <div key={s.title} className="flex w-44 flex-col gap-2">
-                      <div className="min-h-14 rounded-xl border border-accent/40 bg-accent-soft px-3 py-2 text-sm font-medium">
+                      <div className="min-h-14 rounded-lg bg-fg/70 px-3 py-2 text-sm font-medium text-white">
                         {s.title}
                       </div>
                       {above.map((x) => (
@@ -166,7 +166,7 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
         {n.scoped &&
           BANDS.map((b) => (
             <span key={b.key} className="flex items-center gap-2">
-              <span aria-hidden className={`inline-block h-3 w-5 rounded-sm bg-raised ${b.outline}`} />
+              <span aria-hidden className={`inline-block h-3 w-5 rounded-sm ${b.outline}`} />
               <span>
                 <span className="font-medium text-fg">{b.label}</span> {b.when}
               </span>
@@ -182,9 +182,7 @@ function Story({ text, mvp, priority }: { text: string; mvp?: boolean; priority?
   if (band)
     return (
       <div
-        className={`rounded-lg px-3 py-2 text-xs leading-snug ${band.outline} ${
-          priority === "wont" ? "text-muted" : "bg-raised"
-        } ${priority === "could" ? "text-muted" : ""}`}
+        className={`rounded-lg px-3 py-2 text-xs leading-snug ${band.outline}`}
       >
         <span className="sr-only">{band.label}: </span>
         {text}
@@ -209,8 +207,8 @@ function TaskTitle({ title, priority }: { title: string; priority?: StoryPriorit
   const band = BANDS.find((b) => b.key === priority);
   return (
     <div
-      className={`flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm font-semibold ${
-        band?.task ?? "bg-accent text-on-accent"
+      className={`flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm font-semibold ${
+        band?.task ?? "bg-fg text-white"
       }`}
     >
       {title}
