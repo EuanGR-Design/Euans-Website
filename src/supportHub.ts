@@ -287,35 +287,42 @@ const fullOlivia = `[-Edit Team Notification Settings] > Open Notification Setti
 [*Export Reports] > Export Findings: *Export as XLS/CSV | +Export as PDF | +Export as raw data | +Bulk export reports | ?Export a specific section of data | ?Live link to a spreadsheet
 [*Export Reports] > Share Findings with the Enterprise Admin: *Send report through another channel | -Tag admin in reports | -@ mention admin on reports | -Send report to enterprise admins in the support app`;
 
-const fullTony = `[Control Team Support Access] > View All Team Members: See all members across the organisation's teams | Scroll through members | Search team members | See members grouped by team
-[Control Team Support Access] > Set Permission per Member: Change each member's permission individually | Set permissions for several members at once
-[Set Up Integrations With Other Tools] > Choose Integration: View possible integrations | Request an integration from support | Integrate using a third-party tool
-[Set Up Integrations With Other Tools] > Set Up Integration: Follow the set-up documentation | Hire Legalesign to set it up | Set up integration rules and conditions | Test the integration | Get a tailored set-up plan from AI
-[Customise the Ticket Form] > Access Ticket Preferences: Navigate to ticket preferences
-[Customise the Ticket Form] > Set Up a Custom Ticket Form: Make specific fields required | Remove input options (e.g. block screenshots for security) | Create custom label options | Create custom field options | Customise the ticket layout | Add and remove field options from presets
-[Customise the Ticket Form] > Save the Form to Teams: Save the form as a preset | Save the form to specific teams | Save as suggested or mandatory | Save the form to specific users
-[Create Ticket Automation Rules] > Access Automation Preferences: Navigate to automation preferences | Request automation access from support | Add automation to your plan
-[Create Ticket Automation Rules] > Define Automation Rules: Escalation automation | Reminder automation | Escalate after a set time | Notify support after a set time | Notify me or admins after a set time | Ask support to set up automations | When an SLA is missed, act on it | Quarterly or annual checks
-[Create Ticket Automation Rules] > Confirm the Rules: Visual indicator in the UI | In-app success notification | Send the confirmation to my email | Trial with a dummy ticket | Test rules in a sandbox
-[Create Report Presets for Metrics and SLAs] > Access Report Set-up: Navigate to report settings | Request reporting access from support | Add reporting to your plan
-[Create Report Presets for Metrics and SLAs] > Select Metrics to Report On: Select all tickets under the team | Specify date range | Select specific ticket type | Organise data by user | Select specific teams | Select a time period | By a specific metric | Specific SLA
-[Create Report Presets for Metrics and SLAs] > Set Report Terms: Specify date range | By a specific metric (e.g. only when the SLA is missed) | Organise data by user
-[Create Report Presets for Metrics and SLAs] > Choose How to Display Data: XLS/CSV | PDF | Table | Graph or chart
-[Create Report Presets for Metrics and SLAs] > Save Preset: Save as an export option | Create it automatically on a schedule (e.g. every quarter, to my email) | Save as a widget
-@Generate Reports
-@View Report Metrics and SLAs
-@Manage Metrics and SLAs
-[Manage Metrics and SLAs] > Escalate Areas to Support: Send a section of a report to support | Alert support automatically when a red line is near or crossed
-[Manage Metrics and SLAs] > Follow Up: Send a report as a ticket | Chat thread on reports | Highlight and comment on parts of a report for support to answer
-@Customise the Report View
-@View Report Backlog
-[Bulk Ticket Management] > Find Tickets: Search by issue tag/category | Filter by issue location | Search by URL | Search by issue title | Search by issue description | Find similar issues using AI
-[Bulk Ticket Management] > Select Several Tickets: Select tickets by hand | Select all tickets sharing a priority or status | Select several tickets at once | Select everything a search or filter returns
-[Bulk Ticket Management] > Act on the Selection: Bulk update | Bulk remove | Bulk group | Bulk reminders | Link tickets | Merge tickets into one | Bulk escalate | Bulk clone
-@Export Report Data for Analysis/Audits`;
+const fullTony = `[-Control Team Support Access] > View All Team Members: *See all members across the organisation's teams | *Scroll through members | *See members grouped by team | ?Search team members
+[-Control Team Support Access] > Set Permission per Member: ?Change each member's permission individually | ?Set permissions for several members at once
+[-Set Up Integrations With Other Tools] > Choose Integration: -View possible integrations | -Request an integration from support | -Integrate using a third-party tool
+[-Set Up Integrations With Other Tools] > Set Up Integration: -Follow the set-up documentation | -Hire Legalesign to set it up | -Set up integration rules and conditions | -Test the integration | -Get a tailored set-up plan from AI
+[-Customise the Ticket Form] > Access Ticket Preferences: -Navigate to ticket preferences
+[-Customise the Ticket Form] > Set Up a Custom Ticket Form: -Make specific fields required | -Remove input options (e.g. block screenshots for security) | -Create custom label options | -Create custom field options | -Customise the ticket layout | -Add and remove field options from presets
+[-Customise the Ticket Form] > Save the Form to Teams: -Save the form as a preset | -Save the form to specific teams | -Save as suggested or mandatory | -Save the form to specific users
+[-Create Ticket Automation Rules] > Access Automation Preferences: -Navigate to automation preferences | -Request automation access from support | -Add automation to your plan
+[-Create Ticket Automation Rules] > Define Automation Rules: -Escalation automation | -Reminder automation | -Escalate after a set time | -Notify support after a set time | -Notify me or admins after a set time | -Ask support to set up automations | -When an SLA is missed, act on it | -Quarterly or annual checks
+[-Create Ticket Automation Rules] > Confirm the Rules: -Visual indicator in the UI | -In-app success notification | -Send the confirmation to my email | -Trial with a dummy ticket | -Test rules in a sandbox
+[-Create Report Presets for Metrics and SLAs] > Access Report Set-up: -Navigate to report settings | -Request reporting access from support | -Add reporting to your plan
+[-Create Report Presets for Metrics and SLAs] > Select Metrics to Report On: -Select all tickets under the team | -Specify date range | -Select specific ticket type | -Organise data by user | -Select specific teams | -Select a time period | -By a specific metric | -Specific SLA
+[-Create Report Presets for Metrics and SLAs] > Set Report Terms: -Specify date range | -By a specific metric (e.g. only when the SLA is missed) | -Organise data by user
+[-Create Report Presets for Metrics and SLAs] > Choose How to Display Data: -Table | -Graph or chart | -XLS/CSV | -PDF
+[-Create Report Presets for Metrics and SLAs] > Save Preset: -Save as an export option | -Create it automatically on a schedule (e.g. every quarter, to my email) | -Save as a widget
+[*Generate Reports] > Select Metrics to Report On: *Specify date range | *Select all tickets under all teams | *Select specific teams for analysis | *Organise data by user | ?Specific SLA | ?Select specific ticket type | -By a specific metric (location, label, category) | -Compare reports across teams/departments
+[*Generate Reports] > Choose How to Display Data: *Basic number outputs | *Tables/spreadsheets | *Charts and graphs | *Organised by team | +Dashboard | ?Separated by another metric | -Widgets
+[*View Report Metrics and SLAs] > View Reports: *Per team | *Charts and graphs | +Per member | +Dashboard | ?Per category | -Widgets
+[*Manage Metrics and SLAs] > Access Reports: *Navigate to report | *Review/compare exported data sets | *Request a set of reports from support (extra charge) | -Reporting-specific UI
+[*Manage Metrics and SLAs] > Highlight Areas for Improvement: -Capture/highlight insights | -Filter and highlight data by a metric | -Highlight any times support missed the SLA | -Set red lines and show when crossed | -Highlight notable stats
+[*Manage Metrics and SLAs] > Escalate Areas to Support: -Send a section of a report to support | -Alert support automatically when a red line is near or crossed
+[*Manage Metrics and SLAs] > Follow Up: -Send a report as a ticket | -Chat thread on reports | -Highlight and comment on parts of a report for support to answer
+[-Customise the Report View] > Choose Report View: *Navigate to report | -Reporting-specific UI
+[-Customise the Report View] > View Specific Reports: -Quick summary of open and resolved tickets | -Support sets up the dashboard | -Choose from common dashboard templates | -Customise layout from a preset | -Customise the dashboard layout freely
+[-View Report Backlog] > View Backlog of Outstanding Tickets: ?Filter by outstanding tickets | -Go to a backlog view
+[-View Report Backlog] > Assess Backlog for Urgent Tickets: ?Filter by urgent tickets | ?Urgent tickets appear at the top
+[-View Report Backlog] > Push Up Priority: *Update ticket priority/urgency | *Update/edit priority level | -Prompt a reminder to support | -Take control of the ticket (assign to self) | -Mark as blocking (urgent to continue work)
+[-Bulk Ticket Management] > Find Tickets: +Search by issue title | +Search by issue description | ?Search by issue tag/category | ?Filter by issue location | ?Search by URL | -Find similar issues using AI
+[-Bulk Ticket Management] > Select Several Tickets: ?Select tickets by hand | ?Select all tickets sharing a priority or status | ?Select several tickets at once | ?Select everything a search or filter returns
+[-Bulk Ticket Management] > Act on the Selection: -Bulk update | -Bulk remove | -Bulk group | -Bulk reminders | -Link tickets | -Merge tickets into one | -Bulk escalate | -Bulk clone
+[*Export Report Data for Analysis/Audits] > Generate Report: *Specify date range | *Select all tickets under the team | ?Organise data by user | ?By a specific metric | ?Specific SLA | ?By location, label or category | ?Select specific ticket type | ?Compare reports across teams/departments
+[*Export Report Data for Analysis/Audits] > Review Report: +Preview final report | ?Check all desired data is included | ?Check filters are right (date range, team, user) | -View summary of report | -View highlights of report | -AI scan and summary of the report
+[*Export Report Data for Analysis/Audits] > Export Report: *Export as XLS/CSV | *Basic number outputs | *Charts and graphs | *Tables/spreadsheets | -Dashboard | -Widgets | -Bulk export reports | -Export a specific section of data | -Live link to a spreadsheet | -Export as PDF | -Export as raw data`;
 
 export const supportStoryMaps: StoryMap[] = [
-  // Scoped maps make their own cut, so Taylor and Olivia have no separate one.
+  // Scoped maps make their own cut, so no persona needs a separate one.
   parseMap(
     "Taylor",
     "Daily user",
@@ -331,19 +338,7 @@ export const supportStoryMaps: StoryMap[] = [
   parseMap(
     "Tony",
     "Enterprise admin",
-    `[Generate Reports] > Select Metrics to Report On: *Specify date range | *Select all tickets under all teams | *Select specific teams for analysis | Specific SLA | Select specific ticket type | By a specific metric (location, label, category) | Organise data by user | Compare reports across teams/departments
-[Generate Reports] > Choose How to Display Data: *Basic number outputs | *Tables/spreadsheets | *Charts and graphs | *Organised by team | Separated by another metric | Dashboard | Widgets
-[View Report Metrics and SLAs] > View Reports: *Per team | *Charts and graphs | Dashboard | Per category | Per member | Widgets
-[Manage Metrics and SLAs] > Access Reports: *Navigate to report | *Review/compare exported data sets | *Request a set of reports from support (extra charge) | Reporting-specific UI
-[Manage Metrics and SLAs] > Highlight Areas for Improvement: Capture/highlight insights | Filter and highlight data by a metric | Highlight any times support missed the SLA | Set red lines and show when crossed | Highlight notable stats
-[Customise the Report View] > Choose Report View: *Navigate to report | Reporting-specific UI
-[Customise the Report View] > View Specific Reports: *Quick summary of open and resolved tickets | Support sets up the dashboard | Choose from common dashboard templates | Customise layout from a preset | Customise the dashboard layout freely
-[View Report Backlog] > View Backlog of Outstanding Tickets: Filter by outstanding tickets | Go to a backlog view
-[View Report Backlog] > Assess Backlog for Urgent Tickets: Filter by urgent tickets | *Urgent tickets appear at the top
-[View Report Backlog] > Push Up Priority: *Update ticket priority/urgency | *Update/edit priority level | Prompt a reminder to support | Take control of the ticket (assign to self) | Mark as blocking (urgent to continue work)
-[Export Report Data for Analysis/Audits] > Generate Report: *Specify date range | *Select all tickets under team | Organise data by user | By a specific metric | Specific SLA | By location, label or category | Select specific ticket type | Compare reports across teams/departments
-[Export Report Data for Analysis/Audits] > Review Report: Preview final report | Check all desired data is included | Check filters are right (date range, team, user) | View summary of report | View highlights of report | AI scan and summary of the report
-[Export Report Data for Analysis/Audits] > Export Report: *Export as XLS/CSV | *Basic number outputs | *Charts and graphs | *Tables/spreadsheets | Dashboard | Widgets | Bulk export reports | Export a specific section of data | Live link to a spreadsheet | Export as PDF | Export as raw data`,
+    "",
     fullTony,
   ),
 ];
