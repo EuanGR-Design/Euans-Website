@@ -229,46 +229,63 @@ const fullTaylor = `[*Create Support Enquiry] > Open Ticket Modal: *Access Help 
 [?Organise Support Tickets] > Label Support Tickets: *Give tickets a label | -Create a ticket category | -Create categories automatically from a metric (e.g. satisfaction rating)
 [?Organise Support Tickets] > View Categorised Tickets: ?Filter tickets by category/label | -Select ticket display view (Dashboard, Overview, List, Kanban)`;
 
-const fullOlivia = `[Edit Team Notification Settings] > Open Notification Settings: Navigate to settings
-[Edit Team Notification Settings] > Set Up Notification Preferences: Choose how to receive notifications | Get notified of urgent updates only | Get notified of every update | Get notified when a ticket's status changes | Send all notifications to one place (email) | Receive or mute notifications for specific actions | Receive or mute notifications for specific users
-[Edit Team Notification Settings] > Receive Chosen Notifications: Email | Toasts | In-app notification centre | Send chosen notifications to a specific place | Alert indicator in the UI | Another app (e.g. Slack) | Phone | Text message
-[Control Team Support Permissions] > Open User Permissions: Navigate to team permissions | Go to user permissions from a link in a notification
-[Control Team Support Permissions] > Select User: Scroll through users | Select one user | Search for a user | Sort users | Filter users | Select several users
-[Control Team Support Permissions] > Update Permission Settings: Change a user's support access level | Update permissions in bulk | Ask the enterprise admin to grant access to a blocked user
-[Customise Ticket Preset Options] > View Ticket Preset Options: Navigate to ticket preferences
-[Customise Ticket Preset Options] > Set Up Custom Labels and Categories: Add a label name | Choose from recommended label groups | Describe how to use each label | Create label sets (e.g. size, or where in the app) | Set label colour | Set label icon | Make certain label sets required
-[Customise Ticket Preset Options] > Save Customisations: Save to your own team | Publish to the organisation | Publish to chosen teams
-@View/Track All Team Tickets in One Place
-[Bulk Manage Team Tickets] > Select Tickets: Select several tickets by hand | Select all tickets sharing a priority or status | Select several tickets at once
-[Bulk Manage Team Tickets] > Complete Bulk Actions: Bulk reminders | Bulk escalate | Bulk update | Link tickets | Bulk remove | Bulk group | Merge tickets into one | Bulk clone
-[Bulk Manage Team Tickets] > Get Confirmation: See that the action is complete | Receive in-app notification | Receive an email of the actions | See the action in an audit log | Receive notification in another app (e.g. Slack)
-@Follow Up on Blocking/Urgent Issues
-@Escalate on Behalf of a Team Member
-[Step In on a Team Member's Ticket] > Find Issues That Need Help: Get notified when an SLA is breached | Find tickets to escalate | Get notified by team members
-[Step In on a Team Member's Ticket] > Add Help to the Ticket: Give internal support | Assign the ticket to an advanced user | Link resources to the issue | Add to the ticket thread | Link similar past or current tickets
-[Step In on a Team Member's Ticket] > Save Additions: Save updates
-[Assign a Ticket to a Team Member] > Assess the Issue: Expand ticket details | Read ticket thread | Read ticket log | View preview of tickets | View summary of tickets
-[Assign a Ticket to a Team Member] > Check Who Raised It: View the team member's ticket
-[Assign a Ticket to a Team Member] > Assign to an Advanced User: Search for a team member | @ mention a team member
-@Change Ticket Listings View
-[Customise the Ticket Dashboard] > Choose What to Highlight: High-impact issues by urgency | Organise by status | Organise by label/category | Set a date range | Pick stats and metrics to focus on | Set an SLA | Pick team members
-[Customise the Ticket Dashboard] > Add Widgets: Choose from a fixed set | Choose widgets the enterprise admin made | Choose from recommendations for the data | Choose from AI recommendations | Choose charts and graphs
-[Customise the Ticket Dashboard] > Edit Widgets: Edit existing widgets | Rearrange the layout | Resize widgets
-[Customise the Ticket Dashboard] > Save Custom Settings: Save new settings | Apply settings to the existing dashboard | Save widgets as presets | Save the dashboard as a preset
-[Customise the Ticket Dashboard] > Share the Set-up: Share with all team members | Share with chosen team members | Offer the widget as a preset across teams
-@Review Updated Tickets
-[Contribute to Updated Tickets] > Edit Ticket Info: Drill into the ticket to edit | Edit title | Edit description | Edit labels | Edit category/type label | Edit uploads | Edit logs/error codes | Edit automated escalation rules | Edit the ticket from the list
-[Contribute to Updated Tickets] > Add More Details: Add labels | Add details and uploads | Add links | Add a comment | Add logs/error codes | Link similar tickets across teams | Apply automated escalation rules
-@Check Resolved Enquiries Across Teams
-@Compare Similar Tickets Across Teams
-[Link Related Tickets Across Teams] > Locate Similar Ticket: Search by issue title | Search by issue description | Search by issue tag/category | Filter by issue location | Search by URL | Find similar issues using AI
-[Link Related Tickets Across Teams] > View Ticket(s): Enter ticket | Reveal more ticket details from the list | Preview ticket details
-[Link Related Tickets Across Teams] > Link Ticket(s): Add several tickets to a category or label | Select several and link them in one action | Copy reference code | Paste the reference code into a related ticket | Mark a similar ticket as linked | Search inside a ticket for similar ones
-[Link Related Tickets Across Teams] > View Linked Tickets: Filter by linked tickets | View tickets in a linked or grouped view | Search inside a ticket for linked tickets
-[Organise Support Tickets] > Categorise Tickets: Assign a type or label | Create a ticket category | Assign to a team member | Create categories automatically from a metric (e.g. satisfaction rating)
-[Organise Support Tickets] > View Categorised Tickets: Filter tickets by category/label | Separate tickets per team member | Select ticket display view (Dashboard, Overview, List, Kanban)
-@Analyse Support Performance
-@Export Reports`;
+const fullOlivia = `[-Edit Team Notification Settings] > Open Notification Settings: -Navigate to settings
+[-Edit Team Notification Settings] > Set Up Notification Preferences: -Choose how to receive notifications | -Get notified of urgent updates only | -Get notified of every update | -Get notified when a ticket's status changes | -Send all notifications to one place (email) | -Receive or mute notifications for specific actions | -Receive or mute notifications for specific users
+[-Edit Team Notification Settings] > Receive Chosen Notifications: *Email | *Toasts | *Alert indicator in the UI | +In-app notification centre | -Send chosen notifications to a specific place | -Another app (e.g. Slack) | -Phone | -Text message
+[-Control Team Support Permissions] > Open User Permissions: *Navigate to team permissions | -Go to user permissions from a link in a notification
+[-Control Team Support Permissions] > Select User: *Scroll through users | -Select one user | -Search for a user | -Sort users | -Filter users | -Select several users
+[-Control Team Support Permissions] > Update Permission Settings: +Change a user's support access level | -Update permissions in bulk | -Ask the enterprise admin to grant access to a blocked user
+[-Customise Ticket Preset Options] > View Ticket Preset Options: -Navigate to ticket preferences
+[-Customise Ticket Preset Options] > Set Up Custom Labels and Categories: -Add a label name | -Choose from recommended label groups | -Describe how to use each label | -Create label sets (e.g. size, or where in the app) | -Set label colour | -Set label icon | -Make certain label sets required
+[-Customise Ticket Preset Options] > Save Customisations: -Save to your own team | -Publish to the organisation | -Publish to chosen teams
+[*View/Track All Team Tickets in One Place] > Navigate to Ticket Listings: *Navigate to ticket listings
+[*View/Track All Team Tickets in One Place] > Select How to View all Tickets: *View a list of tickets | *Choose to view tickets as stats | ?Reveal all ticket details from the list | ?View a snippet of the ticket description | ?View a summary of tickets | -View tickets on a Kanban board
+[*View/Track All Team Tickets in One Place] > Filter/Sort Tickets: *View per user | ?View by urgency | ?View by label/category | ?View by status | ?View by priority
+[*View/Track All Team Tickets in One Place] > View Open/Closed Stats: +View preview of tickets | -Select ticket display view (Dashboard, Overview, List, Kanban) | -AI summary of tickets
+[-Bulk Manage Team Tickets] > Select Tickets: *Select several tickets by hand | -Select several tickets at once | -Select all tickets sharing a priority or status
+[-Bulk Manage Team Tickets] > Complete Bulk Actions: -Bulk reminders | -Bulk escalate | -Bulk update | -Link tickets | -Bulk remove | -Bulk group | -Merge tickets into one | -Bulk clone
+[-Bulk Manage Team Tickets] > Get Confirmation: -See that the action is complete | -Receive in-app notification | -Receive an email of the actions | -See the action in an audit log | -Receive notification in another app (e.g. Slack)
+[*Follow Up on Blocking/Urgent Issues] > Get Notified of an Urgent Issue: *Receive Email notification | *Visual alert in UI (on list item) | *In-app toast | +Receive in-app notification | ?Receive notification in another app (e.g. Slack)
+[*Follow Up on Blocking/Urgent Issues] > Navigate to Ticket Listings: *Navigate to ticket listings | *Follow link to listings in notification | ?Quick copy issue ID from notification | ?Quick copy issue title
+[*Follow Up on Blocking/Urgent Issues] > Select Blocking Issue: *Scroll to find ticket | *Follow link to ticket in notification | +Search issues by title | +Search issues by ID | ?Filter issues by blocking
+[*Follow Up on Blocking/Urgent Issues] > Review What is Blocking: *Drill into ticket details | *Read ticket thread | *Read ticket log | +View preview of tickets | ?View summary of tickets
+[*Escalate on Behalf of a Team Member] > Escalate Support Issue: *Update ticket priority/urgency | -Prompt a reminder to support | -Take control of the ticket (assign to self)
+[*Escalate on Behalf of a Team Member] > Add Details to a Team Member's Ticket: *Follow up with team member about open issue outside the app | +Leave a comment in support thread | ?Link to relevant resources | ?Upload additional information | -Link related issues across the team
+[-Step In on a Team Member's Ticket] > Find Issues That Need Help: -Get notified when an SLA is breached | -Find tickets to escalate | -Get notified by team members
+[-Step In on a Team Member's Ticket] > Add Help to the Ticket: -Give internal support | -Assign the ticket to an advanced user | -Link resources to the issue | -Add to the ticket thread | -Link similar past or current tickets
+[-Step In on a Team Member's Ticket] > Save Additions: -Save updates
+[-Assign a Ticket to a Team Member] > Assess the Issue: *Expand ticket details | *Read ticket thread | *Read ticket log | +View preview of tickets | ?View summary of tickets
+[-Assign a Ticket to a Team Member] > Check Who Raised It: *View the team member's ticket
+[-Assign a Ticket to a Team Member] > Assign to an Advanced User: -Search for a team member | -@ mention a team member
+[*Change Ticket Listings View] > View Ticket Listing: *Navigate to ticket listings
+[*Change Ticket Listings View] > Choose View: *Select personal view | *Select team view | *View by team member | ?View by open/closed | ?View by category | ?Select ticket preview view | -Select ticket view (Dashboard, Overview, List, Kanban)
+[-Customise the Ticket Dashboard] > Choose What to Highlight: -High-impact issues by urgency | -Organise by status | -Organise by label/category | -Set a date range | -Pick stats and metrics to focus on | -Set an SLA | -Pick team members
+[-Customise the Ticket Dashboard] > Add Widgets: -Choose from a fixed set | -Choose widgets the enterprise admin made | -Choose from recommendations for the data | -Choose from AI recommendations | -Choose charts and graphs
+[-Customise the Ticket Dashboard] > Edit Widgets: -Edit existing widgets | -Rearrange the layout | -Resize widgets
+[-Customise the Ticket Dashboard] > Save Custom Settings: -Save new settings | -Apply settings to the existing dashboard | -Save widgets as presets | -Save the dashboard as a preset
+[-Customise the Ticket Dashboard] > Share the Set-up: -Share with all team members | -Share with chosen team members | -Offer the widget as a preset across teams
+[*Review Updated Tickets] > Get Notified of Updates: *Update appears at top of list (most recent) | *Receive Email notification | *Visual alert in UI | +Receive in-app notification | ?Receive notification in another app (e.g. Slack)
+[*Review Updated Tickets] > Review Updates: *View date of updates | *View time of updates | *View who made the updates | *Follow alert dots to updates | +Follow link to the ticket update | +View live updates | -See whether something has been edited | -View state before update was made
+[*Review Updated Tickets] > Decide What Happens Next: *Assess communication | *Assess links to resources
+[-Contribute to Updated Tickets] > Edit Ticket Info: -Drill into the ticket to edit | -Edit title | -Edit description | -Edit labels | -Edit category/type label | -Edit uploads | -Edit logs/error codes | -Edit automated escalation rules | -Edit the ticket from the list
+[-Contribute to Updated Tickets] > Add More Details: ?Add a comment | -Add labels | -Add details and uploads | -Add links | -Add logs/error codes | -Link similar tickets across teams | -Apply automated escalation rules
+[*Check Resolved Enquiries Across Teams] > View All Past Tickets for the Team: *Scroll the list to find resolved tickets | +Filter by date range | +Sort by status | -Past ticket view
+[*Check Resolved Enquiries Across Teams] > Find Desired Ticket: +Search by title | +Search by description | +Search by label/category | +Filter by label/category | ?Filter by past/resolved | -Filter by location | -Filter by feature | -Search by URL
+[*Check Resolved Enquiries Across Teams] > Select Resolved Ticket(s): *Scroll through a list of resolved tickets | ?Filter by resolved tickets | ?Search in resolved tickets | -Select several resolved tickets in one action
+[*Check Resolved Enquiries Across Teams] > Check Resolutions & Actions Taken: *Review past logs/correspondence | *Scroll through all resources attached to a ticket | -Search for resources in one place
+[*Compare Similar Tickets Across Teams] > Find Similar Tickets: *Open multiple tickets in new tabs | +Reveal more ticket details from the list | +See tickets in a preview | -See tickets side by side | -Select multiple tickets to open
+[*Compare Similar Tickets Across Teams] > Review & Compare Tickets: *Compare responses to ticket issues | -Compare linked resources | -See resources grouped for similar tickets | -View all tickets under one parent | -AI summary of similarities and differences
+[-Link Related Tickets Across Teams] > Locate Similar Ticket: +Search by issue title | +Search by issue description | ?Search by issue tag/category | ?Filter by issue location | ?Search by URL | -Find similar issues using AI
+[-Link Related Tickets Across Teams] > View Ticket(s): *Enter ticket | +Reveal more ticket details from the list | +Preview ticket details
+[-Link Related Tickets Across Teams] > Link Ticket(s): -Add several tickets to a category or label | -Select several and link them in one action | -Copy reference code | -Paste the reference code into a related ticket | -Mark a similar ticket as linked | -Search inside a ticket for similar ones
+[-Link Related Tickets Across Teams] > View Linked Tickets: -Filter by linked tickets | -View tickets in a linked or grouped view | -Search inside a ticket for linked tickets
+[*Organise Support Tickets] > Categorise Tickets: +Assign a type or label | ?Create a ticket category | -Assign to a team member | -Create categories automatically from a metric (e.g. satisfaction rating)
+[*Organise Support Tickets] > View Categorised Tickets: *Separate tickets per team member | ?Filter tickets by category/label | -Select ticket display view (Dashboard, Overview, List, Kanban)
+[*Analyse Support Performance] > Select Tickets for Analysis: *Select time period | *Select all tickets under the team | +Select specific teams (admin of several teams) | ?Select specific ticket type | ?Select specific ticket statuses
+[*Analyse Support Performance] > Choose Stats and Metrics: *Specify date range | ?Organise data by user | ?According to a specific metric
+[*Analyse Support Performance] > View Stats: *Basic number outputs | *Charts and graphs | *Tables/spreadsheets | ?Dashboard | -Widgets
+[*Export Reports] > Export Findings: *Export as XLS/CSV | +Export as PDF | +Export as raw data | +Bulk export reports | ?Export a specific section of data | ?Live link to a spreadsheet
+[*Export Reports] > Share Findings with the Enterprise Admin: *Send report through another channel | -Tag admin in reports | -@ mention admin on reports | -Send report to enterprise admins in the support app`;
 
 const fullTony = `[Control Team Support Access] > View All Team Members: See all members across the organisation's teams | Scroll through members | Search team members | See members grouped by team
 [Control Team Support Access] > Set Permission per Member: Change each member's permission individually | Set permissions for several members at once
@@ -298,7 +315,7 @@ const fullTony = `[Control Team Support Access] > View All Team Members: See all
 @Export Report Data for Analysis/Audits`;
 
 export const supportStoryMaps: StoryMap[] = [
-  // Taylor's cut comes from the scoped map, so there's no separate one here.
+  // Scoped maps make their own cut, so Taylor and Olivia have no separate one.
   parseMap(
     "Taylor",
     "Daily user",
@@ -308,32 +325,7 @@ export const supportStoryMaps: StoryMap[] = [
   parseMap(
     "Olivia",
     "Team admin",
-    `[View/Track All Team Tickets in One Place] > Navigate to Ticket Listings: *Navigate to ticket listings
-[View/Track All Team Tickets in One Place] > Select How to View all Tickets: *View a list of tickets | *Choose to view tickets as stats | Reveal all ticket details from the list | View a snippet of the ticket description | View a summary of tickets | View tickets on a Kanban board
-[View/Track All Team Tickets in One Place] > Filter/Sort Tickets: View by urgency | View by label/category | View by status | View by priority | View per user
-[View/Track All Team Tickets in One Place] > View Open/Closed Stats: *View overview stats | View preview of tickets | Select ticket display view (Dashboard, Overview, List, Kanban) | AI summary of tickets
-[Follow Up on Blocking/Urgent Issues] > Get Notified of an Urgent Issue: *Receive Email notification | *Visual alert in UI (on list item) | *In-app toast | Receive in-app notification | Receive notification in another app (e.g. Slack)
-[Follow Up on Blocking/Urgent Issues] > Navigate to Ticket Listings: *Navigate to ticket listings | *Follow link to listings in notification | Quick copy issue ID from notification | Quick copy issue title
-[Follow Up on Blocking/Urgent Issues] > Select Blocking Issue: *Scroll to find ticket | *Follow link to ticket in notification | Search issues by title | Search issues by ID | Filter issues by blocking
-[Follow Up on Blocking/Urgent Issues] > Review What is Blocking: *Drill into ticket details | *Read ticket thread | *Read ticket log | View preview of tickets | View summary of tickets
-[Escalate on Behalf of a Team Member] > Escalate Support Issue: *Update ticket priority/urgency | Prompt a reminder to support | Take control of the ticket (assign to self)
-[Escalate on Behalf of a Team Member] > Add Details to a Team Member's Ticket: *Follow up with team member about open issue outside the app | Leave a comment in support thread | Link to relevant resources | Upload additional information | Link related issues across the team
-[Change Ticket Listings View] > View Ticket Listing: *Navigate to ticket listings
-[Change Ticket Listings View] > Choose View: *Select personal view | *Select team view | View by open/closed | View by category | Select ticket preview view | View by team member | Select ticket view (Dashboard, Overview, List, Kanban)
-[Review Updated Tickets] > Get Notified of Updates: *Update appears at top of list (most recent) | *Receive Email notification | *Visual alert in UI | Receive in-app notification | Receive notification in another app (e.g. Slack)
-[Review Updated Tickets] > Review Updates: *View date of updates | *View time of updates | *View live updates | *View who made the updates | *Follow link to the ticket update | Follow alert dots to updates | See whether something has been edited | View state before update was made
-[Review Updated Tickets] > Decide What Happens Next: *Assess communication | *Assess links to resources
-[Check Resolved Enquiries Across Teams] > View All Past Tickets for the Team: *View list of all tickets | Filter by date range | Sort by status | Past ticket view
-[Check Resolved Enquiries Across Teams] > Find Desired Ticket: *Scroll list and scan for resolved status | Search by title | Search by description | Search by label/category | Filter by label/category | Filter by past/resolved | Filter by location | Filter by feature | Search by URL
-[Check Resolved Enquiries Across Teams] > Select Resolved Ticket(s): *Scroll through a list of resolved tickets | Filter by resolved tickets | Search in resolved tickets | Select several resolved tickets in one action
-[Check Resolved Enquiries Across Teams] > Check Resolutions & Actions Taken: *Review past logs/correspondence | *Scroll through all resources attached to a ticket | Search for resources in one place
-[Compare Similar Tickets Across Teams] > Find Similar Tickets: *Open multiple tickets in new tabs | Reveal more ticket details from the list | See tickets in a preview | See tickets side by side | Select multiple tickets to open
-[Compare Similar Tickets Across Teams] > Review & Compare Tickets: *Compare responses to ticket issues | Compare linked resources | See resources grouped for similar tickets | View all tickets under one parent | AI summary of similarities and differences
-[Analyse Support Performance] > Select Tickets for Analysis: *Select time period | *Select all tickets under the team | Select specific ticket type | Select specific ticket statuses | Select specific teams (admin of several teams)
-[Analyse Support Performance] > Choose Stats and Metrics: *Specify date range | According to a specific metric | Organise data by user
-[Analyse Support Performance] > View Stats: *Basic number outputs | *Charts and graphs | *Tables/spreadsheets | Dashboard | Widgets
-[Export Reports] > Export Findings: *Export as XLS/CSV | Export as PDF | Export as raw data | Bulk export reports | Export a specific section of data | Live link to a spreadsheet
-[Export Reports] > Share Findings with the Enterprise Admin: *Send report through another channel | Tag admin in reports | @ mention admin on reports | Send report to enterprise admins in the support app`,
+    "",
     fullOlivia,
   ),
   parseMap(
