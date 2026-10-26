@@ -198,8 +198,8 @@ const fullTaylor = `[*Create Support Enquiry] > Open Ticket Modal: *Access Help 
 [*Support Ticket Updates] > Receive Notification: *Receive Email notification | +Visual alert in UI (red dot) | +In-app toast | +Receive in-app notification | -Receive notification in another app (e.g. Slack)
 [*Support Ticket Updates] > Locate Updated Ticket: *Ticket appears at top of list view | *View updated time | +See ticket visually marked as updated | +Sort by recent updates | +Sort by date
 [*Support Ticket Updates] > View Updates: *View ticket thread: communications, links, resources | *Look at ticket log/history | +View top-level ticket changes
-[?Provide More Details on an Issue] > Add Extra Information to Ticket: ?Drill into the ticket to add more information | ?Add information in the ticket thread
-[?Provide More Details on an Issue] > Save and Send Updated Information: -Send directly to support | -Send to internal management | -Get approval from management
+[*Provide More Details on an Issue] > Add Extra Information to Ticket: ?Drill into the ticket to add more information | ?Add information in the ticket thread
+[*Provide More Details on an Issue] > Save and Send Updated Information: -Send directly to support | -Send to internal management | -Get approval from management
 [*Track Progress of All Open Tickets] > Navigate to Ticket Listings: *Navigate to ticket listings
 [*Track Progress of All Open Tickets] > Select How to View all Tickets: *Select List view | +Select Dashboard view | ?Select ticket display view (Dashboard, Overview, List, Kanban)
 [*Track Progress of All Open Tickets] > Filter Tickets by Open/Closed Status: ?Filter by open or closed status
@@ -210,24 +210,24 @@ const fullTaylor = `[*Create Support Enquiry] > Open Ticket Modal: *Access Help 
 [*Check Recently Resolved Tickets] > Verify Success of Solution: *Assess whether the issue persists or is resolved: reply within 2 days, follow up at 5, assume resolved at 7 with no feedback
 [-Give Feedback on a Solution] > Give Feedback on the Ticket: -Rate how well the solution worked | -Update the ticket with new information | -Leave a review
 [-Give Feedback on a Solution] > Send Feedback to Those Involved: -Tell support how well the solution worked
-[*Mark Success of Ticket] > Select Ticket: *Enter tickets
-[*Mark Success of Ticket] > Mark as Done or Unresolved: *Mark ticket as Done or Unresolved | ?Raise ticket with internal management for sign-off | ?Inform management of ticket outcome
+[-Mark Success of Ticket] > Select Ticket: *Enter tickets
+[-Mark Success of Ticket] > Mark as Done or Unresolved: *Mark ticket as Done or Unresolved | ?Raise ticket with internal management for sign-off | ?Inform management of ticket outcome
 [*Check Previously Resolved Inquiries] > Select Listings View of Past Tickets: *View all past tickets | *View ticket log history
 [*Check Previously Resolved Inquiries] > Find Desired Ticket: *Scroll list to find ticket | +Filter by Resolved Tickets | +Search by issue title | ?Search by issue description | ?Sort by ticket date | ?Filter by date range
 [*Check Previously Resolved Inquiries] > Select Resolved Ticket(s): *Enter Ticket | ?Open ticket Preview | ?Multi-select similar tickets
 [*Check Previously Resolved Inquiries] > Check Resolutions & Actions Taken: *View ticket thread/log
-[?Open a New Ticket From a Previous Issue] > Find Desired Ticket: +Search by issue title | +Search by issue description | +Search by issue tag/category | ?Filter by Resolved Tickets | ?Search by URL | ?Search by support assignee
-[?Open a New Ticket From a Previous Issue] > Check Solutions Still Work: *View ticket thread/log of previous solutions | ?View solutions alongside live UI to test them
-[?Open a New Ticket From a Previous Issue] > Open New Issue: ?Reopen Ticket | ?Open new ticket linked to existing issue | -Clone Ticket
-[?Open a New Ticket From a Previous Issue] > Provide Additional Details: ?Add information in the ticket thread | ?Update issue description/title | ?Upload new evidence: screenshots, recordings, files | -Update current Console version
-[+Compare Similar Tickets and Solutions] > Find Similar Tickets: +Search by issue description | +Search by issue title | ?Search by issue tag/category | ?Filter by issue location | ?Search by URL | -Find similar issues using AI
-[+Compare Similar Tickets and Solutions] > Review & Compare Tickets: +Open ticket details in new tabs | -Open tickets side by side | -Reveal several tickets' details from the list
+[-Open a New Ticket From a Previous Issue] > Find Desired Ticket: +Search by issue title | +Search by issue description | +Search by issue tag/category | ?Filter by Resolved Tickets | ?Search by URL | ?Search by support assignee
+[-Open a New Ticket From a Previous Issue] > Check Solutions Still Work: *View ticket thread/log of previous solutions | ?View solutions alongside live UI to test them
+[-Open a New Ticket From a Previous Issue] > Open New Issue: ?Reopen Ticket | ?Open new ticket linked to existing issue | -Clone Ticket
+[-Open a New Ticket From a Previous Issue] > Provide Additional Details: ?Add information in the ticket thread | ?Update issue description/title | ?Upload new evidence: screenshots, recordings, files | -Update current Console version
+[-Compare Similar Tickets and Solutions] > Find Similar Tickets: +Search by issue description | +Search by issue title | ?Search by issue tag/category | ?Filter by issue location | ?Search by URL | -Find similar issues using AI
+[-Compare Similar Tickets and Solutions] > Review & Compare Tickets: +Open ticket details in new tabs | -Open tickets side by side | -Reveal several tickets' details from the list
 [-Link Related Tickets] > Locate Similar Ticket: +Search by issue title | +Search by issue description | ?Search by issue tag/category | ?Filter by issue location | ?Search by URL | -Find similar issues using AI
 [-Link Related Tickets] > View Ticket(s): *Enter ticket | *Preview ticket details
 [-Link Related Tickets] > Link Ticket(s): -Add several tickets to a category or label | -Select several and link them in one action | -Copy reference code | -Paste the reference code into a related ticket | -Mark a similar ticket as linked | -Search inside a ticket for similar ones
 [-Link Related Tickets] > View Linked Tickets: -Drill into the parent ticket | -Filter by category or label | -Search inside a ticket for linked tickets | -Linked or grouped view
-[?Organise Support Tickets] > Label Support Tickets: *Give tickets a label | -Create a ticket category | -Create categories automatically from a metric (e.g. satisfaction rating)
-[?Organise Support Tickets] > View Categorised Tickets: ?Filter tickets by category/label | -Select ticket display view (Dashboard, Overview, List, Kanban)`;
+[-Organise Support Tickets] > Label Support Tickets: *Give tickets a label | -Create a ticket category | -Create categories automatically from a metric (e.g. satisfaction rating)
+[-Organise Support Tickets] > View Categorised Tickets: ?Filter tickets by category/label | -Select ticket display view (Dashboard, Overview, List, Kanban)`;
 
 const fullOlivia = `[-Edit Team Notification Settings] > Open Notification Settings: -Navigate to settings
 [-Edit Team Notification Settings] > Set Up Notification Preferences: -Choose how to receive notifications | -Get notified of urgent updates only | -Get notified of every update | -Get notified when a ticket's status changes | -Send all notifications to one place (email) | -Receive or mute notifications for specific actions | -Receive or mute notifications for specific users
