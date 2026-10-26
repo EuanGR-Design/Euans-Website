@@ -6,6 +6,7 @@ import type { IconName } from "./components/Icon";
 import { oldDims } from "./oldImageSizes";
 import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
 import { caseStudy, todo } from "./caseStudy";
+import { supportObjectives, supportPersonas, supportPriorities, supportShortlist, supportStoryMaps, supportThemes, supportUserStories } from "./supportHub";
 
 export type Era = "university" | "freelance" | "legalesign";
 
@@ -88,6 +89,40 @@ export type Notes = { icon: IconName; title: string; body: string }[];
 
 // `draft: true` shows the copy as a muted prompt until the real words are in.
 // More detail behind a section, opened in a panel so the page stays short.
+export type DirectionStatus = "Shipped" | "Partly" | "Designed" | "Not built" | "Cut";
+
+export type PersonaCard = {
+  name: string;
+  label: string;
+  age: number;
+  role: string;
+  bio: string;
+  quote: string;
+  goals: string[];
+  frustrations: string[];
+  tech: "Low" | "Medium" | "High";
+  help: string[];
+  mvp?: boolean;
+};
+
+// Must have is the MVP; should and could have were scoped for later versions.
+export type StoryPriority = "must" | "should" | "could" | "wont";
+export type StoryTasks = {
+  title: string;
+  priority?: StoryPriority;
+  steps: { title: string; stories: { text: string; mvp?: boolean; priority?: StoryPriority }[] }[];
+}[];
+
+// `full` is everything mapped for a persona; `cut` is the same map after the
+// tasks that weren't needed for a first release were taken out.
+export type StoryMap = { persona: string; label: string; full: StoryTasks; cut: StoryTasks };
+
+export type UserStories = {
+  persona: string;
+  label: string;
+  groups: { title: string; stories: { text: string; mvp?: boolean }[] }[];
+};
+
 export type Deeper = { label: string; heading: string; body?: string; blocks: Block[] };
 
 export type Block =
@@ -186,13 +221,73 @@ export type Block =
       type: "personas";
       eyebrow?: string;
       heading: string;
+      body?: string;
       items: { name: string; role: string; goals: string; frustrations: string }[];
       draft?: boolean;
+      deeper?: Deeper;
+    }
+  // Full persona cards, one shown at a time from a row of everyone.
+  | { type: "persona-cards"; eyebrow?: string; heading: string; body?: string; items: PersonaCard[]; deeper?: Deeper }
+  // A user story map per persona: tasks across, steps under them, stories
+  // below, with the MVP line drawn through each step.
+  | { type: "story-map"; eyebrow?: string; heading: string; body?: string; maps: StoryMap[]; deeper?: Deeper }
+  | { type: "user-stories"; eyebrow?: string; heading: string; body?: string; items: UserStories[]; deeper?: Deeper }
+  // Shortlisted directions weighed against weighted objectives. `meets`
+  // holds the indexes of the directions that meet each objective.
+  | {
+      type: "objectives";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      directions: string[];
+      // `top` marks the objectives leadership put first.
+      items: { objective: string; weight: number; meets: number[]; top?: boolean }[];
+      // Weights at or above this count as high value. Defaults to 8.
+      high?: number;
+      deeper?: Deeper;
+    }
+  // Shortlisted options side by side with their scores, and the call made.
+  | {
+      type: "shortlist";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      items: { title: string; tag: string; stats: { label: string; value: string }[]; chosen?: boolean }[];
+      call: string;
+      deeper?: Deeper;
+    }
+  // The double diamond: what each stage widened or narrowed to.
+  | { type: "double-diamond"; eyebrow?: string; heading: string; body?: string; stages: { name: string; count: string; body: string }[] }
+  // Directions grouped into themes, each with what happened to it.
+  | {
+      type: "themes";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      items: { title: string; body: string; directions: { title: string; status: DirectionStatus }[] }[];
+      // Show what happened to each direction. Defaults to true.
+      statuses?: boolean;
+      deeper?: Deeper;
+    }
+  // Opportunities ranked by score, with value and effort shown as bars.
+  | {
+      type: "priorities";
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      // `value` is left out where the source never scored it. `status` is
+      // what happened to the direction in the end.
+      items: { title: string; value?: number; effort: number; status: DirectionStatus; note?: string }[];
+      // Column names and the top of each scale, as the source scored them.
+      value: { label: string; max: number };
+      effort: { label: string; max: number };
+      deeper?: Deeper;
     }
   | {
       type: "journey-map";
       eyebrow?: string;
       heading: string;
+      body?: string;
       stages: string[];
       // One row per lane, one cell per stage.
       lanes: { label: string; cells: string[] }[];
@@ -454,43 +549,251 @@ export const projects: Project[] = [
     blocks: [],
   },
   {
-    slug: "support-hub",
+    slug: "getting-unstuck",
     era: "legalesign",
-    title: "Support Hub",
-    summary: "One place for customers and the support team to find answers and track tickets.",
-    role: "Design lead",
-    tags: ["Research", "Service design", "UX"],
+    title: "Getting Unstuck",
+    summary: "What should happen when a user hits a problem? Fifteen answers, one priority, and the ticket tracking I designed.",
+    year: "2025",
+    role: "Lead designer, joint product owner",
+    tags: ["Discovery", "Product strategy", "Ticket tracking"],
     cover: null,
     intro:
-      "A customer support and ticketing hub serving both Legalesign users and the internal support team.",
-    statement: "One place for customers and the support team to find answers and track tickets.",
-    context: legalesignContext("Customers and the support team", "Design lead"),
-    // The Quick Send format, with the research stage this project had.
+      "Research into what users do when something goes wrong: report it, fix it themselves or work out what to do next. I found fifteen ways to help, turned them into a roadmap, and narrowed it to the ticket tracking I then designed.",
+    statement: "What should happen when a user hits a problem?",
+    context: legalesignContext("Daily users, team and enterprise admins", "Lead designer, joint product owner"),
+    // Told as a double diamond: what was wrong, how wide the research went,
+    // how one direction was chosen, and how it was built.
     blocks: caseStudy({
       problem: [
-        todo("problem", "Customers couldn't find answers on their own, so simple questions turned into support tickets."),
         {
-          type: "personas",
-          eyebrow: "Personas",
-          heading: "Who we were designing for.",
+          type: "voices",
+          id: "problem",
+          eyebrow: "The problem",
+          heading: "When users hit a problem, there was no good next step.",
+          body: "They couldn't easily report it, fix it themselves or tell what to do next. So support spent its days answering questions people could have answered alone, enterprise customers couldn't see whether we met their SLA, and admins couldn't see what their team was stuck on. There was no obvious fix, so I started with research.",
+          // Paraphrased from what the support team heard again and again.
           items: [
-            { name: "Org admin", role: "Runs Legalesign for their organisation", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
-            { name: "Everyday sender", role: "Sends documents for signing", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
-            { name: "Support agent", role: "Answers customer questions", goals: "What they're trying to get done.", frustrations: "What gets in their way today." },
+            { quote: "I have no idea what I'm doing.", need: "Help they can find inside Console, starting with the most common questions." },
+            { quote: "What does this option even mean?", need: "Answers about what a setting does, without leaving the page they're on." },
+            { quote: "Something unexpected happened.", need: "A way to report it, with the details support needs captured for them." },
+            { quote: "Has my ticket been escalated? When?", need: "Every ticket's status in one place, and a way to raise its priority." },
+            { quote: "I'd rather not talk to anyone.", need: "To solve it themselves first, with a person as the last step, not the first." },
+            { quote: "I need to see my team's tickets and chase them.", need: "A team view of every ticket, and escalation on someone else's behalf." },
+            { quote: "How many tickets, and how fast were they answered?", need: "Ticket counts and response and resolution times for any period, in the product." },
+            { quote: "Is Legalesign keeping to our SLA?", need: "Those times set against the SLA agreed for each priority." },
           ],
-          draft: true,
+          deeper: {
+            label: "the research",
+            heading: "What getting help looked like.",
+            body: "From a discovery workshop with the support team and the developers, run with a second designer.",
+            blocks: [
+            {
+              type: "journey-map",
+              eyebrow: "Journey map",
+              heading: "What happened when something went wrong.",
+              stages: ["Gets stuck", "Looks for help", "Asks support", "Waits", "Gets an answer"],
+              body: "The road from getting stuck to getting an answer. Every stage either left the product or left the user waiting.",
+              lanes: [
+                {
+                  label: "Touchpoint",
+                  cells: ["Console", "Help articles on the website", "Email, phone or chat", "Their inbox", "A link from support"],
+                },
+                {
+                  label: "Doing",
+                  cells: [
+                    "Hits an option they don't understand, or an error.",
+                    "Searches the website's help articles, outside Console.",
+                    "Emails, calls or starts a chat, and explains the problem.",
+                    "Checks their inbox, then chases.",
+                    "Follows a link to an article support picked for them.",
+                  ],
+                },
+                {
+                  label: "Thinking",
+                  cells: [
+                    "I have no idea what I'm doing.",
+                    "There's so much here, and none of it is about my problem.",
+                    "I'd rather not have to talk to someone.",
+                    "Has anyone picked this up? Is it escalated?",
+                    "Was that the fix, or will it happen again?",
+                  ],
+                },
+                {
+                  label: "Pain point",
+                  cells: [
+                    "Nothing in the product explains what went wrong.",
+                    "Leaving the app breaks their flow, and the articles have no search.",
+                    "Support has to ask questions to understand the problem.",
+                    "No way to see a ticket's status or raise its priority.",
+                    "Admins have no record to report on, so stats are made by hand.",
+                  ],
+                },
+              ],
+              draft: true,
+            },
+              {
+                type: "insights",
+                eyebrow: "What we found",
+                heading: "How support worked, and what it meant for the design.",
+                items: [
+                  {
+                    found: "To understand a case, support pieced it together from the CRM, Slack and past tickets.",
+                    so: "Capture the user, team, organisation, page, time and error codes with every ticket.",
+                  },
+                  {
+                    found: "Support thought about 30% of questions could have been answered by documentation alone.",
+                    so: "Put help before the ticket form, starting with the most common questions.",
+                  },
+                  {
+                    found: "Some customers will do anything to avoid talking to a person, and nobody wanted a chatbot.",
+                    so: "Make self-service and a clear form the way in, with no bot in between.",
+                  },
+                  {
+                    found: "Enterprise support stats were made by hand, whenever a customer asked.",
+                    so: "Build ticket counts and response and resolution times into the product.",
+                  },
+                  {
+                    found: "Users wanted to know whether their issue had been escalated, and when.",
+                    so: "Show each ticket's status and priority, and let people raise it.",
+                  },
+                ],
+              },
+            ],
+          },
         },
         {
-          type: "journey-map",
-          eyebrow: "Journey map",
-          heading: "Getting help, step by step.",
-          stages: ["Hits a problem", "Looks for help", "Raises a ticket", "Gets an answer"],
-          lanes: [
-            { label: "Doing", cells: ["What they do here.", "What they do here.", "What they do here.", "What they do here."] },
-            { label: "Thinking", cells: ["What they're thinking.", "What they're thinking.", "What they're thinking.", "What they're thinking."] },
-            { label: "Pain point", cells: ["What goes wrong.", "What goes wrong.", "What goes wrong.", "What goes wrong."] },
+          type: "double-diamond",
+          eyebrow: "My approach",
+          heading: "Understand the problem first, then design the solution.",
+          stages: [
+            { name: "Discover", count: "15 directions", body: "Everything a user might do when they hit a problem, and every way we might help, in four clusters." },
+            { name: "Define", count: "1 problem to solve", body: "Every direction weighed against goals I set with the CEO and leadership. Ticket tracking won." },
+            { name: "Develop", count: "Stories and flows", body: "Ticket tracking mapped story by story for three personas, then designed." },
+            { name: "Deliver", count: "An MVP", body: "Scoped down to what mattered most, and released." },
           ],
-          draft: true,
+        },
+        {
+          type: "persona-cards",
+          eyebrow: "Discover",
+          heading: "Six people who need help in different ways.",
+          body: "From the daily user to procurement. Three of them would become the MVP.",
+          items: supportPersonas,
+        },
+        {
+          type: "themes",
+          eyebrow: "Directions",
+          heading: "Fifteen ways we could help, in four clusters.",
+          body: "I cast the net wide on purpose, for anything that might solve one of the problems, or several.",
+          items: supportThemes,
+          statuses: false,
+        },
+        {
+          type: "shortlist",
+          eyebrow: "Define",
+          heading: "Four made the shortlist. Ticket tracking went first.",
+          body: "Taking on product ownership, I worked with the CEO and leadership to set the business's objectives and weight each out of 10, then scored every direction against them.",
+          items: supportShortlist,
+          call: "The help centre scored highest overall, but ticket tracking met all three of the goals leadership put first: enterprise KPIs, the SLA and UK enterprise sales. So it went first, and the help centre was planned for later on the roadmap.",
+          deeper: {
+            label: "the scoring",
+            heading: "How the four were scored.",
+            body: "Every objective, its weight out of 10, and which directions met it. The three top priorities are marked.",
+            blocks: [
+              {
+                type: "objectives",
+                heading: "Four directions against 23 objectives.",
+                ...supportObjectives,
+              },
+              {
+                type: "priorities",
+                heading: "All fifteen, in the order of execution that became the roadmap.",
+                items: supportPriorities,
+                value: { label: "Objectives met", max: 15 },
+                effort: { label: "Effort, out of 10", max: 10 },
+              },
+            ],
+          },
+        },
+        {
+          type: "points",
+          eyebrow: "The roadmap",
+          heading: "One plan for every department.",
+          items: [
+            { icon: "NumberedList", title: "An order of execution", body: "All fifteen directions ranked by value and effort, so the quick wins went first." },
+            { icon: "ViewColumns", title: "A roadmap across departments", body: "Design, development, support and marketing, each with their part, sprint by sprint." },
+            { icon: "ArrowsSplit", title: "A place for every direction", body: "Ticket tracking first, the help centre later on the roadmap, error messages with the developers, and tooltips added every sprint." },
+          ],
+        },
+      ],
+      brief: {
+        type: "brief",
+        eyebrow: "The brief",
+        heading: "Let customers get help and track it inside Console, and give enterprise admins the numbers.",
+        body: "With ticket tracking chosen, I wrote its brief as product owner, then picked up the design.",
+        recreation: "A simplified recreation of the brief. The original stayed with Legalesign.",
+        title: "Ticket Tracking MVP",
+        meta: [
+          { label: "Owner", value: "Euan Robertson, design and product" },
+          { label: "For", value: "Daily users, team admins and enterprise admins" },
+          { label: "Built as", value: "A standalone support microsite" },
+        ],
+        sections: [
+          { label: "Objective", body: "Help, tickets and support stats in Console, so customers can see where their issue is and admins can report on it." },
+          {
+            label: "Requirements",
+            items: [
+              { icon: "MagnifyingGlass", title: "Help first", body: "The most common questions, search and the onboarding video." },
+              { icon: "PencilSquare", title: "Tickets with context", body: "Title, description and priority, with the details support needs captured." },
+              { icon: "Eye", title: "Status at a glance", body: "Every ticket's status, and updates by email and in the app." },
+              { icon: "HandRaised", title: "Escalation", body: "Raise a ticket's priority, for yourself or for your team." },
+              { icon: "ListBullet", title: "Support stats", body: "Ticket counts and response and resolution times, by team, for any period." },
+              { icon: "ShieldCheck", title: "The right people only", body: "Team and organisation views for admins with permission, exportable for audits." },
+            ],
+          },
+          {
+            label: "Out of scope",
+            body: "Custom dashboards, automated escalation rules, Slack alerts, chatbots and contextual tooltips, until the MVP has been used.",
+          },
+          { label: "Success looks like", body: "Enterprise stats no longer made by hand, and fewer follow-ups asking where a ticket has got to." },
+        ],
+      },
+      versions: [
+        {
+          type: "story-map",
+          eyebrow: "Develop",
+          heading: "Every story mapped, then cut down for the MVP.",
+          body: "A map for each of the three personas ticket tracking served. I mapped the whole picture first, then sorted every task and story into must, should, could and won't have. Must have became the MVP. The rest was scoped for later versions, ready to build if customers asked for it.",
+          maps: supportStoryMaps,
+        },
+        {
+          type: "user-stories",
+          eyebrow: "Product owner",
+          heading: "From user stories to sprint tickets.",
+          body: "I wrote the user stories for each persona and grouped them by feature, then marked the ones the MVP needed. As product owner I turned those into the Jira tickets the developers built from, and as the designer they were my list of what every screen had to do.",
+          items: supportUserStories,
+        },
+        todo("versions"),
+      ],
+      outcome: [
+        {
+          type: "outcome",
+          eyebrow: "The outcome",
+          heading: "Ticket tracking shipped, and the research set the roadmap.",
+          items: [
+            { goal: "Designed and led by me", icon: "QueueList", title: "Ticket tracking", body: "The MVP shipped: customers raise tickets, follow their status and escalate them, and admins see their team's. It did the job, so the later versions stayed in the backlog, scoped and ready." },
+            { goal: "My recommendation, built later on the roadmap", icon: "MagnifyingGlass", title: "A help centre", body: "One place for help that used to be scattered, now live." },
+            { goal: "Started here, added every sprint", icon: "CursorArrowRays", title: "Tooltips and guided tours", body: "Help where people need it, across the product." },
+            { goal: "From the feedback theme", icon: "PaperAirplane", title: "Bug reports and feature requests", body: "Sent from inside the product, straight to support and the team's Jira channel." },
+          ],
+          todo: "Numbers to add: ticket volume, response and resolution times, or how many questions the help centre now answers.",
+        },
+        {
+          type: "text",
+          eyebrow: "What I learned",
+          heading: "Put the priorities in the numbers.",
+          body: [
+            "The scoring put the help centre first, and leadership's priorities put ticket tracking first. The call was right, but the numbers didn't show it. Next time I'd weight the business's top goals so the score and the decision agree.",
+          ],
         },
       ],
     }),
