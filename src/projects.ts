@@ -105,11 +105,11 @@ export type PersonaCard = {
   mvp?: boolean;
 };
 
-// Must have is the MVP (sprint 1); should and could have were planned for
-// sprints 2 and 3.
+// Must have is the MVP; should and could have were scoped for later versions.
 export type StoryPriority = "must" | "should" | "could" | "wont";
 export type StoryTasks = {
   title: string;
+  priority?: StoryPriority;
   steps: { title: string; stories: { text: string; mvp?: boolean; priority?: StoryPriority }[] }[];
 }[];
 
@@ -762,7 +762,7 @@ export const projects: Project[] = [
           type: "story-map",
           eyebrow: "Develop",
           heading: "Every story mapped, then cut down for the MVP.",
-          body: "A map for each of the three personas ticket tracking served. I mapped everything first, then cut the tasks a first release didn't need. For the daily user I sorted every story into must, should, could and won't have, which set the plan for the first three sprints.",
+          body: "A map for each of the three personas ticket tracking served. I mapped the whole picture first, then sorted every task and story into must, should, could and won't have. Must have became the MVP. The rest was scoped for later versions, ready to build if customers asked for it.",
           maps: supportStoryMaps,
         },
         {
@@ -780,7 +780,7 @@ export const projects: Project[] = [
           eyebrow: "The outcome",
           heading: "Ticket tracking shipped, and the research set the roadmap.",
           items: [
-            { goal: "Designed and led by me", icon: "QueueList", title: "Ticket tracking", body: "Customers raise tickets, follow their status and escalate them, and admins see their team's." },
+            { goal: "Designed and led by me", icon: "QueueList", title: "Ticket tracking", body: "The MVP shipped: customers raise tickets, follow their status and escalate them, and admins see their team's. It did the job, so the later versions stayed in the backlog, scoped and ready." },
             { goal: "My recommendation, built later on the roadmap", icon: "MagnifyingGlass", title: "A help centre", body: "One place for help that used to be scattered, now live." },
             { goal: "Started here, added every sprint", icon: "CursorArrowRays", title: "Tooltips and guided tours", body: "Help where people need it, across the product." },
             { goal: "From the feedback theme", icon: "PaperAirplane", title: "Bug reports and feature requests", body: "Sent from inside the product, straight to support and the team's Jira channel." },

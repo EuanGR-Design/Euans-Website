@@ -3,13 +3,13 @@
 import { useState } from "react";
 import type { StoryMap as StoryMapData, StoryPriority, StoryTasks } from "@/projects";
 
-// MoSCoW, as on the scoped maps: must have is the MVP, should and could have
-// were planned for the next two sprints. Each gets a deeper shade of orange.
-const BANDS: { key: StoryPriority; label: string; sprint: string; bar: string }[] = [
-  { key: "must", label: "Must have", sprint: "Sprint 1, the MVP", bar: "bg-accent" },
-  { key: "should", label: "Should have", sprint: "Sprint 2", bar: "bg-accent/65" },
-  { key: "could", label: "Could have", sprint: "Sprint 3", bar: "bg-accent/25" },
-  { key: "wont", label: "Won't have", sprint: "Not planned", bar: "bg-line" },
+// MoSCoW, as on the scoped maps. Must have is the MVP that shipped; should and
+// could have were scoped for later versions. Each gets a deeper shade of orange.
+const BANDS: { key: StoryPriority; label: string; when: string; bar: string; task: string }[] = [
+  { key: "must", label: "Must have", when: "the MVP", bar: "bg-accent", task: "bg-accent text-on-accent" },
+  { key: "should", label: "Should have", when: "a next version", bar: "bg-accent/65", task: "bg-accent/65 text-on-accent" },
+  { key: "could", label: "Could have", when: "a later version", bar: "bg-accent/25", task: "bg-accent/25" },
+  { key: "wont", label: "Won't have", when: "not planned", bar: "bg-line", task: "bg-line text-muted" },
 ];
 
 const count = (tasks: StoryTasks) => {
@@ -127,7 +127,7 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
         <div className="flex w-max gap-3">
           {tasks.map((t) => (
             <div key={t.title} className="flex flex-col gap-3">
-              <div className="rounded-xl bg-accent px-3 py-2 text-sm font-semibold text-on-accent">{t.title}</div>
+              <TaskTitle title={t.title} priority={n.scoped ? t.priority : undefined} />
               <div className="flex gap-3">
                 {t.steps.map((s) => {
                   const above = s.stories.filter((x) => x.mvp);
@@ -156,12 +156,18 @@ export function StoryMap({ maps }: { maps: StoryMapData[] }) {
           <span aria-hidden className="inline-block w-6 border-t-2 border-dashed border-accent" />
           The MVP line. Stories above it shipped first.
         </span>
+        {n.scoped && (
+          <span className="basis-full">
+            A task marked should, could or won&apos;t have can&apos;t be done in full in the MVP, even where some of its steps
+            are.
+          </span>
+        )}
         {n.scoped &&
           BANDS.map((b) => (
             <span key={b.key} className="flex items-center gap-2">
               <span aria-hidden className={`inline-block h-3 w-1 rounded-full ${b.bar}`} />
               <span>
-                <span className="font-medium text-fg">{b.label}</span> {b.sprint}
+                <span className="font-medium text-fg">{b.label}</span> {b.when}
               </span>
             </span>
           ))}
@@ -192,6 +198,25 @@ function Story({ text, mvp, priority }: { text: string; mvp?: boolean; priority?
     >
       {mvp && <span className="sr-only">MVP: </span>}
       {text}
+    </div>
+  );
+}
+
+// On a scoped map the task's own band says whether the task as a whole can be
+// done. A won't have task can still hold must have stories: those actions are
+// in the MVP, the task they'd add up to isn't.
+function TaskTitle({ title, priority }: { title: string; priority?: StoryPriority }) {
+  const band = BANDS.find((b) => b.key === priority);
+  return (
+    <div
+      className={`flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm font-semibold ${
+        band?.task ?? "bg-accent text-on-accent"
+      }`}
+    >
+      {title}
+      {band && band.key !== "must" && (
+        <span className="shrink-0 rounded-full bg-bg/70 px-2 py-0.5 text-[10px] font-medium text-fg">{band.label}</span>
+      )}
     </div>
   );
 }
