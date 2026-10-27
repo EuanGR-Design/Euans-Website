@@ -1253,18 +1253,54 @@ export const projects: Project[] = [
           },
         ],
       },
-      slot(
-        "Ideation",
-        "Many ways to configure a send, and one flow that had to hold them all.",
-        "Two or three frames from the ideation in the Drafts V2 file, each with a line on what it explored and why it was kept or dropped.",
-        "drafts-ideation",
-      ),
-      slot(
-        "The MVP flow",
-        "The workflow, mapped and annotated for the build.",
-        "The annotated MVP flow from the Drafts V2 file: what admins set, what senders see, and the notes the developers built from. Then the final screens.",
-        "drafts-workflow",
-      ),
+      {
+        type: "callouts",
+        id: "drafts-ideation",
+        eyebrow: "Ideation",
+        heading: "Many ways to configure a send, and one flow that had to hold them all.",
+        body: "I started wide. Early ideas tried to fit every kind of send into one place, from a single saved document to a hub that also handled batch and bulk sending.",
+        items: [
+          {
+            title: "A single saved document",
+            body: "The first idea treated a draft as one long page: every setting for one document, top to bottom. It was easy to follow, but it couldn't stretch to sends with several documents and recipients.",
+            image: { src: "/work/drafts/ideation-saved-document.webp", w: 1516, h: 2840, alt: "Early concept of a saved document page with every setting on one long page", caption: "Ideation: one document, every setting on one page." },
+          },
+          {
+            title: "A hub for everything",
+            body: "Next came a tabbed hub that also took in batch and bulk sending. It showed how far the idea could go, and how much it would cost to build. That told me where to cut for the first release.",
+            image: { src: "/work/drafts/ideation-hub.webp", w: 1516, h: 1102, alt: "Early concept of a tabbed drafts hub covering batch sending", caption: "Ideation: a tabbed hub that tried to hold every kind of send." },
+          },
+        ],
+      },
+      {
+        type: "callouts",
+        id: "drafts-workflow",
+        eyebrow: "The MVP flow",
+        heading: "The workflow, mapped and annotated for the build.",
+        body: "The first release narrowed to one clear path: open a draft, prepare each document, send. Every step was mapped end to end and annotated for the developers. Choosing templates for a new draft was left for a later release.",
+        items: [
+          {
+            title: "Start from the send",
+            body: "Opening a draft shows every document in the send and what each still needs. Each one is prepared in turn, and the draft can be reset or left at any point without losing the admin's setup.",
+            image: { src: "/work/drafts/send-overview-prepare.webp", w: 1516, h: 1162, alt: "Send overview listing the documents in a draft, each with a Prepare button", caption: "Send overview: each document shows what's left to do." },
+          },
+          {
+            title: "One document, in clear sections",
+            body: "Preparing a document walks through its name, file, template, fields, recipients and options in order. Anything the admin filled in is already there; senders only finish what's open.",
+            image: { src: "/work/drafts/document-overview.webp", w: 1516, h: 3020, alt: "Document overview split into sections for name, file, template, fields, recipients and options", caption: "Document overview: every part of a send in one ordered page." },
+          },
+          {
+            title: "Type a recipient once",
+            body: "When the same person signs several documents, Auto Link carries their details across all of them. Senders can still break the link when one document needs someone different.",
+            image: { src: "/work/drafts/linked-recipients.webp", w: 1516, h: 1102, alt: "Recipient details linked across several documents", caption: "Linked recipient details across documents." },
+          },
+          {
+            title: "Ready when it's ready",
+            body: "Once every document is prepared, the send overview turns green and the send goes out in one go.",
+            image: { src: "/work/drafts/send-overview-ready.webp", w: 1516, h: 1280, alt: "Send overview with every document ready to send", caption: "Every document prepared and ready to send." },
+          },
+        ],
+      },
       slot(
         "Signer Lobby",
         "Every state, worked out before it was drawn.",
