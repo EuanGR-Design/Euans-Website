@@ -1217,15 +1217,52 @@ export const projects: Project[] = [
     statement: "Making two of Console's most complex features feel simple.",
     context: legalesignContext("Admins, senders and recipients", "Design lead, product owner"),
     blocks: [
+      {
+        type: "text",
+        eyebrow: "The problem",
+        heading: "One customer's advanced workflow, and many more teams who needed the same control.",
+        body: [
+          "A large customer moving to Legalesign from another e-signature product relied on saved send setups for an advanced workflow. Without them, they couldn't make the switch.",
+          "Feedback in Jira and conversations with other users showed they weren't alone. Many teams needed a controlled send: set up once by an admin, then reused by everyday senders without getting it wrong.",
+        ],
+      },
+      {
+        type: "points",
+        eyebrow: "Drafts",
+        heading: "Admins set it up once. Senders just fill it in.",
+        items: [
+          {
+            title: "A saved send",
+            body: "An admin saves a draft of how a send should go: the template, how many recipients, each recipient's presets, and the send settings.",
+            icon: "AdjustmentsHorizontal",
+          },
+          {
+            title: "Filled in, or left open",
+            body: "Any part can be filled in ahead of time or left for the sender, so a draft can be almost ready to go or just a starting point.",
+            icon: "PencilSquare",
+          },
+          {
+            title: "Less to fill in",
+            body: "Everyday senders pick a draft and complete only what's left, inside the limits the admin set.",
+            icon: "PaperAirplane",
+          },
+          {
+            title: "Flexible by design",
+            body: "Everything is configurable and can be swapped out, so one feature fits many different workflows instead of just the one it started with.",
+            icon: "Squares2X2",
+          },
+        ],
+      },
       slot(
-        "The problem",
-        "Lots of rules, lots of states, and users who should never have to think about either.",
-        "Two lines per feature: what Drafts and Signer Lobby had to do, and why they were hard. No iteration story on this page.",
+        "Ideation",
+        "Many ways to configure a send, and one flow that had to hold them all.",
+        "Two or three frames from the ideation in the Drafts V2 file, each with a line on what it explored and why it was kept or dropped.",
+        "drafts-ideation",
       ),
       slot(
-        "Drafts",
-        "The workflow, mapped.",
-        "The Drafts workflow as one map: what admins set, what gets locked, and what everyday senders see. Then the final screens.",
+        "The MVP flow",
+        "The workflow, mapped and annotated for the build.",
+        "The annotated MVP flow from the Drafts V2 file: what admins set, what senders see, and the notes the developers built from. Then the final screens.",
         "drafts-workflow",
       ),
       slot(

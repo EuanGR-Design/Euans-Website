@@ -134,7 +134,7 @@ export const about = {
     {
       skill: "Complex flows & logic",
       proof: [
-        { label: "Drafts", href: "/work/drafts#drafts-workflow" },
+        { label: "Drafts", href: "/work/drafts#drafts" },
         { label: "Signer Lobby", href: "/work/drafts#signer-lobby-states" },
       ],
     },
