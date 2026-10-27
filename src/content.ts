@@ -1,6 +1,8 @@
 // All site copy lives here so it can be edited without touching layout code.
 
 import { basePath } from "@/lib/basePath";
+import { slot } from "@/caseStudy";
+import type { Block } from "@/projects";
 
 export const person = {
   name: "Euan Robertson",
@@ -11,12 +13,14 @@ export const person = {
   photo: null as string | null,
   // The line above the projects at the top of the home page.
   statement: "I lead product design from research to release, and own the product decisions in between.",
+  // A quieter line under the statement, on where the way of working comes from.
+  roots: "Trained at Glasgow School of Art. I still start with the problem, not the pixels.",
   intro:
     "Five years leading design at Legalesign, an enterprise e-signature platform, and more recently owning the product too. I research, prototype and test until the work holds up, then see it through to launch.",
 };
 
 // The projects the home page opens on, in order.
-export const homeCarousel = ["quick-send", "template-editor", "signer-lobby", "drafts", "rebrand", "spacebuds", "tacc", "kate-and-sam"];
+export const homeCarousel = ["quick-send", "getting-unstuck", "template-editor", "console", "mobile-signing", "drafts", "rebrand"];
 
 export const stats = [
   { value: "5+", label: "years in product design" },
@@ -97,49 +101,65 @@ export const about = {
       body: "Detailed handover files, a component library matched 1:1 with code, and Jira epics developers can pick up and run with.",
     },
   ],
+  // The skills index: each skill links straight to the part of the site
+  // that proves it, even halfway down a case study.
   skills: [
     {
-      group: "Product",
-      items: [
-        "Product ownership",
-        "Sprint planning",
-        "Project planning",
-        "Jira epics & tickets",
-        "Product research",
-        "Bug & feature triage",
+      skill: "Prototyping",
+      proof: [
+        { label: "Quick Send", href: "/work/quick-send#prototypes" },
+        { label: "Template Editor", href: "/work/template-editor#built-to-test-itself" },
+        { label: "Mobile Signing", href: "/work/mobile-signing#try-it" },
       ],
     },
     {
-      group: "Research",
-      items: [
-        "User research",
-        "User interviews",
-        "User journey mapping",
-        "User testing & A/B tests",
-        "Hotjar analytics",
-        "Workshop facilitation",
+      skill: "User testing & A/B tests",
+      proof: [
+        { label: "Template Editor", href: "/work/template-editor#a-b-inside-the-prototype" },
+        { label: "Quick Send", href: "/work/quick-send#25-versions" },
+      ],
+    },
+    { skill: "Iteration", proof: [{ label: "Quick Send", href: "/work/quick-send#25-versions" }] },
+    { skill: "User research", proof: [{ label: "Getting Unstuck", href: "/work/getting-unstuck#problem" }] },
+    { skill: "Personas", proof: [{ label: "Getting Unstuck", href: "/work/getting-unstuck#discover" }] },
+    { skill: "Journey mapping", proof: [{ label: "Getting Unstuck", href: "/work/getting-unstuck#problem" }] },
+    {
+      skill: "User stories & story mapping",
+      proof: [
+        { label: "Story maps", href: "/work/getting-unstuck#develop" },
+        { label: "User stories", href: "/work/getting-unstuck#product-owner" },
+      ],
+    },
+    { skill: "Prioritisation", proof: [{ label: "Getting Unstuck", href: "/work/getting-unstuck#define" }] },
+    {
+      skill: "Complex flows & logic",
+      proof: [
+        { label: "Drafts", href: "/work/drafts#drafts-workflow" },
+        { label: "Signer Lobby", href: "/work/drafts#signer-lobby-states" },
+      ],
+    },
+    { skill: "Mobile UI", proof: [{ label: "Mobile Signing", href: "/work/mobile-signing" }] },
+    {
+      skill: "UI & design systems",
+      proof: [
+        { label: "Design system", href: "/work/legalesign#design-system" },
+        { label: "Quick Send", href: "/work/quick-send#key-decisions" },
       ],
     },
     {
-      group: "Design",
-      items: [
-        "UI design",
-        "Interactive prototyping",
-        "Design systems (Figma)",
-        "Developer handoff",
-        "Accessibility",
-        "Prompt coding (Figma Make)",
+      skill: "Product ownership",
+      proof: [
+        { label: "Getting Unstuck", href: "/work/getting-unstuck#product-owner" },
+        { label: "Rebuilding Legalesign", href: "/work/legalesign#my-remit" },
       ],
     },
+    { skill: "Accessibility", proof: [{ label: "Mobile Signing", href: "/work/mobile-signing#accessibility" }] },
+    { skill: "Dev handoff", proof: [{ label: "Quick Send", href: "/work/quick-send#design-to-dev-handoff" }] },
     {
-      group: "Brand",
-      items: [
-        "Brand strategy & identity",
-        "Brand guidelines",
-        "Illustration direction",
-        "Icon & logo animation",
-        "Data visualisation",
-        "Marketing websites",
+      skill: "Branding, logo, print & web",
+      proof: [
+        { label: "Legalesign rebrand", href: "/work/rebrand" },
+        { label: "Website", href: "/work/rebrand#the-website" },
       ],
     },
   ],
@@ -264,3 +284,38 @@ export const showreel = [
   { src: "/work/lobby-verify.png", w: 1516, h: 1100, alt: "Identity verification", href: "/work/signer-lobby" },
   { src: "/brand/p29.jpg", w: 1600, h: 1131, alt: "Legalesign pictogram set", href: "/work/rebrand" },
 ];
+
+// The How I work page: where the way of working comes from, told as a story
+// rather than a diagram, then how it runs on a product team today.
+export const foundations = {
+  heading: "Research first, then taste that's earned.",
+  intro:
+    "I learned to design at Glasgow School of Art, starting from the problem and the people who have it. Years of shipping product have built a design eye I can trust, but the fundamentals I learned there are still what I lean on.",
+  blocks: [
+    slot(
+      "Where it started",
+      "Glasgow School of Art.",
+      "The story in three short paragraphs: what Product Design at GSA taught you (research, co-design, systems thinking), how that became a mindset rather than a method, and how practice turned it into taste. Not a list of stages.",
+    ),
+    slot(
+      "The knotted line",
+      "Design isn't a straight line.",
+      "Your tutor's sketch, drawn as the site's signature: a line that rises and dips, ties itself in a knot, then straightens out at delivery. A line on why that's truer than a neat diagram. Each case study can open with its own version.",
+    ),
+    slot(
+      "How it works today",
+      "The loop on a product team.",
+      "Research over Teams calls, insights into Jira, design in Figma, reviews in FigJam, prototypes in Figma Make, sprints with the developers, then Hotjar and PostHog feeding back into Jira. Drawn as a loop, each step a short tag.",
+    ),
+  ] satisfies Block[],
+  // The early projects, shown for the process behind them rather than as
+  // polished showcase pieces.
+  projects: [
+    {
+      title: "SPACEBUDS",
+      body: "Research, co-design and personas behind a service for people living with food allergies.",
+      href: "/work/spacebuds",
+    },
+    { title: "tacc", body: "Research and planning behind personalised plans for living a more sustainable life.", href: "/work/tacc" },
+  ],
+};

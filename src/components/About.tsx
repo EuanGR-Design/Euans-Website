@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { about, person, stats } from "@/content";
 import { Reveal } from "./motion";
 
@@ -71,29 +72,41 @@ export function About() {
 
 export function Skills() {
   return (
-    <section className="border-t border-line py-24 md:py-32">
+    <section id="skills" className="border-t border-line py-24 md:py-32">
       <div className="container-x">
-        <Reveal>
-          <p className="eyebrow">What I do</p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
-            Skills, end to end.
-          </h2>
+        <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <p className="eyebrow">What I do</p>
+            <h2 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight md:text-5xl">
+              Looking for a skill? Go straight to the proof.
+            </h2>
+          </div>
+          <p className="max-w-sm text-muted">Each link opens the part of a project where I did it.</p>
         </Reveal>
-        <div className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
-          {about.skills.map((g, i) => (
-            <Reveal key={g.group} delay={0.06 * i} className="bg-bg p-6 md:p-8">
-              <h3 className="text-xl font-semibold tracking-tight">{g.group}</h3>
-              <ul className="mt-5 space-y-2.5" aria-label={`${g.group} skills`}>
-                {g.items.map((s) => (
-                  <li key={s} className="flex gap-3 text-sm text-fg/80">
-                    <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent" />
-                    {s}
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          {about.skills.map((s, i) => (
+            <li key={s.skill} className="bg-bg">
+            <Reveal delay={0.04 * (i % 3)} className="h-full p-6 md:p-7">
+              <h3 className="text-lg font-semibold tracking-tight">{s.skill}</h3>
+              <ul className="mt-4 flex flex-wrap gap-2" aria-label={`Where to see ${s.skill.toLowerCase()}`}>
+                {s.proof.map((p) => (
+                  <li key={p.href}>
+                    <Link
+                      href={p.href}
+                      className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-line px-4 text-sm transition-colors hover:border-fg/30"
+                    >
+                      {p.label}
+                      <span aria-hidden className="text-muted transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-fg">
+                        →
+                      </span>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </Reveal>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

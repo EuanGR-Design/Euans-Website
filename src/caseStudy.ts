@@ -84,3 +84,9 @@ export function caseStudy(
     return [todo(key, given?.heading)];
   });
 }
+
+/**
+ * A section planned for a page that isn't in the Quick Send format, such as
+ * the skill pieces: what goes there, until its real block is written.
+ */
+export const slot = (eyebrow: string, ask: string, hint: string, id?: string): Block => ({ type: "todo", id, eyebrow, ask, hint });

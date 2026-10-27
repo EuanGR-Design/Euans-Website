@@ -374,7 +374,7 @@ function BlockView({
     case "todo":
       // A section still to be written, with what goes in it.
       return (
-        <Section>
+        <Section id={b.id}>
           <Reveal>
             <p className="eyebrow">{b.eyebrow}</p>
             <h2

@@ -111,6 +111,7 @@ export function HomeCarousel({ list }: { list: Project[] }) {
         <h1 className="max-w-3xl text-xl leading-snug font-semibold tracking-[-0.02em] text-balance md:text-2xl">
           <span className="text-muted">{person.name}. </span>
           {person.statement}
+          <span className="mt-1 block text-base font-normal tracking-normal text-muted md:text-lg">{person.roots}</span>
         </h1>
         <p className="shrink-0 text-sm text-muted tabular-nums" aria-live="polite">
           <span className="font-medium text-fg">{String(index + 1).padStart(2, "0")}</span> / {String(n).padStart(2, "0")}

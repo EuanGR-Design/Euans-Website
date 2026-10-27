@@ -1,19 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { legalesign, stages } from "@/process";
+import { legalesign } from "@/process";
 import { getProject } from "@/projects";
 import { Blocks } from "@/components/Blocks";
 import { Reveal } from "@/components/motion";
-import { StagePath } from "@/components/Stages";
 
 export const metadata: Metadata = {
-  title: "Console — Euan Robertson",
-  description: "Five years rebuilding Legalesign's e-signature product, told through how I work at each stage.",
+  title: "Rebuilding Legalesign — Euan Robertson",
+  description: "Five years rebuilding Legalesign's e-signature product, on a design system built from scratch.",
 };
 
 export default function LegalesignPage() {
-  const stageFor = (slug?: string) => stages.find((s) => s.project === slug);
-
   return (
     <article>
       <header className="pt-32 md:pt-44">
@@ -46,24 +43,7 @@ export default function LegalesignPage() {
         <Blocks blocks={[legalesign.problem, legalesign.comparison]} name={legalesign.title} />
       </div>
 
-      <section id="how-i-work" className="border-t border-line py-20 md:py-28">
-        <div className="container-x">
-          <Reveal className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <p className="eyebrow">How I work</p>
-              <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">
-                One stage at a time, through the project that shows it best.
-              </h2>
-            </div>
-            <p className="max-w-sm text-muted">
-              Read them in order as one journey, or jump to the stage you care about.
-            </p>
-          </Reveal>
-          <Reveal className="mt-12">
-            <StagePath />
-          </Reveal>
-        </div>
-      </section>
+      <Blocks blocks={legalesign.designSystem} name={legalesign.title} />
 
       <section className="border-t border-line py-20 md:py-28">
         <div className="container-x">
@@ -75,7 +55,6 @@ export default function LegalesignPage() {
           </Reveal>
           <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {legalesign.shipped.map((f, i) => {
-              const stage = stageFor(f.project);
               const page = f.project ? getProject(f.project) : undefined;
               const inner = (
                 <>
@@ -88,11 +67,6 @@ export default function LegalesignPage() {
                     )}
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-muted">{f.body}</p>
-                  {stage && (
-                    <p className="mt-4 font-mono text-[11px] tracking-[0.12em] text-accent-ink uppercase">
-                      Shows {stage.label.toLowerCase()}
-                    </p>
-                  )}
                 </>
               );
               return (
@@ -117,17 +91,6 @@ export default function LegalesignPage() {
       </section>
 
       <Blocks blocks={[legalesign.remit]} name={legalesign.title} />
-
-      <nav aria-label="Start" className="border-t border-line py-20 md:py-28">
-        <div className="container-x">
-          <p className="eyebrow">Start with</p>
-          <Link href={`/work/legalesign/${stages[0].id}`} className="group mt-4 inline-block">
-            <span className="text-[clamp(2rem,6vw,4.5rem)] leading-none font-semibold tracking-[-0.03em] transition-colors group-hover:text-accent-ink">
-              {stages[0].headline} <span aria-hidden>→</span>
-            </span>
-          </Link>
-        </div>
-      </nav>
     </article>
   );
 }

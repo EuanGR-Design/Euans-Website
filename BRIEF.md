@@ -57,3 +57,26 @@ Show the MVP and Euan's remit at that stage, then the releases that followed as 
 - Freelance Graphic Designer, 2019–2020
 - BDes (Hons) Product Design, Glasgow School of Art, 2015–2020
 - Strengths: product strategy, UX/UI, user research, workshop facilitation, interactive prototyping, design systems, stakeholder collaboration, cross-functional delivery, visual design & branding, accessibility & inclusive design.
+
+## Site structure, agreed 2026-10-27
+
+This replaces the earlier plan of showing projects by double diamond stage. The full site map, with a reason for each choice, is the "Portfolio site map" doc in the project.
+
+**Positioning.** A product designer who rebuilt Legalesign end to end and tests ideas with real prototypes. It is aimed at product designer and UX/UI lead roles. Prototyping is the differentiator. Design thinking from Glasgow School of Art runs through the whole site quietly; the double diamond is never named.
+
+**Home page order**
+1. Quick Send (deep): iteration and prototyping that led development.
+2. Getting Unstuck (deep): research, personas, story maps, prioritisation. It ends on the designed vision, then what shipped and why.
+3. Prototyping for Testing (deep, slug `template-editor`): intro modal, guided tour, A/B toggles, feedback download, mock data.
+4. Rebuilding Legalesign (overview, `/work/legalesign`): before and after, a card per feature area, and the design system matched 1:1 in code.
+5. Mobile Signing (short): key screens, the embedded prototype, AAA accessibility.
+6. Untangling Complex Logic (short, slug `drafts`): Drafts workflow map and Signer Lobby state matrix. Signer Lobby's card leads here.
+7. Legalesign Rebrand (compact): with the website and other identity work folded in.
+
+**Skills index** (home page, `about.skills` in `src/content.ts`). Each skill links straight to the section that proves it.
+
+**How I work** (`/how-i-work`). The Foundations story (GSA, practice, earned taste), the knotted line motif, and the loop used today. Spacebuds and tacc sit here as process artefacts.
+
+**Parked.** Bulk send and inbox appear only as overview cards. Kate and Sam waits until that site is redone. The old stage pages (`/work/legalesign/<stage>`) are no longer linked.
+
+**Build order:** Prototyping for Testing, then finish Getting Unstuck, then the Rebuilding Legalesign overview, the skills index anchors, Mobile Signing, the brand page and complex logic.

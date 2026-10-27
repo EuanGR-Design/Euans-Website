@@ -5,7 +5,7 @@ import type { IconName } from "./components/Icon";
 
 import { oldDims } from "./oldImageSizes";
 import { quickSendInProduction, quickSendIterations, quickSendPrototypeCards, quickSendTesting } from "./quickSend";
-import { caseStudy, todo } from "./caseStudy";
+import { caseStudy, slot, todo } from "./caseStudy";
 import { supportObjectives, supportPersonas, supportPriorities, supportShortlist, supportStoryMaps, supportThemes, supportUserStories } from "./supportHub";
 
 export type Era = "university" | "freelance" | "legalesign";
@@ -537,11 +537,11 @@ export const projects: Project[] = [
     // card leads there instead of to a page of its own.
     slug: "console",
     era: "legalesign",
-    title: "Console",
-    summary: "Five years of features, and how I worked on each stage of them.",
+    title: "Rebuilding Legalesign",
+    summary: "The whole product rebuilt as Console, on a design system I built from scratch.",
     year: "2021 – Present",
     role: "Design lead, product owner",
-    tags: ["Product design", "Research", "Product ownership"],
+    tags: ["Product design", "Design systems", "Product ownership"],
     cover: dashboard,
     featured: true,
     href: "/work/legalesign",
@@ -799,52 +799,156 @@ export const projects: Project[] = [
     }),
   },
   {
+    // Told as a skill piece about prototyping for testing, with the editor
+    // itself as the example.
     slug: "template-editor",
     era: "legalesign",
-    title: "Template Editor",
-    summary: "Placing and assigning fields, made faster and harder to get wrong.",
+    title: "Prototyping for Testing",
+    summary: "A prototype that ran its own user tests: a guided tour, A/B switches and feedback, all in one link.",
     role: "Design lead, product owner",
-    tags: ["UX", "Prototyping", "User testing"],
+    tags: ["Prototyping", "User testing", "A/B testing"],
+    contribution: ["Prototyping", "Test design", "A/B testing", "UX/UI design", "Dev handoff"],
     cover: editorHero,
     hero: editorHero,
     featured: true,
     intro:
-      "A redesigned document editing page: the step where senders place fields on a document and assign them to recipients before it goes out for signing.",
-    statement: "Placing and assigning fields, made faster and harder to get wrong.",
+      "The Template Editor, where senders place fields on a document and assign them to recipients, rebuilt with a prototype that testers could run on their own from one link.",
+    statement: "I built a prototype that ran its own user tests, and it led the build.",
     actions: [{ label: "Try the prototype", href: "https://love-model-19724475.figma.site/", icon: "CursorArrowRays", play: true }],
     // The hero uses the same browser frame as Quick Send's.
     play: { url: "https://love-model-19724475.figma.site/", width: 1440, screen: [398, 359, 1603, 1057] },
     context: legalesignContext("Senders preparing documents", "Design lead, product owner"),
-    blocks: caseStudy({
-      problem: {
-        heading: "Adding fields to a document before sending was slow and easy to get wrong, so people sent documents that couldn't be completed.",
-      },
-      prototypes: {
+    blocks: [
+      slot(
+        "The challenge",
+        "A full rebuild of the editor had to be tested before any of it was built.",
+        "In two or three lines: the editor had to do everything the old ones did, so the risk was in the detail. Why a static file or a moderated session wasn't enough, and why the prototype had to stand on its own.",
+      ),
+      slot(
+        "Built to test itself",
+        "Testers ran it alone, from one link.",
+        "The intro modal that explains the project, and the guided tour that teaches testers how to use the prototype. Screens or a short clip of each.",
+      ),
+      slot(
+        "A/B inside the prototype",
+        "Switch a feature on and off, then say which is better.",
+        "The toggles that swap between versions of a feature, so testers compare them directly. One clip of a switch, and what the comparisons decided.",
+      ),
+      slot(
+        "Feedback without taking data",
+        "So realistic that testers wouldn't use real documents.",
+        "Why it was filled with mock data, and how the feedback survey inside the prototype was downloaded by testers and sent back, so nothing left their hands without them choosing to send it.",
+      ),
+      {
         type: "prototype",
-        eyebrow: "Prototypes",
+        eyebrow: "Try it",
         url: "https://love-model-19724475.figma.site/",
-        heading: "Try the new editor.",
-        body: "The redesigned editing page as a clickable prototype, the kind I put in front of users before a line of production code was written.",
+        heading: "Run the test yourself.",
+        body: "The same prototype testers used, with the tour, the switches and the survey built in.",
         width: 1440,
         height: 900,
       },
-    }),
+      slot(
+        "What it changed",
+        "The prototype led the build.",
+        "Two or three things the testing changed, and how developers worked from the prototype as the spec, as with Quick Send.",
+      ),
+      slot(
+        "The editor",
+        "The UI rework, in short.",
+        "One paragraph and a before and after of the editor itself. The rebuild matched every feature of the old editors, so this stays short and points to the Rebuilding Legalesign page.",
+      ),
+    ],
   },
   {
+    // Drafts and Signer Lobby together, as a skill piece about complex rules
+    // and flows. Signer Lobby's card leads here.
     slug: "drafts",
     era: "legalesign",
-    title: "Drafts",
-    summary: "Controlled, pre-filled sending that admins set up for their teams.",
+    title: "Untangling Complex Logic",
+    summary: "Drafts and Signer Lobby: the rules, states and flows behind two of the most complex parts of Console.",
     role: "Design lead, product owner",
-    tags: ["Workflow", "Admin tools", "UX"],
+    tags: ["Systems thinking", "Complex flows", "Requirements"],
     cover: { src: "/work/drafts-v2-cover.png", w: 800, h: 566, alt: "Drafts V2 Figma file cover" },
     intro:
-      "A send-flow configurer. Admins set up drafts with sections pre-filled and settings locked, so when everyday users send from them there's less to fill in, in a controlled environment.",
-    statement: "Controlled, pre-filled sending that admins set up for their teams.",
-    context: legalesignContext("Admins and everyday senders", "Design lead, product owner"),
-    blocks: caseStudy({
-      problem: { heading: "Admins needed control over what their teams sent, while everyday senders needed less to fill in." },
-    }),
+      "Two features where the hard part was the logic, not the screens: Drafts, which lets admins pre-fill and lock down sending for their teams, and Signer Lobby, which shows each recipient the right state for their documents.",
+    statement: "Making two of Console's most complex features feel simple.",
+    context: legalesignContext("Admins, senders and recipients", "Design lead, product owner"),
+    blocks: [
+      slot(
+        "The problem",
+        "Lots of rules, lots of states, and users who should never have to think about either.",
+        "Two lines per feature: what Drafts and Signer Lobby had to do, and why they were hard. No iteration story on this page.",
+      ),
+      slot(
+        "Drafts",
+        "The workflow, mapped.",
+        "The Drafts workflow as one map: what admins set, what gets locked, and what everyday senders see. Then the final screens.",
+        "drafts-workflow",
+      ),
+      slot(
+        "Signer Lobby",
+        "Every state, worked out before it was drawn.",
+        "The state matrix of configurations and rules (order, approvals, identity checks, multiple documents) and the screen each one leads to.",
+        "signer-lobby-states",
+      ),
+      {
+        type: "gallery",
+        eyebrow: "The result",
+        heading: "Clear progress, secure by default.",
+        images: [
+          {
+            src: "/work/lobby-batch.png",
+            w: 1516,
+            h: 1100,
+            alt: "Signer Lobby batch view",
+            caption: "Multi-document, multi-recipient signing sessions with sequential ordering, approvals and clear progress.",
+          },
+          {
+            src: "/work/lobby-verify.png",
+            w: 1516,
+            h: 1100,
+            alt: "Identity verification step",
+            caption: "2FA and access checks before signing, designed for government-grade security without the friction.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "mobile-signing",
+    era: "legalesign",
+    title: "Mobile Signing",
+    summary: "Signing on a phone, rebuilt mobile-first and designed to AAA accessibility.",
+    role: "Design lead",
+    tags: ["Mobile UI", "Prototyping", "Accessibility"],
+    cover: null,
+    intro:
+      "The signing experience rebuilt for phones. The features and users were already defined, so this was a UI rework, tested through an interactive prototype.",
+    statement: "Signing on a phone, rebuilt mobile-first.",
+    context: legalesignContext("Recipients signing on their phones", "Design lead"),
+    blocks: [
+      slot(
+        "The problem",
+        "Signing on a phone was an afterthought.",
+        "Two lines: what was wrong on mobile, and why AAA accessibility mattered for these users.",
+      ),
+      slot(
+        "Key screens",
+        "The flow, screen by screen.",
+        "Four to six key screens in phone frames, each with one line on the decision behind it.",
+      ),
+      slot(
+        "Try it",
+        "The interactive prototype.",
+        "The prototype embedded in a phone frame so people can play with it. Add its link and it can use the same prototype block as Quick Send.",
+      ),
+      slot(
+        "Accessibility",
+        "Designed to AAA.",
+        "Two or three points on what AAA asked of the design: contrast, target sizes, screen readers, focus order.",
+      ),
+    ],
   },
   {
     slug: "quick-send",
@@ -1140,6 +1244,8 @@ export const projects: Project[] = [
       "The lobby is where recipients land to sign. It handles multi-document, multi-recipient sessions with sequential ordering, approvals and identity checks, built for government-grade security without the friction.",
     statement: "Controlling the signing flow for every recipient of a document.",
     context: legalesignContext("Recipients signing documents", "Design lead"),
+    // Told alongside Drafts, on the complex logic page.
+    href: "/work/drafts#signer-lobby-states",
     blocks: caseStudy({
       result: {
         type: "gallery",
@@ -1197,6 +1303,17 @@ export const projects: Project[] = [
         ],
       },
       { type: "brand" },
+      slot(
+        "The website",
+        "The brand, carried onto the web.",
+        "The marketing site designed in Figma and built with external developers on Storyblok, with templates so marketing could run it themselves. A few key pages, and a line on what you'd do differently now.",
+        "the-website",
+      ),
+      slot(
+        "More identity work",
+        "Logos and identities beyond Legalesign.",
+        "A compact grid of other identity work, such as the Tynings logo, each with a one-line caption and a link to its page.",
+      ),
     ],
   },
   {
@@ -1207,6 +1324,8 @@ export const projects: Project[] = [
     role: "Web designer",
     tags: ["Web", "Figma", "Storyblok"],
     cover: null,
+    // Told as part of the rebrand.
+    href: "/work/rebrand#the-website",
     intro:
       "A new customer-facing website, designed from scratch in Figma and built with external developers on Storyblok, so the internal marketing team could maintain and update it without a developer.",
     blocks: [

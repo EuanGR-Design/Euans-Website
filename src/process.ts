@@ -8,6 +8,7 @@
 // follow the slug.
 
 import type { Block } from "./projects";
+import { slot } from "./caseStudy";
 import { quickSendInProduction, quickSendIterations, quickSendShot, quickSendTesting } from "./quickSend";
 
 export type StageId = "research" | "ideation" | "iteration" | "outcome";
@@ -271,9 +272,9 @@ export const getStage = (id: string) => stages.find((s) => s.id === id);
 // The overview page.
 export const legalesign = {
   eyebrow: "Legalesign · 2021 – Present",
-  title: "Console",
+  title: "Rebuilding Legalesign",
   intro:
-    "Legalesign is a secure, regulated e-signature platform used by governments, councils and large organisations. I rebuilt the whole legacy product as Console, feature by feature, and over five years shipped more than 100 features and workflows. Rather than tell every project the same way, each stage of how I work is shown through the project that shows it best.",
+    "Legalesign is a secure, regulated e-signature platform used by governments, councils and large organisations. I rebuilt the whole legacy product as Console, feature by feature, on a design system I built from scratch, and over five years shipped more than 100 features and workflows.",
   facts: [
     { label: "Role", value: "Design lead, product owner" },
     { label: "Shipped", value: "100+ features and workflows" },
@@ -346,9 +347,10 @@ export const legalesign = {
     { title: "Dashboard", body: "A hub of quick actions, a live document overview and team activity." },
     { title: "Sending flow", body: "The core flow for sending documents out for signing." },
     { title: "Documents list", body: "Everything you've sent, and where each document is up to." },
-    { title: "Signer Lobby", body: "Multi-document, multi-recipient signing with approvals and identity checks.", project: "signer-lobby" },
-    { title: "Mobile Signing", body: "A mobile-first signing experience, designed to AAA accessibility." },
+    { title: "Signer Lobby", body: "Multi-document, multi-recipient signing with approvals and identity checks.", project: "drafts" },
+    { title: "Mobile Signing", body: "A mobile-first signing experience, designed to AAA accessibility.", project: "mobile-signing" },
     { title: "Bulk Sending", body: "Sending many documents out for signing at once, from a CSV." },
+    { title: "Inbox", body: "Documents waiting for you to sign or approve, in one place." },
     { title: "Reporting", body: "Usage data for org admins and team users to review and export." },
     { title: "Workflow configuration", body: "Admin controls for how documents move through an organisation." },
     { title: "Ticket tracking", body: "Raising, following and escalating support tickets, for users and their admins.", project: "getting-unstuck" },
@@ -356,6 +358,20 @@ export const legalesign = {
     { title: "Template Editor", body: "Placing and assigning fields, faster and harder to get wrong.", project: "template-editor" },
     { title: "Quick Send", body: "A streamlined first send that cut trial bounce and churn.", project: "quick-send" },
   ] as { title: string; body: string; project?: string }[],
+  // The design system behind every feature.
+  designSystem: [
+    slot(
+      "Design system",
+      "Every component built from scratch, and matched one for one in code.",
+      "How the component library was built in Figma and rebuilt one for one by the front-end developers, so what's designed is exactly what ships. Then why it mattered: consistency, speed, security, control, and patterns users recognise. A pull quote: in complex software you can't invent new UI patterns on the fly.",
+      "design-system",
+    ),
+    slot(
+      "Icon library",
+      "Custom icons for niche enterprise interactions.",
+      "The icon library, built and expanded twice, with a grid of icons and a line on why so many had to be custom.",
+    ),
+  ] satisfies Block[],
   remit: {
     type: "timeline",
     eyebrow: "My remit",
