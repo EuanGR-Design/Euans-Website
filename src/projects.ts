@@ -395,8 +395,17 @@ export type Block =
       eyebrow?: string;
       heading: string;
       body?: string;
-      // `loop` plays a short animation of the idea in place of the image.
-      items: { title: string; body: string; fix?: string; image?: Img; icon?: IconName; loop?: DecisionLoopName }[];
+      // `loop` plays a short animation of the idea in place of the image, and
+      // `video` a trimmed screen recording of it in a browser frame.
+      items: {
+        title: string;
+        body: string;
+        fix?: string;
+        image?: Img;
+        icon?: IconName;
+        loop?: DecisionLoopName;
+        video?: { src: string; poster: string; label: string };
+      }[];
       // How the items are laid out. Cards by default.
       look?: "cards" | "statements" | "goals" | "fixes" | "split" | "grid";
       deeper?: Deeper;
@@ -1767,12 +1776,12 @@ export const projects: Project[] = [
           },
           {
             title: "Look before you dig in",
-            loop: "details",
+            video: { src: "/work/drafts/clips/details.mp4", poster: "/work/drafts/clips/details-poster.jpg", label: "Selecting each document in turn opens the details panel, then scrolling through its fields and recipients" },
             body: "Selecting a document opens a side panel with everything already in it: the template, the file, its fields and who it goes to. Senders can check a document without opening it.",
           },
           {
             title: "One list of everything left",
-            loop: "todo",
+            video: { src: "/work/drafts/clips/todo.mp4", poster: "/work/drafts/clips/todo-poster.jpg", label: "Opening the required actions list, jumping to a document and then to the exact field, and the list turning to Done" },
             body: "The required actions list sits in the same top-right spot on every page. It goes from documents, to sections, to the exact issue, and each line takes you straight there. When it's empty, the send is ready.",
           },
           {
@@ -1782,7 +1791,7 @@ export const projects: Project[] = [
           },
           {
             title: "Always a way back",
-            loop: "drill",
+            video: { src: "/work/drafts/clips/drill.mp4", poster: "/work/drafts/clips/drill-poster.jpg", label: "Going into two documents and one of their sections from the batch overview, and back out each time" },
             body: "Breadcrumbs show how deep you are and where you came from. Back, Reset, Cancel and Done sit in the same place on every page, and Save and Reset only come alive once there's something to save, so drilling in never feels like getting lost.",
           },
           {
@@ -1792,12 +1801,12 @@ export const projects: Project[] = [
           },
           {
             title: "Type it once",
-            loop: "linkField",
+            video: { src: "/work/drafts/clips/link-field.mp4", poster: "/work/drafts/clips/link-field-poster.jpg", label: "Typing an address, linking it across the documents, then opening another document to find it already filled in" },
             body: "When the same person or the same date appears in several documents, linking fills it in everywhere. Any one link can be broken when a document needs something different.",
           },
           {
             title: "Link it all in one place",
-            loop: "manageLinks",
+            video: { src: "/work/drafts/clips/manage-links.mp4", poster: "/work/drafts/clips/manage-links-poster.jpg", label: "Opening Manage Linked Fields, picking the value a link keeps, and the fields updating" },
             body: "Manage Linked Fields lists every label the documents share, with its value in each. When the documents disagree, the sender picks the value the link keeps.",
           },
         ],
