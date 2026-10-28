@@ -10,10 +10,22 @@ type Matrix = Extract<Block, { type: "state-matrix" }>;
  * listing what lives there and what it opens. The ways back out sit
  * underneath, so the round trip reads as one picture.
  */
-export function LogicMap({ levels, out, note }: Pick<Map, "levels" | "out" | "note">) {
+export function LogicMap({ modes, levels, out, note }: Pick<Map, "modes" | "levels" | "out" | "note">) {
   const cols = `repeat(${levels.length}, minmax(0, 1fr))`;
   return (
     <div className="mt-12">
+      {modes && (
+        <ul className="mb-4 grid gap-4 sm:grid-cols-2 lg:mb-6">
+          {modes.map((m, i) => (
+            <Reveal key={m.label} delay={0.06 * i} className="h-full">
+              <li className="h-full rounded-3xl bg-fg p-6 text-bg">
+                <p className="text-lg font-semibold">{m.label}</p>
+                <p className="mt-1 leading-relaxed opacity-75">{m.body}</p>
+              </li>
+            </Reveal>
+          ))}
+        </ul>
+      )}
       <ol className="grid gap-4 lg:gap-10 lg:[grid-template-columns:var(--cols)]" style={{ "--cols": cols } as React.CSSProperties}>
         {levels.map((l, i) => (
           <Reveal key={l.name} delay={0.08 * i} className="relative h-full">

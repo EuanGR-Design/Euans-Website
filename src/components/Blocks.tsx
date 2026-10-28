@@ -990,7 +990,7 @@ function BlockView({
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
             </Reveal>
           )}
-          {b.type === "logic-map" ? <LogicMap levels={b.levels} out={b.out} note={b.note} /> : <StateMatrix columns={b.columns} rows={b.rows} note={b.note} />}
+          {b.type === "logic-map" ? <LogicMap modes={b.modes} levels={b.levels} out={b.out} note={b.note} /> : <StateMatrix columns={b.columns} rows={b.rows} note={b.note} />}
         </Section>
       );
     case "flow":
