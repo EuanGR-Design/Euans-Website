@@ -166,6 +166,31 @@ export type Block =
       principle?: { eyebrow?: string; heading: string; body: string[]; quote?: { text: string; by: string; url: string; logo?: "linear" } };
     }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
+  // How a feature is put together: levels you drill into, left to right,
+  // and the ways back out underneath. See LogicMap.
+  | {
+      type: "logic-map";
+      id?: string;
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      levels: { name: string; note: string; items: { label: string; opens?: string }[] }[];
+      out: { label: string; body: string }[];
+      note?: string;
+    }
+  // Parts of a feature down the side, the states each can be in across the
+  // top. A null cell is a state that part can't reach. `tone` colours the
+  // columns that warn or block.
+  | {
+      type: "state-matrix";
+      id?: string;
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      columns: { name: string; tone?: "warn" | "block" }[];
+      rows: { name: string; cells: (string | null)[] }[];
+      note?: string;
+    }
   | {
       type: "comparison";
       eyebrow?: string;
@@ -1271,6 +1296,102 @@ export const projects: Project[] = [
             image: { src: "/work/drafts/ideation-hub.webp", w: 1516, h: 1102, alt: "Early concept of a tabbed drafts hub covering batch sending", caption: "Ideation: a tabbed hub that tried to hold every kind of send." },
           },
         ],
+      },
+      {
+        type: "logic-map",
+        id: "drafts-architecture",
+        eyebrow: "How it fits together",
+        heading: "Three levels, and always a clear way back.",
+        body: "Before any screen, I placed every function somewhere. A send holds documents, a document holds sections, and anything fiddly opens as a focused task. Senders drill in to prepare a document, then drill back out to the whole send.",
+        levels: [
+          {
+            name: "Drafts library",
+            note: "Where admins build drafts and the team finds them.",
+            items: [
+              { label: "Shared drafts", opens: "Every team member can use them" },
+              { label: "Open a draft", opens: "Send overview" },
+            ],
+          },
+          {
+            name: "Send overview",
+            note: "The whole send at a glance: one document, several, or a batch.",
+            items: [
+              { label: "Documents in the send", opens: "Each marked Prepare or Ready" },
+              { label: "Prepare a document", opens: "Document overview" },
+              { label: "Required actions", opens: "What's left before it can send" },
+              { label: "Send", opens: "Only when every document is ready" },
+            ],
+          },
+          {
+            name: "Document overview",
+            note: "One document, prepared section by section, in a fixed order.",
+            items: [
+              { label: "Document name", opens: "Rename for this send only" },
+              { label: "Underlying file", opens: "Swap the file, keep the fields" },
+              { label: "Template preparation", opens: "Place fields in the editor" },
+              { label: "Field content", opens: "Pre-fill fields for recipients" },
+              { label: "Recipient details", opens: "Auto Link across documents" },
+              { label: "Recipient options", opens: "Reminders, expiry, attachments" },
+              { label: "Document options", opens: "Order, permissions, password, CC" },
+            ],
+          },
+        ],
+        out: [
+          { label: "Save the document", body: "Back to the send overview, where the document now shows as Ready." },
+          { label: "Reset to last save", body: "Undo what's changed since the last save, and nothing more." },
+          { label: "Reset to draft base", body: "Go back to the admin's setup. Everything prepared for this send is lost, so it asks first." },
+          { label: "Exit the draft", body: "Leave without sending. Unsaved changes get a warning, never a silent loss." },
+        ],
+        note: "Reconstructed from the final MVP file to show how the logic fits together.",
+      },
+      {
+        type: "state-matrix",
+        id: "drafts-states",
+        eyebrow: "Every state",
+        heading: "Each part of a send, and everything that can happen to it.",
+        body: "Reading across a row shows one part's whole life, from the admin's preset to what a sender can change. Reading down a column shows everything that can stop a send, so no edge case is left to the build.",
+        columns: [
+          { name: "Starts as" },
+          { name: "Admin presets" },
+          { name: "Sender can" },
+          { name: "Needs attention", tone: "warn" },
+          { name: "Blocks the send", tone: "block" },
+        ],
+        rows: [
+          {
+            name: "Document name",
+            cells: ["The template's name", "A name recipients will see", "Rename for this send only", null, null],
+          },
+          {
+            name: "Underlying file",
+            cells: ["The template's PDF", "The file to send", "Swap it and keep every field", "New file has a different page count", "Wrong format, password protected, encrypted or too large"],
+          },
+          {
+            name: "Template",
+            cells: ["Chosen when the draft is made", "Fields and participants", "Adjust fields for this send only", "Template changed since the draft was saved", "Template deleted: replace it or remove the document"],
+          },
+          {
+            name: "Field content",
+            cells: ["Empty fields", "Values recipients see as filled", "Fill in what's left; auto-sign applies on send", "Required fields still empty", null],
+          },
+          {
+            name: "Recipient details",
+            cells: ["Roles with no one assigned", "Fixed people for some roles", "Add people, link them across documents, or break a link", "Missing or invalid details", "A required recipient with no details"],
+          },
+          {
+            name: "Recipient options",
+            cells: ["Team defaults", "Reminders, expiry, attachments", "Add, edit or remove options", null, null],
+          },
+          {
+            name: "Document options",
+            cells: ["Team defaults", "Order, permissions, password, CC", "Change them for this send only", null, null],
+          },
+          {
+            name: "The whole send",
+            cells: ["Every document needs preparing", "Single, multi-document or batch", "Reset to last save or to the draft base", "Required actions listed before sending", "Any document not ready"],
+          },
+        ],
+        note: "Reconstructed from the final MVP file. The states are the ones the designs and their dev annotations cover.",
       },
       {
         type: "callouts",

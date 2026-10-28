@@ -29,6 +29,7 @@ import { ObjectivesMatrix } from "./ObjectivesMatrix";
 import { Themes } from "./Themes";
 import { Shortlist } from "./Shortlist";
 import { DoubleDiamond } from "./DoubleDiamond";
+import { LogicMap, StateMatrix } from "./LogicMap";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -977,6 +978,19 @@ function BlockView({
               </li>
             ))}
           </ol>
+        </Section>
+      );
+    case "logic-map":
+    case "state-matrix":
+      return (
+        <Section id={b.id}>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          {b.type === "logic-map" ? <LogicMap levels={b.levels} out={b.out} note={b.note} /> : <StateMatrix columns={b.columns} rows={b.rows} note={b.note} />}
         </Section>
       );
     case "flow":
