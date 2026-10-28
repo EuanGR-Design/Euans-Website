@@ -194,6 +194,17 @@ export type Block =
       }[];
       notes: { title: string; body: string }[];
     }
+  // The handoff file, a screen at a time: each step is one screen with the
+  // annotations written on it in Figma. A note's x, y, w and h place the part
+  // it's about, as fractions of the screen; `intro` is a note on the whole screen.
+  | {
+      type: "handoff";
+      id?: string;
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      steps: { label: string; image: Img; intro?: string; notes: { x: number; y: number; w: number; h: number; text: string }[] }[];
+    }
   // Every rule a feature has to honour, drawn as a knot that pulls straight
   // into the sections that own them as the page scrolls. `links` joins rules
   // that affect each other; `before` and `after` caption the two ends.
@@ -386,7 +397,7 @@ export type Block =
       body?: string;
       items: { title: string; body: string; fix?: string; image?: Img; icon?: IconName }[];
       // How the items are laid out. Cards by default.
-      look?: "cards" | "statements" | "goals" | "fixes" | "split";
+      look?: "cards" | "statements" | "goals" | "fixes" | "split" | "grid";
       deeper?: Deeper;
     }
   // Clickable prototypes side by side, each with a screen of its version
@@ -421,6 +432,8 @@ export type Block =
       // A Figma file to embed on larger screens, linked on phones. `preview`
       // is a blurred image of the file, shown behind the button until it loads.
       figma?: { embed: string; url: string; preview?: string };
+      // Numbered markers on the image, in percent of its width and height.
+      pins?: { x: number; y: number; label: string }[];
       notes?: Notes;
     }
   // A brief: a bold one-line summary, beside a preview of the brief as a
@@ -1632,21 +1645,44 @@ export const projects: Project[] = [
         },
       },
       {
+        type: "flow",
+        eyebrow: "Ideation",
+        heading: "The whole ideation page, mess and all.",
+        body: "I started wide. This is the real ideation page from the Figma file, around 190 frames: single documents, a hub for batch and bulk sending, editors, recipient flows and library states. Scroll to pan across it. The pins mark the directions pulled out below.",
+        image: { src: "/work/drafts/ideation-canvas.webp", w: 7516, h: 2285, alt: "The full Drafts ideation page in Figma, with around 190 frames of explorations" },
+        pins: [
+          { x: 27.9, y: 6.2, label: "Tabs for every document" },
+          { x: 22.0, y: 45.4, label: "One long page" },
+          { x: 59.1, y: 18.9, label: "A list, then drill in" },
+          { x: 73.2, y: 24.4, label: "Editing beside the document" },
+        ],
+      },
+      {
         type: "callouts",
         id: "drafts-ideation",
-        eyebrow: "Ideation",
-        heading: "Many ways to configure a send, and one flow that had to hold them all.",
-        body: "I started wide. Early ideas tried to fit every kind of send into one place, from a single saved document to a hub that also handled batch and bulk sending.",
+        eyebrow: "Directions",
+        heading: "Four directions from that page, and the one that became Drafts.",
+        look: "grid",
         items: [
           {
-            title: "A single saved document",
-            body: "The first idea treated a draft as one long page: every setting for one document, top to bottom. It was easy to follow, but it couldn't stretch to sends with several documents and recipients.",
-            image: { src: "/work/drafts/ideation-saved-document.webp", w: 1516, h: 2840, alt: "Early concept of a saved document page with every setting on one long page", caption: "Ideation: one document, every setting on one page." },
+            title: "Tabs for every document",
+            body: "A hub with a tab per document and a live preview, which also took in batch and bulk sending. It showed how far the idea could go, and how much it would cost to build. That told me where to cut for the first release.",
+            image: { src: "/work/drafts/ideation-hub.webp", w: 1516, h: 1102, alt: "Early concept of a tabbed drafts hub covering batch sending", caption: "A tab per document, with batch and bulk in the same hub." },
           },
           {
-            title: "A hub for everything",
-            body: "Next came a tabbed hub that also took in batch and bulk sending. It showed how far the idea could go, and how much it would cost to build. That told me where to cut for the first release.",
-            image: { src: "/work/drafts/ideation-hub.webp", w: 1516, h: 1102, alt: "Early concept of a tabbed drafts hub covering batch sending", caption: "Ideation: a tabbed hub that tried to hold every kind of send." },
+            title: "One long page",
+            body: "A draft as one long page, with every setting for one document from top to bottom. Easy to follow, but it couldn't stretch to sends with several documents and recipients.",
+            image: { src: "/work/drafts/ideation-saved-document.webp", w: 1516, h: 2840, alt: "Early concept of a saved document page with every setting on one long page", caption: "One document, every setting on one page." },
+          },
+          {
+            title: "A list, then drill in",
+            body: "A list of documents, each with its status, a details panel beside it, and a focused page for each part of a document. This is the direction that became Drafts.",
+            image: { src: "/work/drafts/ideation-batch-overview.webp", w: 1440, h: 1047, alt: "Early batch overview with a list of documents and a details panel", caption: "The list and details panel that the final design grew from." },
+          },
+          {
+            title: "Editing beside the document",
+            body: "Recipients and fields in a panel next to the document, so the document never leaves view while a sender prepares it. It carried on as one focused step in the final flow.",
+            image: { src: "/work/drafts/ideation-editor.webp", w: 1440, h: 1047, alt: "Early concept of preparing a template with recipients and fields beside the document", caption: "Placing fields with the document in view." },
           },
         ],
       },
@@ -1757,6 +1793,89 @@ export const projects: Project[] = [
             title: "Type it once",
             body: "When the same person or the same date appears in several documents, linking fills it in everywhere. Any one link can be broken when a document needs something different.",
             image: { src: "/work/drafts/linked-recipients.webp", w: 1516, h: 1102, alt: "Recipient details linked across several documents", caption: "Linked recipient details across documents." },
+          },
+        ],
+      },
+      {
+        type: "handoff",
+        id: "drafts-handoff",
+        eyebrow: "Dev handoff",
+        heading: "Every screen annotated for the build.",
+        body: "The MVP flow went to the developers with 80 annotations written on it in Figma: what each control does, when it's available, and what was left out of the first release. Step through the main screens to read the notes as the developers did.",
+        steps: [
+          {
+            label: "Send overview",
+            image: { src: "/work/drafts/handoff-send-overview.webp", w: 1440, h: 1204, alt: "Send overview with three documents ready to send and the details panel open" },
+            notes: [
+              { x: 0.008, y: 0.007, w: 0.034, h: 0.017, text: "Exit opens the same dialog as Exit Draft before letting the sender leave." },
+              { x: 0.938, y: 0.048, w: 0.022, h: 0.027, text: "The to-do list shows as complete, with a green check, once every document is prepared and ready to send." },
+              { x: 0.177, y: 0.254, w: 0.066, h: 0.017, text: "The status changes to Ready to Send when all the required fields are complete." },
+              { x: 0.543, y: 0.233, w: 0.031, h: 0.037, text: "Removing a document opens a dialog warning that anything added to it will be lost." },
+              { x: 0.07, y: 0.491, w: 0.098, h: 0.043, text: "Reset Draft is active now there are changes. It takes the draft back to its saved version, after a dialog to confirm, as anything since the last save will be lost." },
+              { x: 0.419, y: 0.491, w: 0.087, h: 0.043, text: "Exit Draft opens an exit-without-saving dialog, so the sender can save and exit or leave without saving." },
+              { x: 0.523, y: 0.491, w: 0.061, h: 0.043, text: "Save is only there for the draft's owner. It saves over the draft, so it opens a dialog to confirm, with the option to name or rename it." },
+            ],
+          },
+          {
+            label: "Several documents",
+            image: { src: "/work/drafts/handoff-multi-doc.webp", w: 1440, h: 1086, alt: "Send overview with three documents that each need preparing" },
+            notes: [
+              { x: 0.338, y: 0.007, w: 0.324, h: 0.018, text: "Title structure: Sending / Draft: the name it was saved with / the template, or the document name if one is given. Batch drafts differ." },
+              { x: 0.933, y: 0.048, w: 0.05, h: 0.04, text: "The same to-do list as today: it shows what has to be filled in before the whole draft is ready to send." },
+              { x: 0.726, y: 0.126, w: 0.031, h: 0.041, text: "Opens the Multi-Doc Options." },
+              { x: 0.243, y: 0.267, w: 0.017, h: 0.022, text: "Drag handles set the order of the documents. This matters most in a batch with Enforce Ordering on." },
+            ],
+          },
+          {
+            label: "Document overview",
+            image: { src: "/work/drafts/handoff-document-overview.webp", w: 1440, h: 1450, alt: "Document overview with its sections as cards and Field Content needing preparation" },
+            notes: [
+              { x: 0.167, y: 0.0447, w: 0.179, h: 0.0142, text: "Breadcrumbs show where the sender has come from. The blue one is the current page." },
+              { x: 0.243, y: 0.0948, w: 0.031, h: 0.0304, text: "The back button returns to the Send Overview." },
+              { x: 0.676, y: 0.319, w: 0.065, h: 0.0313, text: "Cards get a larger shadow and a blue outline on hover. Edit opens that section to change it on its own." },
+              { x: 0.384, y: 0.7927, w: 0.093, h: 0.0137, text: "This label tells the sender the section needs required actions before it's ready to send." },
+              { x: 0.672, y: 0.7907, w: 0.068, h: 0.0313, text: "The button says Prepare, and is primary, while the section needs action. Once it's ready to send it turns secondary and says Edit." },
+              { x: 0.527, y: 0.8436, w: 0.206, h: 0.0157, text: "Warns the sender there are required sender fields to fill in before the document can be sent." },
+              { x: 0.448, y: 0.9062, w: 0.103, h: 0.0196, text: "Expands to show all of the sender's fields." },
+            ],
+          },
+          {
+            label: "Underlying file",
+            image: { src: "/work/drafts/handoff-underlying-file.webp", w: 1440, h: 1026, alt: "The underlying file page, with a preview of the document and a Replace button" },
+            notes: [
+              { x: 0.66, y: 0.279, w: 0.085, h: 0.043, text: "Replace swaps the underlying file. It doesn't touch the base template: a draft send works on a copy of the original." },
+              { x: 0.243, y: 0.263, w: 0.514, h: 0.596, text: "A preview of the file used in the base template, for the sender to review." },
+              { x: 0.654, y: 0.345, w: 0.025, h: 0.035, text: "Opens the file full screen." },
+              { x: 0.693, y: 0.485, w: 0.044, h: 0.086, text: "Choosing a page thumbnail shows it larger." },
+            ],
+          },
+          {
+            label: "Template preparation",
+            image: { src: "/work/drafts/handoff-template-prep.webp", w: 1440, h: 1026, alt: "Template preparation, with participant fields in a left toolbar beside the document" },
+            intro: "A slightly updated version of the new editor, with a simpler left toolbar to line up with the changes made to Compose.",
+            notes: [
+              { x: 0.019, y: 0.141, w: 0.193, h: 0.837, text: "Two buttons, Template Settings and Manage Recipients, replace the tabs. That saves a lot of horizontal space and matches the modals in Quick Send." },
+              { x: 0.031, y: 0.237, w: 0.171, h: 0.047, text: "Feedback said the floating participant selector took too much space and covered the document, so it moved into the toolbar. It sets who fields are being placed for." },
+              { x: 0.031, y: 0.885, w: 0.171, h: 0.035, text: "Opens a modal with the template settings." },
+              { x: 0.031, y: 0.928, w: 0.171, h: 0.035, text: "Opens the participants modal, following the new design from Quick Send." },
+            ],
+          },
+          {
+            label: "Field content",
+            image: { src: "/work/drafts/handoff-field-content.webp", w: 1440, h: 1026, alt: "Field content, where the sender fills in their own fields beside the document" },
+            notes: [
+              { x: 0.24, y: 0.283, w: 0.243, h: 0.047, text: "A participant selector, so the sender can choose whose fields they're seeing." },
+              { x: 0.404, y: 0.296, w: 0.047, h: 0.019, text: "Shows how many required fields are left for the sender to fill in." },
+            ],
+          },
+          {
+            label: "Recipient details",
+            image: { src: "/work/drafts/handoff-recipient-details.webp", w: 1440, h: 1026, alt: "Recipient details for a batch, with an option to link a recipient across documents" },
+            notes: [
+              { x: 0.26, y: 0.502, w: 0.143, h: 0.035, text: "Experience and time zone sit apart from the other presets. They can only be applied per recipient, and always are by default." },
+              { x: 0.715, y: 0.451, w: 0.025, h: 0.035, text: "Let Previous Decide isn't available for the first recipient." },
+              { x: 0.26, y: 0.553, w: 0.481, h: 0.074, text: "This option only appears when there are several documents in the send, or a batch." },
+            ],
           },
         ],
       },

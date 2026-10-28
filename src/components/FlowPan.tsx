@@ -77,14 +77,26 @@ export function FlowPan({ b, after }: { b: Flow; after?: React.ReactNode }) {
 
   // The image is 70% of the screen's height, so its width sets the pan.
   const picture = (
-    <Image
-      src={img.src}
-      alt={img.alt}
-      width={img.w}
-      height={img.h}
-      sizes={`${Math.round((70 * img.w) / img.h)}vh`}
-      className="h-[min(70vh,70svh)] w-auto max-w-none rounded-3xl border border-line bg-raised"
-    />
+    <div className="relative shrink-0">
+      <Image
+        src={img.src}
+        alt={img.alt}
+        width={img.w}
+        height={img.h}
+        sizes={`${Math.round((70 * img.w) / img.h)}vh`}
+        className="h-[min(70vh,70svh)] w-auto max-w-none rounded-3xl border border-line bg-raised"
+      />
+      {b.pins?.map((p, i) => (
+        <span
+          key={p.label}
+          className="absolute flex -translate-x-1/2 -translate-y-full items-center gap-1.5 rounded-full bg-accent py-1 pr-3 pl-1 text-xs font-semibold whitespace-nowrap text-white shadow-lg"
+          style={{ left: `${p.x}%`, top: `${p.y}%` }}
+        >
+          <span className="flex size-5 items-center justify-center rounded-full bg-white/25">{i + 1}</span>
+          {p.label}
+        </span>
+      ))}
+    </div>
   );
 
   if (reduce) {

@@ -32,6 +32,7 @@ import { DoubleDiamond } from "./DoubleDiamond";
 import { LogicMap, StateMatrix } from "./LogicMap";
 import { Untangle } from "./Untangle";
 import { Skeleton } from "./Skeleton";
+import { Handoff } from "./Handoff";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -764,6 +765,38 @@ function BlockView({
           </Section>
         );
       }
+      // Pictures two by two, each cropped to the same shape from the top, for
+      // options that are meant to be seen side by side.
+      if (b.look === "grid") {
+        return (
+          <Section id={b.id}>
+            {intro}
+            <ol className="mt-12 grid gap-x-8 gap-y-12 md:mt-16 md:grid-cols-2">
+              {b.items.map((it, i) => (
+                <Reveal key={it.title} delay={0.06 * (i % 2)}>
+                  <li>
+                    {it.image?.src && (
+                      <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border border-line bg-raised">
+                        <Image
+                          src={it.image.src}
+                          alt={it.image.alt}
+                          fill
+                          sizes="(min-width: 768px) 600px, 100vw"
+                          className="object-cover object-top"
+                        />
+                      </div>
+                    )}
+                    <p className="mt-6 font-mono text-sm text-accent-ink">{String(i + 1).padStart(2, "0")}</p>
+                    <h3 className="mt-2 text-2xl leading-tight font-bold tracking-[-0.02em] md:text-3xl">{it.title}</h3>
+                    <p className="mt-3 max-w-xl leading-relaxed text-fg/75">{it.body}</p>
+                  </li>
+                </Reveal>
+              ))}
+            </ol>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
       // Words only: one row of short, bold cards that read at a glance.
       if (!withImages) {
         const cols = b.items.length === 4 ? "lg:grid-cols-4" : b.items.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2";
@@ -1005,6 +1038,18 @@ function BlockView({
             </Reveal>
           )}
           <Skeleton screens={b.screens} notes={b.notes} />
+        </Section>
+      );
+    case "handoff":
+      return (
+        <Section id={b.id}>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <Handoff steps={b.steps} />
         </Section>
       );
     case "untangle":
