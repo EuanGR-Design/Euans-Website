@@ -30,6 +30,7 @@ import { Themes } from "./Themes";
 import { Shortlist } from "./Shortlist";
 import { DoubleDiamond } from "./DoubleDiamond";
 import { LogicMap, StateMatrix } from "./LogicMap";
+import { Untangle } from "./Untangle";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -991,6 +992,29 @@ function BlockView({
             </Reveal>
           )}
           {b.type === "logic-map" ? <LogicMap modes={b.modes} levels={b.levels} out={b.out} note={b.note} /> : <StateMatrix columns={b.columns} rows={b.rows} note={b.note} />}
+        </Section>
+      );
+    case "untangle":
+      return (
+        <Section id={b.id}>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          {b.stats && (
+            <dl className="mt-12 grid grid-cols-2 gap-6 md:grid-cols-4">
+              {b.stats.map((s, i) => (
+                <Reveal key={s.label} delay={0.06 * i}>
+                  <dt className="text-5xl font-bold tracking-[-0.04em] text-accent-ink">{s.value}</dt>
+                  <dd className="mt-2 leading-snug text-muted">{s.label}</dd>
+                </Reveal>
+              ))}
+            </dl>
+          )}
+          <Untangle groups={b.groups} links={b.links} before={b.before} after={b.after} />
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "flow":

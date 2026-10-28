@@ -166,6 +166,22 @@ export type Block =
       principle?: { eyebrow?: string; heading: string; body: string[]; quote?: { text: string; by: string; url: string; logo?: "linear" } };
     }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
+  // Every rule a feature has to honour, drawn as a knot that pulls straight
+  // into the sections that own them as the page scrolls. `links` joins rules
+  // that affect each other; `before` and `after` caption the two ends.
+  | {
+      type: "untangle";
+      id?: string;
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      stats?: { value: string; label: string }[];
+      groups: { name: string; items: string[] }[];
+      links: [string, string][];
+      before: string;
+      after: string;
+      deeper?: Deeper;
+    }
   // How a feature is put together: levels you drill into, left to right,
   // and the ways back out underneath. See LogicMap.
   | {
@@ -1275,10 +1291,226 @@ export const projects: Project[] = [
           },
           {
             title: "Flexible by design",
-            body: "Everything is configurable and can be swapped out, so one feature fits many different workflows instead of just the one it started with.",
+            body: "An admin can leave a sender just one thing to fill in, or open up every setting for detailed sends. One feature fits many workflows instead of the one it started with.",
             icon: "Squares2X2",
           },
         ],
+      },
+      {
+        type: "untangle",
+        id: "drafts-tangle",
+        eyebrow: "The tangle",
+        heading: "Thirty rules, and almost every one touches another.",
+        body: "Swap a template and the fields stop matching. Skip a recipient and the signing order changes. Link a recipient and every document follows. Before designing anything, I mapped every rule, every dependency and everything that could stop a send, then gave each one a single home.",
+        stats: [
+          { value: "2", label: "modes: editing the draft, or sending it" },
+          { value: "3", label: "kinds of send: single, multi-document, batch" },
+          { value: "7", label: "sections to prepare in every document" },
+          { value: "5", label: "things that can stop a send" },
+        ],
+        before: "Every rule touches another.",
+        after: "So each one got a single home.",
+        groups: [
+          { name: "Document name", items: ["Draft name", "Batch name", "Rename per send"] },
+          { name: "Underlying file", items: ["Swap the file", "Page count", "Rejected upload", "Placeholder file"] },
+          { name: "Template", items: ["Swap template", "Template deleted", "Template changed", "Add participants"] },
+          { name: "Field content", items: ["Linked fields", "Field labels", "Field types", "Required sender fields", "Fields mismatch"] },
+          { name: "Recipient details", items: ["Linked recipients", "Participant mismatch", "Skip recipient", "Previous decides", "Time zones"] },
+          { name: "Recipient options", items: ["Email message", "Reminders", "Attachments", "Expiry"] },
+          { name: "Document options", items: ["Sequential signing", "Enforce Ordering", "Permissions", "Password", "CC"] },
+        ],
+        links: [
+          ["Swap template", "Fields mismatch"],
+          ["Swap template", "Participant mismatch"],
+          ["Add participants", "Participant mismatch"],
+          ["Add participants", "Required sender fields"],
+          ["Template changed", "Fields mismatch"],
+          ["Template deleted", "Swap template"],
+          ["Swap the file", "Page count"],
+          ["Page count", "Linked fields"],
+          ["Rejected upload", "Swap the file"],
+          ["Placeholder file", "Swap the file"],
+          ["Field labels", "Linked fields"],
+          ["Field types", "Linked fields"],
+          ["Required sender fields", "Linked fields"],
+          ["Participant mismatch", "Linked recipients"],
+          ["Linked recipients", "Skip recipient"],
+          ["Skip recipient", "Previous decides"],
+          ["Previous decides", "Sequential signing"],
+          ["Sequential signing", "Enforce Ordering"],
+          ["Enforce Ordering", "Batch name"],
+          ["Draft name", "Batch name"],
+          ["Rename per send", "Draft name"],
+          ["Reminders", "Expiry"],
+          ["Time zones", "Expiry"],
+          ["Email message", "Linked recipients"],
+          ["Attachments", "Swap the file"],
+          ["Permissions", "Password"],
+          ["CC", "Linked recipients"],
+          ["Skip recipient", "Sequential signing"],
+        ],
+        deeper: {
+          label: "See every rule and state",
+          heading: "The full map: levels, modes, states and the rules behind them.",
+          body: "Reconstructed from the final MVP file and the rules behind it.",
+          blocks: [
+          {
+            type: "logic-map",
+            id: "drafts-architecture",
+            eyebrow: "How it fits together",
+            heading: "Three levels, two modes, and always a clear way back.",
+            body: "Before any screen, I placed every function somewhere. A draft holds documents, a document holds sections, and anything fiddly opens as a focused task. Who you are decides what a change does.",
+            modes: [
+              {
+                label: "Editing mode",
+                body: "The draft's owner, an admin or anyone allowed to make drafts. Whatever they add, remove or fill in becomes the draft the whole team sees when they save.",
+              },
+              {
+                label: "Sending mode",
+                body: "Anyone using a saved draft, even their own. Changes apply to this one send and never touch the base draft.",
+              },
+            ],
+            levels: [
+              {
+                name: "Create the draft",
+                note: "Pick templates, then decide how they travel together.",
+                items: [
+                  { label: "Select templates", opens: "One document, or several" },
+                  { label: "Draft name", opens: "What the team sees in their library" },
+                  { label: "Share with team", opens: "Every team member can use it" },
+                  { label: "Reorder documents", opens: "The order they're sent in" },
+                  { label: "Send as a batch", opens: "Batch name and Enforce Ordering" },
+                ],
+              },
+              {
+                name: "Send or batch overview",
+                note: "The whole send at a glance, and what each document still needs.",
+                items: [
+                  { label: "Documents", opens: "Each marked Prepare or Ready" },
+                  { label: "Required actions", opens: "Everything left, document by document" },
+                  { label: "Prepare a document", opens: "Document overview" },
+                  { label: "Send", opens: "Only when nothing blocks it" },
+                ],
+              },
+              {
+                name: "Document overview",
+                note: "One document, prepared section by section, in a fixed order.",
+                items: [
+                  { label: "Document name", opens: "Rename this document" },
+                  { label: "Underlying file", opens: "Swap the PDF, keep the fields" },
+                  { label: "Template preparation", opens: "Edit fields and participants, or swap the template" },
+                  { label: "Field content", opens: "Fill sender fields, manage linked fields" },
+                  { label: "Recipient details", opens: "Add people, manage linked recipients" },
+                  { label: "Recipient options", opens: "Message, reminders, attachments, expiry" },
+                  { label: "Document options", opens: "Access control and signing order" },
+                ],
+              },
+            ],
+            out: [
+              { label: "Save", body: "Back to the overview, with the document marked Ready. In editing mode this updates the draft for the whole team." },
+              { label: "Reset to last save", body: "Undo what's changed since the last save, and nothing more." },
+              { label: "Reset to draft base", body: "Go back to the saved draft. Everything prepared for this send is lost, so it asks first." },
+              { label: "Exit the draft", body: "Leave without sending. Unsaved changes get a warning, never a silent loss." },
+            ],
+            note: "Reconstructed from the final MVP file to show how the logic fits together.",
+          },
+          {
+            type: "state-matrix",
+            id: "drafts-states",
+            eyebrow: "Every state",
+            heading: "Each part of a send, and everything that can happen to it.",
+            body: "Reading across a row shows one part's whole life, from how the draft's owner sets it up to what a sender can change. Reading down the last two columns shows everything that needs fixing or stops a send, so no edge case is left to the build.",
+            columns: [
+              { name: "Starts as" },
+              { name: "Editing mode" },
+              { name: "Sending mode" },
+              { name: "Needs attention", tone: "warn" },
+              { name: "Blocks the send", tone: "block" },
+            ],
+            rows: [
+              {
+                name: "Names",
+                cells: ["The template's name, for one document", "Name the draft for the team library, and the batch for the sent list", "Rename any document for this send", null, null],
+              },
+              {
+                name: "Batch",
+                cells: ["Documents in the order selected", "Reorder them, name the batch, turn on Enforce Ordering", "Reorder them for this send only", null, null],
+              },
+              {
+                name: "Underlying file",
+                cells: ["The template's PDF: a draft always has a file", "A placeholder, like a blank page, to swap out every send", "Swap in a file with any number of pages", "Fewer pages: fields on the missing pages are lost. Wrong format, password protected, encrypted or too large: rejected, upload another", "A rejected upload, until another file goes in"],
+              },
+              {
+                name: "Template",
+                cells: ["The template selected", "Move fields, add or move participants, or swap the template", "Swap the template for this send", "Template changed since the draft was saved", "Template deleted: replace it or remove the document"],
+              },
+              {
+                name: "Sender fields",
+                cells: ["Empty", "Pre-fill values, link fields by type or label", "Fill in what's left, or break a link", "Fields mismatch: force update, then prepare again", "A required sender field is empty"],
+              },
+              {
+                name: "Participant fields",
+                cells: ["Left for recipients", "Pre-fill what's known", "Pre-fill what's known", null, null],
+              },
+              {
+                name: "Recipient details",
+                cells: ["Roles from the template", "Fill in people, link them by order, label or description", "Add people, link or break links", "Participant mismatch: force update and re-enter details", "A recipient with no details, unless skipped or left for the one before to decide"],
+              },
+              {
+                name: "Recipient settings",
+                cells: ["Team defaults", "Experience, time zone, link previous recipient, skip", "Change them for this send", "Next recipient left to be decided by the one before", null],
+              },
+              {
+                name: "Recipient options",
+                cells: ["Team defaults", "Email message, reminder schedule, attachments, expiry", "Change them for this send", null, null],
+              },
+              {
+                name: "Document options",
+                cells: ["Team defaults", "Access control and sequential signing", "Change them for this send", null, null],
+              },
+              {
+                name: "The whole send",
+                cells: ["Each document marked Prepare", "Save it for the whole team", "Changes stay with this send", "Required actions listed per document", "Any document still needs preparing"],
+              },
+            ],
+            note: "Reconstructed from the final MVP file and the rules behind it.",
+          },
+          {
+            type: "callouts",
+            id: "drafts-logic",
+            eyebrow: "The hard parts",
+            heading: "The rules that had to be worked out before anything was drawn.",
+            look: "split",
+            items: [
+              {
+                title: "Linked fields",
+                body: "A batch might have a completion date on every document. Fields can be linked by type, or by a label set in the template, so a sender fills it in once. Each field type has its own states (a checkbox can be empty, ticked or crossed; a dropdown empty or set), and any one field can break from the link.",
+                icon: "PuzzlePiece",
+              },
+              {
+                title: "Linked recipients",
+                body: "When the landlord or approver is the same on every document, their details are linked by the order they appear in the template, their label, or their description. Links are made from one place or straight from a recipient's card, and can be broken one at a time.",
+                icon: "UserGroup",
+              },
+              {
+                title: "When the template changes",
+                body: "Adding a participant or sender field in the template leaves the draft out of step. A banner says the fields or recipients no longer match, the sender forces an update, and the document goes back to needing preparation. Details entered before are lost, so the warning comes first.",
+                icon: "ArrowPath",
+              },
+              {
+                title: "Skipping and handing on",
+                body: "A recipient with no details blocks the send, with two ways out. Skip them, and it's as if they were never on the document; but never skip them all, so if every recipient after the first is skipped, the first can't be. Or let the previous recipient decide, and the person before them in the signing order adds their details while signing.",
+                icon: "ArrowsSplit",
+              },
+              {
+                title: "Two kinds of order",
+                body: "Enforce Ordering makes everyone finish one document before the next opens. Sequential signing sets the order recipients sign within a document; with it off, everyone gets it at once. Both had to agree, and they carry through to the Inbox and Signer Lobby.",
+                icon: "NumberedList",
+              },
+            ],
+          },
+          ],
+        },
       },
       {
         type: "callouts",
@@ -1300,186 +1532,46 @@ export const projects: Project[] = [
         ],
       },
       {
-        type: "logic-map",
-        id: "drafts-architecture",
-        eyebrow: "How it fits together",
-        heading: "Three levels, two modes, and always a clear way back.",
-        body: "Before any screen, I placed every function somewhere. A draft holds documents, a document holds sections, and anything fiddly opens as a focused task. Who you are decides what a change does.",
-        modes: [
-          {
-            label: "Editing mode",
-            body: "The draft's owner, an admin or anyone allowed to make drafts. Whatever they add, remove or fill in becomes the draft the whole team sees when they save.",
-          },
-          {
-            label: "Sending mode",
-            body: "Anyone using a saved draft, even their own. Changes apply to this one send and never touch the base draft.",
-          },
-        ],
-        levels: [
-          {
-            name: "Create the draft",
-            note: "Pick templates, then decide how they travel together.",
-            items: [
-              { label: "Select templates", opens: "One document, or several" },
-              { label: "Draft name", opens: "What the team sees in their library" },
-              { label: "Share with team", opens: "Every team member can use it" },
-              { label: "Reorder documents", opens: "The order they're sent in" },
-              { label: "Send as a batch", opens: "Batch name and Enforce Ordering" },
-            ],
-          },
-          {
-            name: "Send or batch overview",
-            note: "The whole send at a glance, and what each document still needs.",
-            items: [
-              { label: "Documents", opens: "Each marked Prepare or Ready" },
-              { label: "Required actions", opens: "Everything left, document by document" },
-              { label: "Prepare a document", opens: "Document overview" },
-              { label: "Send", opens: "Only when nothing blocks it" },
-            ],
-          },
-          {
-            name: "Document overview",
-            note: "One document, prepared section by section, in a fixed order.",
-            items: [
-              { label: "Document name", opens: "Rename this document" },
-              { label: "Underlying file", opens: "Swap the PDF, keep the fields" },
-              { label: "Template preparation", opens: "Edit fields and participants, or swap the template" },
-              { label: "Field content", opens: "Fill sender fields, manage linked fields" },
-              { label: "Recipient details", opens: "Add people, manage linked recipients" },
-              { label: "Recipient options", opens: "Message, reminders, attachments, expiry" },
-              { label: "Document options", opens: "Access control and signing order" },
-            ],
-          },
-        ],
-        out: [
-          { label: "Save", body: "Back to the overview, with the document marked Ready. In editing mode this updates the draft for the whole team." },
-          { label: "Reset to last save", body: "Undo what's changed since the last save, and nothing more." },
-          { label: "Reset to draft base", body: "Go back to the saved draft. Everything prepared for this send is lost, so it asks first." },
-          { label: "Exit the draft", body: "Leave without sending. Unsaved changes get a warning, never a silent loss." },
-        ],
-        note: "Reconstructed from the final MVP file to show how the logic fits together.",
-      },
-      {
-        type: "state-matrix",
-        id: "drafts-states",
-        eyebrow: "Every state",
-        heading: "Each part of a send, and everything that can happen to it.",
-        body: "Reading across a row shows one part's whole life, from how the draft's owner sets it up to what a sender can change. Reading down the last two columns shows everything that needs fixing or stops a send, so no edge case is left to the build.",
-        columns: [
-          { name: "Starts as" },
-          { name: "Editing mode" },
-          { name: "Sending mode" },
-          { name: "Needs attention", tone: "warn" },
-          { name: "Blocks the send", tone: "block" },
-        ],
-        rows: [
-          {
-            name: "Names",
-            cells: ["The template's name, for one document", "Name the draft for the team library, and the batch for the sent list", "Rename any document for this send", null, null],
-          },
-          {
-            name: "Batch",
-            cells: ["Documents in the order selected", "Reorder them, name the batch, turn on Enforce Ordering", "Reorder them for this send only", null, null],
-          },
-          {
-            name: "Underlying file",
-            cells: ["The template's PDF: a draft always has a file", "A placeholder, like a blank page, to swap out every send", "Swap in a file with any number of pages", "Fewer pages: fields on the missing pages are lost. Wrong format, password protected, encrypted or too large: rejected, upload another", "A rejected upload, until another file goes in"],
-          },
-          {
-            name: "Template",
-            cells: ["The template selected", "Move fields, add or move participants, or swap the template", "Swap the template for this send", "Template changed since the draft was saved", "Template deleted: replace it or remove the document"],
-          },
-          {
-            name: "Sender fields",
-            cells: ["Empty", "Pre-fill values, link fields by type or label", "Fill in what's left, or break a link", "Fields mismatch: force update, then prepare again", "A required sender field is empty"],
-          },
-          {
-            name: "Participant fields",
-            cells: ["Left for recipients", "Pre-fill what's known", "Pre-fill what's known", null, null],
-          },
-          {
-            name: "Recipient details",
-            cells: ["Roles from the template", "Fill in people, link them by order, label or description", "Add people, link or break links", "Participant mismatch: force update and re-enter details", "A recipient with no details, unless skipped or left for the one before to decide"],
-          },
-          {
-            name: "Recipient settings",
-            cells: ["Team defaults", "Experience, time zone, link previous recipient, skip", "Change them for this send", "Next recipient left to be decided by the one before", null],
-          },
-          {
-            name: "Recipient options",
-            cells: ["Team defaults", "Email message, reminder schedule, attachments, expiry", "Change them for this send", null, null],
-          },
-          {
-            name: "Document options",
-            cells: ["Team defaults", "Access control and sequential signing", "Change them for this send", null, null],
-          },
-          {
-            name: "The whole send",
-            cells: ["Each document marked Prepare", "Save it for the whole team", "Changes stay with this send", "Required actions listed per document", "Any document still needs preparing"],
-          },
-        ],
-        note: "Reconstructed from the final MVP file and the rules behind it.",
-      },
-      {
         type: "callouts",
-        id: "drafts-logic",
-        eyebrow: "The hard parts",
-        heading: "The rules that had to be worked out before anything was drawn.",
-        look: "split",
+        id: "drafts-ui",
+        eyebrow: "Making it simple",
+        heading: "All of that, without the sender ever having to see it.",
+        body: "An admin can lock a send down to one field or leave everything open, and the sender still has to find their way through either. So every screen shows just enough to know where to go next, and everything else is a click away.",
         items: [
           {
-            title: "Linked fields",
-            body: "A batch might have a completion date on every document. Fields can be linked by type, or by a label set in the template, so a sender fills it in once. Each field type has its own states (a checkbox can be empty, ticked or crossed; a dropdown empty or set), and any one field can break from the link.",
-            icon: "PuzzlePiece",
+            title: "Know where to start",
+            body: "Every document in the send is a card that says if it needs preparing. Send stays disabled until nothing blocks it, and a guided tour walks first-time senders through.",
+            image: { src: "/work/drafts/send-overview-prepare.webp", w: 1516, h: 1162, alt: "Send overview with each document marked Preparation Required and Send disabled", caption: "Each card says what it needs. Send waits until nothing blocks it." },
           },
           {
-            title: "Linked recipients",
-            body: "When the landlord or approver is the same on every document, their details are linked by the order they appear in the template, their label, or their description. Links are made from one place or straight from a recipient's card, and can be broken one at a time.",
-            icon: "UserGroup",
+            title: "Look before you dig in",
+            body: "Selecting a document opens a side panel with everything already in it: the template, the file, its fields and who it goes to. Senders can check a document without opening it.",
+            image: { src: "/work/drafts/side-panel.webp", w: 1516, h: 1280, alt: "Send overview with a document details panel open on the right", caption: "The details panel: a whole document at a glance." },
           },
           {
-            title: "When the template changes",
-            body: "Adding a participant or sender field in the template leaves the draft out of step. A banner says the fields or recipients no longer match, the sender forces an update, and the document goes back to needing preparation. Details entered before are lost, so the warning comes first.",
-            icon: "ArrowPath",
+            title: "One list of everything left",
+            body: "The required actions list sits in the same top-right spot on every page. It goes from documents, to sections, to the exact issue, and each line takes you straight there. When it's empty, the send is ready.",
+            image: { src: "/work/drafts/required-actions.webp", w: 1598, h: 605, alt: "Required actions list drilling from documents to sections to issues, ending in All Documents Ready to Send", caption: "Required actions: from three documents, to seven sections, to the one issue, to ready." },
           },
           {
-            title: "Skipping and handing on",
-            body: "A recipient with no details blocks the send, with two ways out. Skip them, and it's as if they were never on the document; but never skip them all, so if every recipient after the first is skipped, the first can't be. Or let the previous recipient decide, and the person before them in the signing order adds their details while signing.",
-            icon: "ArrowsSplit",
+            title: "One section at a time",
+            body: "Each document is split into the same seven cards, in the same order. Each card shows a short summary, with Show all for the rest, and its own Prepare button. Once a section is done it needs no more attention, so senders move on to the next one.",
+            image: { src: "/work/drafts/section-cards.webp", w: 789, h: 1516, alt: "Document overview with seven section cards, two marked Preparation Required", caption: "Seven sections, each summarised, each prepared on its own." },
           },
           {
-            title: "Two kinds of order",
-            body: "Enforce Ordering makes everyone finish one document before the next opens. Sequential signing sets the order recipients sign within a document; with it off, everyone gets it at once. Both had to agree, and they carry through to the Inbox and Signer Lobby.",
-            icon: "NumberedList",
-          },
-        ],
-      },
-      {
-        type: "callouts",
-        id: "drafts-workflow",
-        eyebrow: "The MVP flow",
-        heading: "The workflow, mapped and annotated for the build.",
-        body: "The first release narrowed to one clear path: open a draft, prepare each document, send. Every step was mapped end to end and annotated for the developers. Choosing templates for a new draft was left for a later release.",
-        items: [
-          {
-            title: "Start from the send",
-            body: "Opening a draft shows every document in the send, which ones need preparing, and the required actions for each. Documents are prepared in turn, and the draft can be reset or left at any point without losing the saved setup.",
-            image: { src: "/work/drafts/send-overview-prepare.webp", w: 1516, h: 1162, alt: "Send overview listing the documents in a draft, each with a Prepare button", caption: "Send overview: each document shows what's left to do." },
+            title: "Always a way back",
+            body: "Breadcrumbs show how deep you are and where you came from. Back, Reset, Cancel and Done sit in the same place on every page, so drilling in never feels like getting lost.",
+            image: { src: "/work/drafts/document-overview.webp", w: 1516, h: 3020, alt: "Document overview with breadcrumbs at the top and Reset and Done at the bottom", caption: "The same frame on every page: breadcrumbs above, actions below." },
           },
           {
-            title: "One document, in clear sections",
-            body: "Preparing a document walks through its name, file, template, fields, recipients and options in order. Anything the admin filled in is already there; senders only finish what's open.",
-            image: { src: "/work/drafts/document-overview.webp", w: 1516, h: 3020, alt: "Document overview split into sections for name, file, template, fields, recipients and options", caption: "Document overview: every part of a send in one ordered page." },
+            title: "When something breaks, say how to fix it",
+            body: "If a template is deleted or changed underneath a draft, a banner says what happened and offers the fix: replace it, remove it, or sync the fields and recipients to match. The affected sections go back to needing preparation.",
+            image: { src: "/work/drafts/template-missing.webp", w: 1516, h: 1162, alt: "Send overview with a banner explaining a deleted template and how to resolve it", caption: "A deleted template: what happened, and the two ways to fix it." },
           },
           {
-            title: "Type a recipient once",
-            body: "When the same person signs several documents, Auto Link carries their details across all of them, matched by order, label or description. Senders can still break the link when one document needs someone different.",
+            title: "Type it once",
+            body: "When the same person or the same date appears in several documents, linking fills it in everywhere. Any one link can be broken when a document needs something different.",
             image: { src: "/work/drafts/linked-recipients.webp", w: 1516, h: 1102, alt: "Recipient details linked across several documents", caption: "Linked recipient details across documents." },
-          },
-          {
-            title: "Ready when it's ready",
-            body: "Once every document is prepared, the send overview turns green and the send goes out in one go.",
-            image: { src: "/work/drafts/send-overview-ready.webp", w: 1516, h: 1280, alt: "Send overview with every document ready to send", caption: "Every document prepared and ready to send." },
           },
         ],
       },
