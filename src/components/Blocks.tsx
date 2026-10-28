@@ -705,8 +705,8 @@ function BlockView({
             {intro}
             <div className="mt-12 md:mt-16">
               <div aria-hidden className="hidden grid-cols-12 gap-10 pb-4 md:grid">
-                <p className="eyebrow col-span-7">{b.labels?.[0] ?? "What was wrong"}</p>
-                <p className="eyebrow col-span-5">{b.labels?.[1] ?? "The fix"}</p>
+                <p className="eyebrow col-span-7">What was wrong</p>
+                <p className="eyebrow col-span-5">The fix</p>
               </div>
               <ul className="border-b border-line">
                 {b.items.map((it, i) => (
@@ -723,7 +723,7 @@ function BlockView({
                         <p className="flex items-start gap-3 md:col-span-5">
                           <Icon name="ArrowLongRight" className="mt-0.5 size-7 shrink-0 text-accent-ink" />
                           <span className="text-xl leading-snug font-semibold text-accent-ink md:text-2xl">
-                            <span className="sr-only">{b.labels?.[1] ?? "The fix"}: </span>
+                            <span className="sr-only">The fix: </span>
                             {it.fix}
                           </span>
                         </p>

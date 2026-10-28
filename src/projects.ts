@@ -359,8 +359,6 @@ export type Block =
       items: { title: string; body: string; fix?: string; image?: Img; icon?: IconName }[];
       // How the items are laid out. Cards by default.
       look?: "cards" | "statements" | "goals" | "fixes" | "split";
-      // Column headings for the fixes look, in place of What was wrong and The fix.
-      labels?: [string, string];
       deeper?: Deeper;
     }
   // Clickable prototypes side by side, each with a screen of its version
@@ -1303,7 +1301,7 @@ export const projects: Project[] = [
         id: "drafts-brief",
         eyebrow: "The brief",
         heading: "Flexible but controlled. Powerful but safe.",
-        body: "I wrote the brief as product owner, for a modular way to set up a send that would replace the old one-way template, send and draft flow.",
+        body: "I wrote the brief as product owner: a modular way to set up a send, built once by an admin and reused by everyone else, replacing the old one-way template, send and draft flow.",
         recreation: "A simplified recreation of the brief I wrote. The original stayed with Legalesign.",
         title: "Modular send configuration",
         meta: [
@@ -1312,14 +1310,14 @@ export const projects: Project[] = [
           { label: "Replaces", value: "The linear template, send and draft flow" },
         ],
         sections: [
-          { label: "Objective", body: "Let teams set up each part of a send on its own, save it half-finished, share it, and send from it without ever overwriting what was saved." },
+          { label: "Objective", body: "Let admins set up any send, from one document to a batch, part by part, save it and share it with their team. Let senders finish what's left and send it, without ever changing the saved draft." },
           {
             label: "Principles",
             items: [
               { icon: "Squares2X2", title: "A control tower", body: "One overview shows every part of the send at a glance." },
               { icon: "PencilSquare", title: "Focused workspaces", body: "Each part is edited on its own page." },
               { icon: "Eye", title: "Always visible", body: "Every part shows if it's ready, and a disabled Send says why." },
-              { icon: "ShieldCheck", title: "Non-destructive", body: "Sending never changes the saved draft." },
+              { icon: "ShieldCheck", title: "Non-destructive", body: "Sending never changes the saved draft, and nothing is lost without a warning." },
               { icon: "ArrowPath", title: "No silent cascades", body: "When one part breaks another, the user is told." },
               { icon: "AdjustmentsHorizontal", title: "Robust, not playful", body: "An enterprise feature that should feel solid." },
             ],
@@ -1580,22 +1578,6 @@ export const projects: Project[] = [
             body: "Next came a tabbed hub that also took in batch and bulk sending. It showed how far the idea could go, and how much it would cost to build. That told me where to cut for the first release.",
             image: { src: "/work/drafts/ideation-hub.webp", w: 1516, h: 1102, alt: "Early concept of a tabbed drafts hub covering batch sending", caption: "Ideation: a tabbed hub that tried to hold every kind of send." },
           },
-        ],
-      },
-      {
-        type: "callouts",
-        id: "drafts-mvp",
-        eyebrow: "From brief to MVP",
-        heading: "Simpler than the brief, and bigger than it.",
-        body: "Some of the brief was cut back to keep the interface calm. Some of it grew, as real customer workflows came in.",
-        look: "fixes",
-        labels: ["The brief asked for", "What shipped"],
-        items: [
-          { title: "Five states on every section", body: "Not started, in progress, invalid, valid and locked.", fix: "Two: Preparation Required and Ready. Far quicker to scan.", icon: "Flag" },
-          { title: "A choice when the file changes", body: "A dialog asking whether to keep or remove the fields.", fix: "Swap any file, with a warning when fewer pages means fields are lost.", icon: "DocumentText" },
-          { title: "Admins lock sections", body: "Any part of a send locked so senders can't change it.", fix: "Editing and sending modes, so only owners and admins change the draft. Locking is on the roadmap.", icon: "LockOpen" },
-          { title: "Save always on", body: "Save enabled at all times, even with nothing to save.", fix: "Save once something has changed, with Save a copy and duplicate any time.", icon: "DocumentDuplicate" },
-          { title: "One document at a time", body: "A single configurable document.", fix: "Single, multi-document and batch sends, with fields and recipients linked across them.", icon: "QueueList" },
         ],
       },
       {
