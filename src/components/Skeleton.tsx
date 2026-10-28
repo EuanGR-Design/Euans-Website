@@ -8,10 +8,12 @@ type Screen = Props["screens"][number];
 type Mark = keyof NonNullable<Screen["marks"]>;
 
 /** A numbered pin that ties a part of a screen to a note below. */
-function Pin({ n }: { n?: number }) {
+function Pin({ n, left }: { n?: number; left?: boolean }) {
   if (!n) return null;
   return (
-    <span className="absolute -top-2 -right-2 z-10 flex size-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white shadow">
+    <span
+      className={`absolute -top-3.5 z-10 flex size-4 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-white shadow ${left ? "-left-3.5" : "-right-3.5"}`}
+    >
       {n}
     </span>
   );
@@ -39,7 +41,27 @@ function Frame({ s }: { s: Screen }) {
           <Pin n={m("todo")} />
         </span>
       </div>
-      <p className="mt-3 text-sm font-semibold">{s.name}</p>
+      <div className="mt-3 flex items-center gap-2">
+        {s.backButton && (
+          <span className="relative flex size-5 shrink-0 items-center justify-center rounded-full border border-fg/30" aria-hidden>
+            <ArrowLeftIcon className="size-3 text-muted" />
+            <Pin n={m("backButton")} left />
+          </span>
+        )}
+        <p className="min-w-0 flex-1 text-sm font-semibold">{s.name}</p>
+        {s.more && (
+          <span className="relative shrink-0 rounded-md border border-dashed border-fg/30 px-1.5 py-0.5 text-[9px] text-muted">
+            {s.more}
+            <Pin n={m("more")} />
+          </span>
+        )}
+      </div>
+      {s.banner && (
+        <p className="relative mt-2 rounded-lg border border-accent/40 bg-accent-soft px-2 py-1.5 text-[9px] leading-snug text-accent-ink">
+          {s.banner}
+          <Pin n={m("banner")} />
+        </p>
+      )}
       <div className="mt-2 flex flex-1 gap-2">
         <ul className="relative flex flex-1 flex-col gap-1.5">
           {s.rows.map((r) => (

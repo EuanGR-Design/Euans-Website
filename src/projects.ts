@@ -180,11 +180,17 @@ export type Block =
         crumbs: string[];
         rows: { label: string; status?: "prepare" | "ready" }[];
         panel?: boolean;
+        // A round back button before the title, once drilled in.
+        backButton?: boolean;
+        // Where the screen's extra actions and dialogs open, right of the title.
+        more?: string;
+        // A message under the title, above the work it's about.
+        banner?: string;
         secondary: string[];
         primary: string;
         next?: string;
         back?: string;
-        marks?: { crumbs?: number; todo?: number; rows?: number; panel?: number; actions?: number };
+        marks?: { crumbs?: number; backButton?: number; todo?: number; more?: number; banner?: number; rows?: number; panel?: number; actions?: number };
       }[];
       notes: { title: string; body: string }[];
     }
@@ -1618,15 +1624,18 @@ export const projects: Project[] = [
               { label: "Service Agreement", status: "ready" },
             ],
             panel: true,
+            more: "Settings",
             secondary: ["Reset draft", "Exit"],
             primary: "Send",
             next: "Prepare",
             back: "Done",
-            marks: { todo: 2, rows: 3, panel: 4, actions: 6 },
+            marks: { todo: 3, more: 4, rows: 6, panel: 7, actions: 9 },
           },
           {
             name: "Document overview",
             crumbs: ["Send overview", "Rental Agreement"],
+            backButton: true,
+            banner: "Fields no longer match the template. Force update to sync them.",
             rows: [
               { label: "Document name", status: "ready" },
               { label: "Underlying file", status: "ready" },
@@ -1640,21 +1649,26 @@ export const projects: Project[] = [
             primary: "Done",
             next: "Prepare",
             back: "Done",
-            marks: { crumbs: 1, rows: 5 },
+            marks: { crumbs: 1, backButton: 2, banner: 5, rows: 8 },
           },
           {
             name: "Recipient details",
             crumbs: ["Send overview", "Rental Agreement", "Recipient details"],
             rows: [{ label: "Recipient 01 · Buyer" }, { label: "Recipient 02 · Buyer" }, { label: "Recipient 03 · Solicitor" }],
+            backButton: true,
+            more: "Linked recipients",
             secondary: ["Reset", "Cancel"],
             primary: "Done",
-            marks: { actions: 6 },
+            marks: { more: 4, actions: 9 },
           },
         ],
         notes: [
           { title: "Breadcrumbs", body: "Always show how deep you are and the way back out." },
+          { title: "A back button", body: "Once you're drilled in, a round back button always sits just before the title." },
           { title: "One to-do list", body: "In the same top-right spot on every screen, listing everything left before sending." },
-          { title: "A status on every card", body: "Preparation Required or Ready, and nothing more to decode." },
+          { title: "More, beside the title", body: "Anything extra a page can do, like settings or managing links, opens from right of its title." },
+          { title: "Banners in one place", body: "Anything you need to know sits under the title, above the work, or inside the card it's about, like a prompt to force update." },
+          { title: "A status on every card", body: "Any card with something to do inside says Preparation Required. Otherwise it's Ready." },
           { title: "Peek before opening", body: "A details panel shows what a document already holds." },
           { title: "Seven sections, same order", body: "Every document is prepared the same way, one section at a time." },
           { title: "Actions in fixed places", body: "Reset on the left, Done or Send on the right, on every screen." },
