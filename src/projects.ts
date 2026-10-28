@@ -1371,7 +1371,7 @@ export const projects: Project[] = [
             items: [
               { icon: "QueueList", title: "Single, multi-document and batch", body: "Documents can be reordered, and a batch has its own name and Enforce Ordering." },
               { icon: "Squares2X2", title: "Seven sections per document", body: "Name, file, template, field content, recipient details, recipient options and document options, each prepared on its own." },
-              { icon: "UserGroup", title: "Linked fields and recipients", body: "Fill a field or a recipient once across every document, linked by type, label, order or description." },
+              { icon: "UserGroup", title: "Linked fields and recipients", body: "Fill a field or a recipient once across every document. Fields link by label, recipients by order or label." },
               { icon: "ListBullet", title: "Required actions", body: "One list of everything left, by document, section and issue." },
               { icon: "DocumentDuplicate", title: "Save, Save a copy, Reset", body: "Save once something has changed, keep a copy as a new base draft, or reset to the last save or the draft base." },
               { icon: "Users", title: "Shared with the team", body: "Drafts live in the team's library under a name that says what they're for." },
@@ -1563,7 +1563,7 @@ export const projects: Project[] = [
               },
               {
                 name: "Sender fields",
-                cells: ["Empty", "Pre-fill values, link fields by type or label", "Fill in what's left, or break a link", "Fields mismatch: force update, then prepare again", "A required sender field is empty"],
+                cells: ["Empty", "Pre-fill values, link fields that share a label", "Fill in what's left, or break a link", "Fields mismatch: force update, then prepare again", "A required sender field is empty"],
               },
               {
                 name: "Participant fields",
@@ -1571,7 +1571,7 @@ export const projects: Project[] = [
               },
               {
                 name: "Recipient details",
-                cells: ["Roles from the template", "Fill in people, link them by order, label or description", "Add people, link or break links", "Participant mismatch: force update and re-enter details", "A recipient with no details, unless skipped or left for the one before to decide"],
+                cells: ["Roles from the template", "Fill in people, link them by order or label", "Add people, link or break links", "Participant mismatch: force update and re-enter details", "A recipient with no details, unless skipped or left for the one before to decide"],
               },
               {
                 name: "Recipient settings",
@@ -1601,12 +1601,12 @@ export const projects: Project[] = [
             items: [
               {
                 title: "Linked fields",
-                body: "A batch might have a completion date on every document. Fields can be linked by type, or by a label set in the template, so a sender fills it in once. Each field type has its own states (a checkbox can be empty, ticked or crossed; a dropdown empty or set), and any one field can break from the link.",
+                body: "A batch might have a completion date on every document. Fields that share a label set in the template can be linked, from the field itself or from one panel that lists every match, so a sender fills it in once. When the documents already hold different values, the sender picks the one the link keeps. Each field type has its own states (a checkbox can be empty, ticked or crossed; a dropdown empty or set), and any link can be broken.",
                 icon: "PuzzlePiece",
               },
               {
                 title: "Linked recipients",
-                body: "When the landlord or approver is the same on every document, their details are linked by the order they appear in the template, their label, or their description. Links are made from one place or straight from a recipient's card, and can be broken one at a time.",
+                body: "When the landlord or approver is the same on every document, their details can be linked, matched by the order they appear in each template or by their label. Links are made straight from a recipient's card or from one panel, and breaking one asks whether it goes everywhere or just in this document.",
                 icon: "UserGroup",
               },
               {
@@ -1626,7 +1626,7 @@ export const projects: Project[] = [
               },
               {
                 title: "Roles and order in the template",
-                body: "A signer must have a signature field and an approver doesn't, so changing someone's role can add a requirement. Reordering participants after recipients are linked means deciding whether links follow the order, the label or the description.",
+                body: "A signer must have a signature field and an approver doesn't, so changing someone's role can add a requirement. Reordering participants after recipients are linked means deciding whether links follow the order or the label. Switching between them breaks every link, so the switch asks first.",
                 icon: "UserPlus",
               },
               {
