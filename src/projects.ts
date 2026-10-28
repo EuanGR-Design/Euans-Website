@@ -1383,7 +1383,7 @@ export const projects: Project[] = [
           },
           {
             name: "Underlying file",
-            cells: ["The template's PDF", "A placeholder file to swap out", "Swap in a file with any number of pages", "Fewer pages: fields on the missing pages are lost", "Wrong format, password protected, encrypted or too large"],
+            cells: ["The template's PDF, or no file yet", "A placeholder file to swap out every send", "Swap in a file with any number of pages", "Fewer pages: fields on the missing pages are lost. Wrong format, password protected, encrypted or too large: rejected, upload another", "No usable file until one is uploaded"],
           },
           {
             name: "Template",
