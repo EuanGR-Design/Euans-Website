@@ -1379,7 +1379,7 @@ export const projects: Project[] = [
           },
           {
             name: "Batch",
-            cells: ["Documents in the order selected", "Reorder them, name the batch, turn on Enforce Ordering", "Send in the order the draft sets", null, null],
+            cells: ["Documents in the order selected", "Reorder them, name the batch, turn on Enforce Ordering", "Reorder them for this send only", null, null],
           },
           {
             name: "Underlying file",
@@ -1399,7 +1399,7 @@ export const projects: Project[] = [
           },
           {
             name: "Recipient details",
-            cells: ["Roles from the template", "Fill in people, link them by order, label or description", "Add people, link or break links", "Participant mismatch: force update and re-enter details", "A recipient with no details"],
+            cells: ["Roles from the template", "Fill in people, link them by order, label or description", "Add people, link or break links", "Participant mismatch: force update and re-enter details", "A recipient with no details, unless skipped or left for the one before to decide"],
           },
           {
             name: "Recipient settings",
@@ -1444,7 +1444,7 @@ export const projects: Project[] = [
           },
           {
             title: "Skipping and handing on",
-            body: "Recipients can be skipped, but never all of them: if every recipient after the first is skipped, the first can't be. A recipient can also be left to be decided, so the person before them adds their details while signing.",
+            body: "A recipient with no details blocks the send, with two ways out. Skip them, and it's as if they were never on the document; but never skip them all, so if every recipient after the first is skipped, the first can't be. Or let the previous recipient decide, and the person before them in the signing order adds their details while signing.",
             icon: "ArrowsSplit",
           },
           {
