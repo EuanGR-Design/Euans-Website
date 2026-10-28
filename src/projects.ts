@@ -1300,7 +1300,7 @@ export const projects: Project[] = [
         type: "untangle",
         id: "drafts-tangle",
         eyebrow: "The tangle",
-        heading: "Thirty rules, and almost every one touches another.",
+        heading: "Dozens of rules, and almost every one touches another.",
         body: "Swap a template and the fields stop matching. Skip a recipient and the signing order changes. Link a recipient and every document follows. Before designing anything, I mapped every rule, every dependency and everything that could stop a send, then gave each one a single home.",
         stats: [
           { value: "2", label: "modes: editing the draft, or sending it" },
@@ -1313,11 +1313,12 @@ export const projects: Project[] = [
         groups: [
           { name: "Document name", items: ["Draft name", "Batch name", "Rename per send"] },
           { name: "Underlying file", items: ["Swap the file", "Page count", "Rejected upload", "Placeholder file"] },
-          { name: "Template", items: ["Swap template", "Template deleted", "Template changed", "Add participants"] },
+          { name: "Template", items: ["Swap template", "Template deleted", "Template changed", "Add participants", "Reorder participants", "Signature required"] },
           { name: "Field content", items: ["Linked fields", "Field labels", "Field types", "Required sender fields", "Fields mismatch"] },
           { name: "Recipient details", items: ["Linked recipients", "Participant mismatch", "Skip recipient", "Previous decides", "Time zones"] },
           { name: "Recipient options", items: ["Email message", "Reminders", "Attachments", "Expiry"] },
           { name: "Document options", items: ["Sequential signing", "Enforce Ordering", "Permissions", "Password", "CC"] },
+          { name: "The whole send", items: ["Switch modes", "Remove document", "Reset draft", "Save a copy"] },
         ],
         links: [
           ["Swap template", "Fields mismatch"],
@@ -1341,6 +1342,11 @@ export const projects: Project[] = [
           ["Enforce Ordering", "Batch name"],
           ["Reminders", "Expiry"],
           ["Skip recipient", "Sequential signing"],
+          ["Switch modes", "Swap template"],
+          ["Switch modes", "Fields mismatch"],
+          ["Add participants", "Signature required"],
+          ["Reorder participants", "Linked recipients"],
+          ["Reorder participants", "Participant mismatch"],
         ],
         deeper: {
           label: "See every rule and state",
@@ -1435,7 +1441,7 @@ export const projects: Project[] = [
               },
               {
                 name: "Template",
-                cells: ["The template selected", "Move fields, add or move participants, or swap the template", "Swap the template for this send", "Template changed since the draft was saved", "Template deleted: replace it or remove the document"],
+                cells: ["The template selected", "Move fields, add or move participants, or swap the template", "Swap the template for this send only; it stays behind if you switch to editing mode", "Template changed since the draft was saved, or a signer has no signature field", "Template deleted: replace it or remove the document"],
               },
               {
                 name: "Sender fields",
@@ -1463,7 +1469,7 @@ export const projects: Project[] = [
               },
               {
                 name: "The whole send",
-                cells: ["Each document marked Prepare", "Save it for the whole team", "Changes stay with this send", "Required actions listed per document", "Any document still needs preparing"],
+                cells: ["Each document marked Prepare", "Save it for the whole team", "Changes stay with this send", "Switching modes, removing a document or resetting warns before entered details are lost", "Any document still needs preparing"],
               },
             ],
             note: "Reconstructed from the final MVP file and the rules behind it.",
@@ -1494,6 +1500,21 @@ export const projects: Project[] = [
                 title: "Skipping and handing on",
                 body: "A recipient with no details blocks the send, with two ways out. Skip them, and it's as if they were never on the document; but never skip them all, so if every recipient after the first is skipped, the first can't be. Or let the previous recipient decide, and the person before them in the signing order adds their details while signing.",
                 icon: "ArrowsSplit",
+              },
+              {
+                title: "Switching modes",
+                body: "Moving from sending to editing asks whether to bring unsaved changes across or discard them. A template swapped for one send can't follow, so it warns that the original template comes back and the sender fields may need syncing and filling in again.",
+                icon: "ArrowsSplit",
+              },
+              {
+                title: "Roles and order in the template",
+                body: "A signer must have a signature field and an approver doesn't, so changing someone's role can add a requirement. Reordering participants after recipients are linked means deciding whether links follow the order, the label or the description.",
+                icon: "UserPlus",
+              },
+              {
+                title: "Losing work, only on purpose",
+                body: "Removing a document, resetting the draft or switching modes all warn first when entered details would be lost. Saving a copy does the opposite: it keeps everything filled in as a new base draft, its own branch to build on.",
+                icon: "DocumentDuplicate",
               },
               {
                 title: "Two kinds of order",

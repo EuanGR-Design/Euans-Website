@@ -34,7 +34,7 @@ export function Untangle({ groups, links, before, after }: Props) {
       const a = rand(k) * Math.PI * 2;
       const r = Math.sqrt(rand(k + 101));
       const from = { x: 50 + Math.cos(a) * r * 44, y: 52 + Math.sin(a) * r * 40 };
-      const to = { x: ((gi + 0.5) / groups.length) * 100, y: 24 + ii * 14 };
+      const to = { x: ((gi + 0.5) / groups.length) * 100, y: 22 + ii * 12.5 };
       return { label, x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
     }),
   );
@@ -84,7 +84,7 @@ export function Untangle({ groups, links, before, after }: Props) {
       {chips.map((c) => (
         <span
           key={c.label}
-          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-line bg-bg px-2.5 py-1 text-xs whitespace-nowrap shadow-sm"
+          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-line bg-bg px-2 py-1 text-[11px] whitespace-nowrap shadow-sm"
           style={{ left: `${c.x}%`, top: `${c.y}%` }}
         >
           {c.label}
