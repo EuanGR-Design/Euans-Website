@@ -1311,13 +1311,13 @@ export const projects: Project[] = [
         before: "Every rule touches another.",
         after: "So each one got a single home.",
         groups: [
-          { name: "Document name", items: ["Draft name", "Batch name", "Rename per send"] },
+          { name: "Names and batch", items: ["Draft name", "Rename per send", "Batch name", "Reorder documents", "Enforce Ordering"] },
           { name: "Underlying file", items: ["Swap the file", "Page count", "Rejected upload", "Placeholder file"] },
           { name: "Template", items: ["Swap template", "Template deleted", "Template changed", "Add participants", "Reorder participants", "Signature required"] },
           { name: "Field content", items: ["Linked fields", "Field labels", "Field types", "Required sender fields", "Fields mismatch"] },
           { name: "Recipient details", items: ["Linked recipients", "Participant mismatch", "Skip recipient", "Previous decides", "Time zones"] },
           { name: "Recipient options", items: ["Email message", "Reminders", "Attachments", "Expiry"] },
-          { name: "Document options", items: ["Sequential signing", "Enforce Ordering", "Permissions", "Password", "CC"] },
+          { name: "Document options", items: ["Sequential signing", "Permissions", "Password", "CC"] },
           { name: "The whole send", items: ["Send", "Switch modes", "Remove document", "Reset draft", "Save over", "Save a copy"] },
         ],
         links: [
@@ -1524,7 +1524,7 @@ export const projects: Project[] = [
               },
               {
                 title: "Two kinds of order",
-                body: "Enforce Ordering makes everyone finish one document before the next opens. Sequential signing sets the order recipients sign within a document; with it off, everyone gets it at once. Both had to agree, and they carry through to the Inbox and Signer Lobby.",
+                body: "Enforce Ordering is a batch setting, and only appears once a send is a batch: everyone finishes one document before the next opens. Sequential signing sets the order recipients sign within a document; with it off, everyone gets it at once. Both had to agree, and they carry through to the Inbox and Signer Lobby.",
                 icon: "NumberedList",
               },
             ],
