@@ -1318,7 +1318,7 @@ export const projects: Project[] = [
           { name: "Recipient details", items: ["Linked recipients", "Participant mismatch", "Skip recipient", "Previous decides", "Time zones"] },
           { name: "Recipient options", items: ["Email message", "Reminders", "Attachments", "Expiry"] },
           { name: "Document options", items: ["Sequential signing", "Enforce Ordering", "Permissions", "Password", "CC"] },
-          { name: "The whole send", items: ["Switch modes", "Remove document", "Reset draft", "Save a copy"] },
+          { name: "The whole send", items: ["Send", "Switch modes", "Remove document", "Reset draft", "Save over", "Save a copy"] },
         ],
         links: [
           ["Swap template", "Fields mismatch"],
@@ -1343,6 +1343,11 @@ export const projects: Project[] = [
           ["Reminders", "Expiry"],
           ["Skip recipient", "Sequential signing"],
           ["Switch modes", "Swap template"],
+          ["Switch modes", "Send"],
+          ["Send", "Required sender fields"],
+          ["Send", "Template deleted"],
+          ["Send", "Rejected upload"],
+          ["Save over", "Save a copy"],
           ["Switch modes", "Fields mismatch"],
           ["Add participants", "Signature required"],
           ["Reorder participants", "Linked recipients"],
@@ -1362,11 +1367,11 @@ export const projects: Project[] = [
             modes: [
               {
                 label: "Editing mode",
-                body: "The draft's owner, an admin or anyone allowed to make drafts. Whatever they add, remove or fill in becomes the draft the whole team sees when they save.",
+                body: "The draft's owner, an admin or anyone allowed to make drafts. There's no Send here: Save overwrites the draft the whole team sees, and Save a copy keeps the original.",
               },
               {
                 label: "Sending mode",
-                body: "Anyone using a saved draft, even their own. Changes apply to this one send and never touch the base draft.",
+                body: "Anyone using a saved draft, even their own. Changes apply to this one send and never touch the base draft. Send stays disabled until every required action is done.",
               },
             ],
             levels: [
@@ -1388,7 +1393,8 @@ export const projects: Project[] = [
                   { label: "Documents", opens: "Each marked Prepare or Ready" },
                   { label: "Required actions", opens: "Everything left, document by document" },
                   { label: "Prepare a document", opens: "Document overview" },
-                  { label: "Send", opens: "Only when nothing blocks it" },
+                  { label: "Send", opens: "Sending mode, once nothing blocks it" },
+              { label: "Save or Save a copy", opens: "Editing mode, once something has changed" },
                 ],
               },
               {
@@ -1469,7 +1475,7 @@ export const projects: Project[] = [
               },
               {
                 name: "The whole send",
-                cells: ["Each document marked Prepare", "Save it for the whole team", "Changes stay with this send", "Switching modes, removing a document or resetting warns before entered details are lost", "Any document still needs preparing"],
+                cells: ["Each document marked Prepare", "Save over the draft or Save a copy, once something has changed; no Send", "Send, once nothing blocks it; changes stay with this send", "Switching modes, removing a document or resetting warns before entered details are lost", "Any document still needs preparing"],
               },
             ],
             note: "Reconstructed from the final MVP file and the rules behind it.",
@@ -1574,7 +1580,7 @@ export const projects: Project[] = [
           },
           {
             title: "Always a way back",
-            body: "Breadcrumbs show how deep you are and where you came from. Back, Reset, Cancel and Done sit in the same place on every page, so drilling in never feels like getting lost.",
+            body: "Breadcrumbs show how deep you are and where you came from. Back, Reset, Cancel and Done sit in the same place on every page, and Save and Reset only come alive once there's something to save, so drilling in never feels like getting lost.",
             image: { src: "/work/drafts/document-overview.webp", w: 1516, h: 3020, alt: "Document overview with breadcrumbs at the top and Reset and Done at the bottom", caption: "The same frame on every page: breadcrumbs above, actions below." },
           },
           {
