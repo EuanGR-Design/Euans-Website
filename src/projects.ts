@@ -1291,10 +1291,10 @@ export const projects: Project[] = [
       {
         type: "text",
         eyebrow: "The problem",
-        heading: "One customer's advanced workflow, and many more teams who needed the same control.",
+        heading: "Enterprise teams needed control over how their documents were sent.",
         body: [
-          "A large customer moving to Legalesign from another e-signature product relied on saved send setups for an advanced workflow. Without them, they couldn't make the switch.",
-          "Feedback in Jira and conversations with other users showed they weren't alone. Many teams needed a controlled send: set up once by an admin, then reused by everyday senders without getting it wrong.",
+          "Customer after customer asked for the same thing: a way to set a send up once and have their team reuse it, exactly as intended, every time. Larger organisations run complex workflows, with several documents, fixed signers, set orders and rules about who can change what, and our send flow couldn't hold any of it.",
+          "It was a missing part of the product. Without it we couldn't win or keep the enterprise customers whose workflows depended on it, including some moving to us from other e-signature products. Drafts was about growing what Legalesign could do for them.",
         ],
       },
       {
@@ -1340,7 +1340,7 @@ export const projects: Project[] = [
         sections: [
           {
             label: "Background",
-            body: "A large customer moving from another e-signature product relied on saved send setups for an advanced workflow, and couldn't switch without them. Jira feedback and conversations with other teams showed the same need: a send set up once, then reused without mistakes. Our flow ran one way, from template to send to draft, and couldn't hold a send that was partly set up.",
+            body: "Customers kept asking for a send they could set up once and reuse across their team without mistakes. Enterprise teams with complex workflows needed it to meet their own requirements, and without it they couldn't choose us. Our flow ran one way, from template to send to draft, and couldn't hold a send that was partly set up.",
           },
           {
             label: "Objective",
