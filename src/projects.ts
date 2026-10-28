@@ -1338,7 +1338,32 @@ export const projects: Project[] = [
           { label: "Replaces", value: "The linear template, send and draft flow" },
         ],
         sections: [
-          { label: "Objective", body: "Let admins set up any send, from one document to a batch, part by part, save it and share it with their team. Let senders finish what's left and send it, without ever changing the saved draft." },
+          {
+            label: "Background",
+            body: "A large customer moving from another e-signature product relied on saved send setups for an advanced workflow, and couldn't switch without them. Jira feedback and conversations with other teams showed the same need: a send set up once, then reused without mistakes. Our flow ran one way, from template to send to draft, and couldn't hold a send that was partly set up.",
+          },
+          {
+            label: "Objective",
+            body: "Let admins set up any send, from one document to a batch, part by part, save it and share it with their team. Let senders finish what's left and send it, without ever changing the saved draft.",
+          },
+          {
+            label: "Who it's for",
+            items: [
+              { icon: "AdjustmentsHorizontal", title: "Admins and draft owners", body: "Build the draft in editing mode: the documents, presets, recipients and options. Decide what's filled in and what's left open." },
+              { icon: "PaperAirplane", title: "Everyday senders", body: "Use the draft in sending mode. Fill in only what's left, change what they need for this send, and send." },
+            ],
+          },
+          {
+            label: "Scope",
+            items: [
+              { icon: "QueueList", title: "Single, multi-document and batch", body: "Documents can be reordered, and a batch has its own name and Enforce Ordering." },
+              { icon: "Squares2X2", title: "Seven sections per document", body: "Name, file, template, field content, recipient details, recipient options and document options, each prepared on its own." },
+              { icon: "UserGroup", title: "Linked fields and recipients", body: "Fill a field or a recipient once across every document, linked by type, label, order or description." },
+              { icon: "ListBullet", title: "Required actions", body: "One list of everything left, by document, section and issue." },
+              { icon: "DocumentDuplicate", title: "Save, Save a copy, Reset", body: "Save once something has changed, keep a copy as a new base draft, or reset to the last save or the draft base." },
+              { icon: "Users", title: "Shared with the team", body: "Drafts live in the team's library under a name that says what they're for." },
+            ],
+          },
           {
             label: "Principles",
             items: [
@@ -1346,9 +1371,26 @@ export const projects: Project[] = [
               { icon: "PencilSquare", title: "Focused workspaces", body: "Each part is edited on its own page." },
               { icon: "Eye", title: "Always visible", body: "Every part shows if it's ready, and a disabled Send says why." },
               { icon: "ShieldCheck", title: "Non-destructive", body: "Sending never changes the saved draft, and nothing is lost without a warning." },
-              { icon: "ArrowPath", title: "No silent cascades", body: "When one part breaks another, the user is told." },
+              { icon: "ArrowPath", title: "No silent cascades", body: "When one part breaks another, the user is told and shown the fix." },
               { icon: "AdjustmentsHorizontal", title: "Robust, not playful", body: "An enterprise feature that should feel solid." },
             ],
+          },
+          {
+            label: "Rules",
+            body: "Send is enabled only in sending mode, and only when every document is ready. A draft always has a file. Changing the template, file or participants can invalidate fields and recipients; the draft says so, offers a force update, and marks the section as needing preparation. Signers need a signature field; approvers don't.",
+          },
+          {
+            label: "Edge cases",
+            items: [
+              { icon: "DocumentText", title: "A smaller file", body: "Fields on missing pages are lost, with a warning first." },
+              { icon: "ArrowPath", title: "A changed or deleted template", body: "Sync the fields and recipients, or replace or remove the document." },
+              { icon: "ArrowsSplit", title: "Switching modes", body: "Bring unsaved changes across or discard them; a swapped template stays behind." },
+              { icon: "UserPlus", title: "Skipped or undecided recipients", body: "Never skip everyone; let the previous recipient decide who's next." },
+            ],
+          },
+          {
+            label: "Out of scope",
+            body: "Locking individual sections, descriptions and labels on drafts, and choosing templates while creating a draft, until the MVP has been used.",
           },
           { label: "Success looks like", body: "Flexible but controlled. Powerful but safe. Modular but logically consistent." },
         ],
