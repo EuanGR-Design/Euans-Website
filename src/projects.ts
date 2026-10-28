@@ -82,7 +82,7 @@ export type BentoTile = {
 );
 
 // The animations Key decisions can show (src/components/DecisionLoop.tsx).
-export type DecisionLoopName = "recipients" | "sidebar" | "fields" | "panel" | "modals" | "send" | "again";
+export type DecisionLoopName = "recipients" | "sidebar" | "fields" | "panel" | "modals" | "send" | "again" | "details" | "drill" | "todo" | "linkField" | "manageLinks";
 
 // A few short points with icons, under a section's main content.
 export type Notes = { icon: IconName; title: string; body: string }[];
@@ -395,7 +395,8 @@ export type Block =
       eyebrow?: string;
       heading: string;
       body?: string;
-      items: { title: string; body: string; fix?: string; image?: Img; icon?: IconName }[];
+      // `loop` plays a short animation of the idea in place of the image.
+      items: { title: string; body: string; fix?: string; image?: Img; icon?: IconName; loop?: DecisionLoopName }[];
       // How the items are laid out. Cards by default.
       look?: "cards" | "statements" | "goals" | "fixes" | "split" | "grid";
       deeper?: Deeper;
@@ -1766,13 +1767,13 @@ export const projects: Project[] = [
           },
           {
             title: "Look before you dig in",
+            loop: "details",
             body: "Selecting a document opens a side panel with everything already in it: the template, the file, its fields and who it goes to. Senders can check a document without opening it.",
-            image: { src: "/work/drafts/side-panel.webp", w: 1516, h: 1280, alt: "Send overview with a document details panel open on the right", caption: "The details panel: a whole document at a glance." },
           },
           {
             title: "One list of everything left",
+            loop: "todo",
             body: "The required actions list sits in the same top-right spot on every page. It goes from documents, to sections, to the exact issue, and each line takes you straight there. When it's empty, the send is ready.",
-            image: { src: "/work/drafts/required-actions.webp", w: 1598, h: 605, alt: "Required actions list drilling from documents to sections to issues, ending in All Documents Ready to Send", caption: "Required actions: from three documents, to seven sections, to the one issue, to ready." },
           },
           {
             title: "One section at a time",
@@ -1781,8 +1782,8 @@ export const projects: Project[] = [
           },
           {
             title: "Always a way back",
+            loop: "drill",
             body: "Breadcrumbs show how deep you are and where you came from. Back, Reset, Cancel and Done sit in the same place on every page, and Save and Reset only come alive once there's something to save, so drilling in never feels like getting lost.",
-            image: { src: "/work/drafts/document-overview.webp", w: 1516, h: 3020, alt: "Document overview with breadcrumbs at the top and Reset and Done at the bottom", caption: "The same frame on every page: breadcrumbs above, actions below." },
           },
           {
             title: "When something breaks, say how to fix it",
@@ -1791,8 +1792,13 @@ export const projects: Project[] = [
           },
           {
             title: "Type it once",
+            loop: "linkField",
             body: "When the same person or the same date appears in several documents, linking fills it in everywhere. Any one link can be broken when a document needs something different.",
-            image: { src: "/work/drafts/linked-recipients.webp", w: 1516, h: 1102, alt: "Recipient details linked across several documents", caption: "Linked recipient details across documents." },
+          },
+          {
+            title: "Link it all in one place",
+            loop: "manageLinks",
+            body: "Manage Linked Fields lists every label the documents share, with its value in each. When the documents disagree, the sender picks the value the link keeps.",
           },
         ],
       },

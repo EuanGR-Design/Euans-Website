@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { MotionConfig, motion } from "framer-motion";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import type { DecisionLoopName } from "@/projects";
 import {
   ArrowPathIcon,
@@ -19,7 +19,17 @@ import {
   TrashIcon,
   UsersIcon,
   XMarkIcon,
+  ClipboardDocumentListIcon as ClipboardIcon,
+  EllipsisVerticalIcon,
+  HomeIcon,
+  PencilSquareIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  HashtagIcon,
+  LinkIcon,
 } from "@heroicons/react/16/solid";
+import { DocumentTextIcon as DocOutlineIcon } from "@heroicons/react/24/outline";
 
 export type { DecisionLoopName };
 
@@ -1455,6 +1465,789 @@ function AgainScene({ s }: { s: number }) {
 }
 
 /* ------------------------------------------------------------------------ */
+/* Drafts                                                                    */
+/* ------------------------------------------------------------------------ */
+
+// Drafts' own colours, sampled from the production recordings.
+const PREP = { bg: "#fbefc7", ink: "#8f5d14" };
+const SELECTED = "#7b9ef5";
+
+/** Drafts' frame: the header, then the breadcrumbs and the to-do list. */
+function DraftsChrome({ crumbs, done = false, count = 12 }: { crumbs: string[]; done?: boolean; count?: number }) {
+  return (
+    <>
+      <AppHeader />
+      <div className="absolute inset-x-0 top-[20px] flex h-[22px] items-center gap-[5px] border-b px-[10px] text-[8.5px] font-medium" style={{ borderColor: LINE, color: PRIMARY }}>
+        <HomeIcon className="size-[10px]" />
+        {crumbs.map((c, i) => (
+          <span key={c} className="flex items-center gap-[5px]" style={{ color: i === crumbs.length - 1 ? PRIMARY : MUTED }}>
+            {i > 0 && <ChevronRightIcon className="size-[8px]" style={{ color: MUTED }} />}
+            {c}
+          </span>
+        ))}
+        <TodoButton done={done} count={count} className="ml-auto" />
+      </div>
+    </>
+  );
+}
+
+/** The to-do list's button: a clipboard with a count, or a tick when all's ready. */
+function TodoButton({ done = false, count = 12, className = "" }: { done?: boolean; count?: number; className?: string }) {
+  return (
+    <span className={`relative flex items-center gap-[3px] ${className}`}>
+      <motion.span
+        className="flex size-[15px] items-center justify-center rounded-[4px]"
+        initial={false}
+        animate={{ backgroundColor: done ? "#d6f8ea" : "#fde58a", color: done ? "#1f7a57" : "#6b4a07" }}
+        transition={{ duration: 0.3, delay: done ? 1 : 0 }}
+      >
+        {done ? <CheckIcon className="size-[10px]" /> : <ClipboardIcon className="size-[10px]" />}
+      </motion.span>
+      <motion.span
+        className="absolute -top-[4px] left-[10px] flex h-[9px] min-w-[9px] items-center justify-center rounded-full px-[2px] text-[6px] font-bold text-white"
+        style={{ background: DANGER }}
+        initial={false}
+        animate={{ opacity: done ? 0 : 1, scale: done ? 0.5 : 1 }}
+        transition={{ duration: 0.3, delay: done ? 1 : 0 }}
+      >
+        {count}
+      </motion.span>
+      <ChevronDownIcon className="size-[8px]" style={{ color: MUTED }} />
+    </span>
+  );
+}
+
+/** "Preparation Required", or "Ready to Send" once a document is done. */
+function PrepPill({ ready = false, delay = 0 }: { ready?: boolean; delay?: number }) {
+  return (
+    <AnimatePresence initial={false} mode="popLayout">
+      <motion.span
+        key={String(ready)}
+        className="rounded-full px-[4px] py-[1px] text-[6.5px] font-medium whitespace-nowrap"
+        style={ready ? { background: "#d6f8ea", color: "#1f7a57" } : { background: PREP.bg, color: PREP.ink }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3, delay: ready ? delay : 0 }}
+      >
+        {ready ? "Ready to Send" : "Preparation Required"}
+      </motion.span>
+    </AnimatePresence>
+  );
+}
+
+const BATCH = [
+  { name: "Property Inspection Report", pages: 3 },
+  { name: "Tenancy Agreement", pages: 4 },
+  { name: "Inventory and Key Handover", pages: 2 },
+];
+
+// Who's on each document, as the details panel lists them.
+const PARTICIPANTS = [
+  [
+    { n: "S", who: "You", role: "Sender", fields: 5 },
+    { n: "01", who: "Landlord", role: "Signer", fields: 2, tint: TINT.blue },
+    { n: "02", who: "Tenant 1", role: "Signer", fields: 4, tint: TINT.green },
+    { n: "03", who: "Tenant 2", role: "Signer", fields: 4, tint: TINT.yellow },
+  ],
+  [
+    { n: "S", who: "You", role: "Sender", fields: 6 },
+    { n: "01", who: "Landlord", role: "Signer", fields: 3, tint: TINT.blue },
+    { n: "02", who: "Tenant 1", role: "Signer", fields: 5, tint: TINT.green },
+    { n: "03", who: "Tenant 2", role: "Signer", fields: 5, tint: TINT.yellow },
+    { n: "04", who: "Witness", role: "Witness", fields: 2, tint: TINT.purple },
+  ],
+];
+
+// The list sits centred until a document is selected, then moves over and
+// narrows to make room for the details panel. Window-relative.
+const LIST = { closed: { left: 76, width: 280 }, open: { left: 10, width: 244 } };
+const ROW_TOP = 112;
+const ROW_H = 40;
+// Stage spots: a row's name, with the list centred or moved over.
+const DOC_AT = (i: number, open: boolean): [number, number] => [24 + (open ? LIST.open.left : LIST.closed.left) + 96, 24 + ROW_TOP + 11 + i * ROW_H];
+
+/** The batch's documents, each with its status and a Prepare button. */
+function BatchList({ open = false, selected = null, ready = [] }: { open?: boolean; selected?: number | null; ready?: boolean[] }) {
+  const at = open ? LIST.open : LIST.closed;
+  return (
+    <motion.div className="absolute top-[42px] bottom-0" initial={false} animate={{ left: at.left, width: at.width }} transition={{ duration: 0.55, ease: EASE }}>
+      <div className="mt-[10px] flex items-center justify-between">
+        <span className="text-[15px] font-semibold">Batch Overview</span>
+        <span className="flex size-[16px] items-center justify-center rounded-[4px] border bg-white" style={{ borderColor: LINE }}>
+          <EllipsisVerticalIcon className="size-[10px]" style={{ color: MUTED }} />
+        </span>
+      </div>
+      <Bar w={130} h={4} className="mt-[6px]" />
+      <span className="mt-[10px] block text-[9px] font-semibold">Albert House move-in pack</span>
+      <div className="absolute inset-x-0 overflow-visible rounded-[8px] border bg-white" style={{ top: ROW_TOP - 42, height: ROW_H * 3, borderColor: LINE }}>
+        {BATCH.map((d, i) => (
+          <div key={d.name} className="absolute inset-x-0 flex items-center gap-[7px] px-[8px]" style={{ top: i * ROW_H, height: ROW_H, borderTop: i ? `1px solid ${LINE}` : undefined }}>
+            <motion.span
+              className="pointer-events-none absolute -inset-[1px] rounded-[8px]"
+              initial={false}
+              animate={{ boxShadow: `inset 0 0 0 ${selected === i ? 1.5 : 0}px ${SELECTED}` }}
+              transition={{ duration: 0.25 }}
+            />
+            <span className="flex size-[20px] shrink-0 items-center justify-center rounded-[5px] bg-[#eef0f4]">
+              <DocOutlineIcon className="size-[11px]" style={{ color: MUTED }} />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+              <span className="truncate text-[9.5px] font-medium">{d.name}</span>
+              <span className="flex items-center gap-[3px] text-[7px]" style={{ color: MUTED }}>
+                {d.pages} pgs · <PrepPill ready={ready[i]} delay={0.1 + i * 0.3} />
+              </span>
+            </span>
+            <span className="flex h-[19px] shrink-0 items-center rounded-[5px] px-[8px] text-[8.5px] font-semibold text-white" style={{ background: PRIMARY }}>
+              Prepare
+            </span>
+            <XMarkIcon className="size-[10px] shrink-0" style={{ color: MUTED }} />
+          </div>
+        ))}
+      </div>
+      <div
+        className="absolute inset-x-0 flex h-[22px] items-center justify-center gap-[3px] rounded-[7px] border border-dashed bg-white text-[8px] font-medium"
+        style={{ top: ROW_TOP - 42 + ROW_H * 3 + 8, borderColor: "#d3d6de", color: INK }}
+      >
+        <PlusIcon className="size-[9px]" />
+        Add Document
+      </div>
+      <div className="absolute inset-x-0 flex items-center gap-[6px] text-[8px] font-medium" style={{ top: ROW_TOP - 42 + ROW_H * 3 + 44 }}>
+        <span className="rounded-[5px] border px-[7px] py-[4px]" style={{ borderColor: LINE, color: "#c3c6cf" }}>
+          Reset Draft
+        </span>
+        <span className="ml-auto rounded-[5px] border bg-white px-[7px] py-[4px]" style={{ borderColor: "#d3d6de" }}>
+          Save a Copy
+        </span>
+        <span className="rounded-[5px] px-[9px] py-[4px] text-white" style={{ background: PRIMARY_OFF }}>
+          Save
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
+/** The details panel: everything a document already holds, without opening it. */
+function DetailsPanel({ doc }: { doc: number }) {
+  const d = BATCH[doc];
+  return (
+    <div className="absolute inset-0 px-[10px]">
+      <div className="mt-[12px] flex items-center justify-between">
+        <span className="text-[11.5px] font-semibold">Document Details</span>
+        <span className="flex items-center gap-[3px] rounded-[5px] border bg-white px-[5px] py-[2px] text-[7.5px] font-medium" style={{ borderColor: "#d3d6de" }}>
+          <PencilSquareIcon className="size-[8px]" />
+          Edit
+        </span>
+      </div>
+      <span className="mt-[8px] block text-[6.5px]" style={{ color: MUTED }}>
+        Template
+      </span>
+      <div className="relative mt-[3px] h-[74px] rounded-[7px] bg-[#e9ebf0]">
+        <span className="absolute top-[5px] left-[5px] rounded-full bg-white px-[4px] py-[1px] text-[6px] font-medium">Page 1 / {d.pages}</span>
+        <div className="absolute top-[8px] left-1/2 flex h-[60px] w-[46px] -translate-x-1/2 flex-col gap-[3px] bg-white px-[5px] pt-[6px] shadow-[0_1px_3px_rgba(20,20,80,0.15)]">
+          <Bar w="70%" h={2.5} color="#cdd1dc" className="mx-auto mb-[2px]" />
+          {[90, 100, 80, 96, 70, 88].map((w, i) => (
+            <Bar key={i} w={`${w}%`} h={1.5} />
+          ))}
+        </div>
+      </div>
+      <div className="mt-[6px] flex items-center justify-between">
+        <span className="truncate text-[8.5px] font-semibold">{d.name}</span>
+        <span className="shrink-0 rounded-full bg-[#eceef3] px-[4px] py-[1px] text-[6.5px] font-medium">{d.pages} pages</span>
+      </div>
+      <span className="mt-[9px] block text-[7.5px] font-semibold" style={{ color: MUTED }}>
+        Participants & Fields
+      </span>
+      <div className="mt-[4px] flex flex-col gap-[3px]">
+        {PARTICIPANTS[doc].map((p) => (
+          <div key={p.n} className="flex h-[15px] items-center gap-[4px] rounded-[5px] border bg-white px-[3px] text-[7px]" style={{ borderColor: LINE }}>
+            <span
+              className="flex h-[10px] min-w-[13px] items-center justify-center rounded-[3px] text-[6px] font-semibold"
+              style={{ background: p.tint?.pill ?? "#eceef3", color: p.tint?.ink ?? MUTED }}
+            >
+              {p.n}
+            </span>
+            <span className="font-medium">{p.who}</span>
+            <span style={{ color: MUTED }}>{p.role}</span>
+            <span
+              className="ml-auto rounded-[3px] px-[3px] text-[6.5px] font-medium"
+              style={{ background: p.tint?.pill ?? "#eceef3", color: p.tint?.ink ?? INK }}
+            >
+              {p.fields} Fields
+            </span>
+          </div>
+        ))}
+      </div>
+      <span className="mt-[9px] block text-[7.5px] font-semibold" style={{ color: MUTED }}>
+        Recipients
+      </span>
+      <div className="mt-[4px] flex flex-wrap gap-[3px]">
+        {PARTICIPANTS[doc].slice(1).map((p) => (
+          <span key={p.n} className="flex items-center gap-[3px] rounded-full border bg-white py-[1px] pr-[4px] pl-[2px] text-[6.5px]" style={{ borderColor: LINE }}>
+            <span className="rounded-full px-[3px] text-[5.5px] font-semibold" style={{ background: p.tint?.pill, color: p.tint?.ink }}>
+              {p.n}
+            </span>
+            {p.who}
+            <span style={{ color: p.tint?.fg }}>No details</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DetailsScene({ s }: { s: number }) {
+  const open = s >= 2 && s <= 4;
+  const doc = s >= 4 ? 1 : 0;
+  return (
+    <AppWindow>
+      <DraftsChrome crumbs={["Batch Overview"]} />
+      <BatchList open={open} selected={open ? doc : null} />
+      <motion.div
+        className="absolute top-[42px] right-0 bottom-0 overflow-hidden border-l bg-[#f7f8fa]"
+        style={{ width: 162, borderColor: LINE }}
+        initial={false}
+        animate={{ x: open ? 0 : 170, opacity: open ? 1 : 0 }}
+        transition={{ duration: 0.55, ease: EASE }}
+      >
+        <AnimatePresence initial={false} mode="popLayout">
+          <motion.div key={doc} className="absolute inset-0" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+            <DetailsPanel doc={doc} />
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
+    </AppWindow>
+  );
+}
+
+
+/* Drilling in and out ------------------------------------------------------ */
+
+// Stage spots: a document's Prepare button, and the first breadcrumb.
+const PREPARE_AT = (i: number): [number, number] => [24 + LIST.closed.left + 231, 24 + ROW_TOP + 20 + i * ROW_H];
+const CRUMB_AT: [number, number] = [78, 55];
+
+const SECTIONS = [
+  { name: "Document Name", ready: true },
+  { name: "Underlying File", ready: true },
+  { name: "Template Preparation", ready: true },
+  { name: "Field Content", ready: false },
+  { name: "Recipient Details", ready: false },
+];
+
+/** A document's overview: its sections as cards, each with a status. */
+function DocOverview() {
+  return (
+    <div className="absolute top-[42px] bottom-0" style={{ left: LIST.closed.left, width: LIST.closed.width }}>
+      <div className="mt-[10px] flex items-center gap-[7px]">
+        <span className="flex size-[16px] items-center justify-center rounded-full border bg-white" style={{ borderColor: LINE }}>
+          <ChevronLeftIcon className="size-[9px]" style={{ color: MUTED }} />
+        </span>
+        <span className="text-[15px] font-semibold">Document Overview</span>
+      </div>
+      <Bar w={150} h={4} className="mt-[6px] ml-[23px]" />
+      <div className="mt-[12px] flex flex-col gap-[6px]">
+        {SECTIONS.map((c) => (
+          <div key={c.name} className="flex h-[34px] items-center gap-[7px] rounded-[8px] border bg-white px-[8px]" style={{ borderColor: LINE }}>
+            <span className="flex size-[18px] shrink-0 items-center justify-center rounded-[5px] bg-[#eef0f4]">
+              <DocOutlineIcon className="size-[10px]" style={{ color: MUTED }} />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-[4px]">
+              <span className="flex items-center gap-[4px] text-[9px] font-semibold">
+                {c.name}
+                {!c.ready && <PrepPill />}
+              </span>
+              <Bar w={110} h={3} />
+            </span>
+            {c.ready ? (
+              <span className="flex items-center gap-[3px] rounded-[5px] border bg-white px-[6px] py-[3px] text-[8px] font-medium" style={{ borderColor: "#d3d6de" }}>
+                <PencilSquareIcon className="size-[8px]" />
+                Edit
+              </span>
+            ) : (
+              <span className="rounded-[5px] px-[7px] py-[4px] text-[8px] font-semibold text-white" style={{ background: PRIMARY }}>
+                Prepare
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DrillScene({ s }: { s: number }) {
+  const deep = s === 2 || s === 3;
+  return (
+    <AppWindow>
+      <DraftsChrome crumbs={deep ? ["Batch Overview", "Tenancy Agreement"] : ["Batch Overview"]} />
+      <motion.div className="absolute inset-0" initial={false} animate={{ x: deep ? -40 : 0, opacity: deep ? 0 : 1 }} transition={{ duration: 0.45, ease: EASE }}>
+        <BatchList />
+      </motion.div>
+      <motion.div className="absolute inset-0" initial={false} animate={{ x: deep ? 0 : 40, opacity: deep ? 1 : 0 }} transition={{ duration: 0.45, ease: EASE }}>
+        <DocOverview />
+      </motion.div>
+    </AppWindow>
+  );
+}
+
+/* The to-do list ------------------------------------------------------------ */
+
+// The dropdown hangs from the to-do button. Window-relative; rows are stage spots.
+const TODO = { right: 8, top: 40, width: 196 };
+const TODO_AT: [number, number] = [427, 55];
+const TODO_ROW_AT = (i: number): [number, number] => [24 + 432 - TODO.right - 80, 24 + TODO.top + 52 + i * 28];
+
+type TodoLevel = "docs" | "sections" | "issues" | "done";
+
+/** One line of the to-do list: what's wrong, and where it is. */
+function TodoRow({ title, note, warn = false, chevron = true }: { title: string; note: string; warn?: boolean; chevron?: boolean }) {
+  return (
+    <div className="flex h-[26px] items-center gap-[5px] rounded-[6px] px-[5px]">
+      {warn && <ExclamationTriangleIcon className="size-[9px] shrink-0" style={{ color: DANGER }} />}
+      <span className="flex min-w-0 flex-1 flex-col gap-[1px]">
+        <span className="truncate text-[8px] font-semibold">{title}</span>
+        <span className="truncate text-[6.5px]" style={{ color: warn ? DANGER : MUTED }}>
+          {note}
+        </span>
+      </span>
+      {chevron && <ChevronRightIcon className="size-[9px] shrink-0" style={{ color: MUTED }} />}
+    </div>
+  );
+}
+
+const TODO_LEVELS: Record<Exclude<TodoLevel, "done">, { crumb?: string; count: string; rows: { title: string; note: string; warn?: boolean }[] }> = {
+  docs: {
+    count: "12 Items",
+    rows: [
+      { title: "Property Inspection Report", note: "10 items required" },
+      { title: "Tenancy Agreement", note: "1 item required" },
+      { title: "Inventory and Key Handover", note: "1 item required" },
+    ],
+  },
+  sections: {
+    crumb: "Property Inspection Report",
+    count: "10 Items",
+    rows: [
+      { title: "Field Content", note: "4 items require attention", warn: true },
+      { title: "Recipient Details", note: "6 items require attention", warn: true },
+    ],
+  },
+  issues: {
+    crumb: "Property Inspection Report / Recipient Details",
+    count: "6 Issues",
+    rows: [
+      { title: "First Name", note: "First name for Landlord is a required field", warn: true },
+      { title: "Last Name", note: "Last name for Landlord is a required field", warn: true },
+      { title: "Email", note: "Email for Landlord is a required field", warn: true },
+    ],
+  },
+};
+
+function TodoDropdown({ level }: { level: TodoLevel | null }) {
+  return (
+    <motion.div
+      className="absolute z-10 overflow-hidden rounded-[10px] border bg-white"
+      style={{ right: TODO.right, top: TODO.top, width: TODO.width, borderColor: LINE, boxShadow: SHADOW, transformOrigin: "top right" }}
+      initial={false}
+      animate={{ opacity: level ? 1 : 0, scale: level ? 1 : 0.94, y: level ? 0 : -4 }}
+      transition={{ duration: 0.3, ease: EASE }}
+    >
+      <AnimatePresence initial={false} mode="popLayout">
+        <motion.div key={level ?? "none"} className="p-[8px]" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: 0.3, ease: EASE }}>
+          {level === "done" ? (
+            <div className="flex flex-col items-center gap-[4px] py-[14px] text-center">
+              <CheckCircleIcon className="size-[22px]" style={{ color: "#22b07d" }} />
+              <span className="text-[9.5px] font-semibold">All Documents Ready to Send</span>
+              <span className="text-[7px]" style={{ color: MUTED }}>
+                Nothing left to prepare.
+              </span>
+            </div>
+          ) : (
+            level && (
+              <>
+                <span className="block h-[9px] truncate text-[6.5px]" style={{ color: PRIMARY }}>
+                  {TODO_LEVELS[level].crumb}
+                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[9.5px] font-semibold">Required Actions</span>
+                  <span className="rounded-full px-[4px] py-[1px] text-[6.5px] font-semibold" style={{ background: PREP.bg, color: PREP.ink }}>
+                    {TODO_LEVELS[level].count}
+                  </span>
+                </div>
+                <Bar w={110} h={3} className="mt-[4px] mb-[6px]" />
+                {TODO_LEVELS[level].rows.map((r) => (
+                  <TodoRow key={r.title} {...r} chevron={level !== "issues"} />
+                ))}
+              </>
+            )
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+const TODO_STEPS: (TodoLevel | null)[] = [null, null, "docs", "docs", "sections", "sections", "issues", "issues", null, null, "done", null];
+
+function TodoScene({ s }: { s: number }) {
+  const allReady = s >= 9;
+  return (
+    <AppWindow>
+      <DraftsChrome crumbs={["Batch Overview"]} done={allReady} />
+      <BatchList ready={allReady ? [true, true, true] : []} />
+      <TodoDropdown level={TODO_STEPS[s]} />
+    </AppWindow>
+  );
+}
+
+/* Link Field Content -------------------------------------------------------- */
+
+const ADDRESS = "14 Albert House, Kensington Gardens Sq";
+const FIELD_INPUT_AT: [number, number] = [24 + 90, 24 + 131];
+const LINK_AT: [number, number] = [24 + 206, 24 + 150];
+const LINK_MODAL = { left: 106, top: 92, width: 220 };
+const LINK_FIELDS_AT: [number, number] = [24 + LINK_MODAL.left + 182, 24 + LINK_MODAL.top + 104];
+
+/** A sender field: its type and label, then the box to fill. */
+function SenderField({ icon: Icon, type, label, top, value, children }: { icon: typeof LinkIcon; type: string; label: string; top: number; value?: ReactNode; children?: ReactNode }) {
+  return (
+    <div className="absolute inset-x-0" style={{ top }}>
+      <div className="flex items-center gap-[3px]">
+        <span className="flex items-center gap-[3px] rounded-[4px] bg-[#eceef3] px-[4px] py-[1px] text-[7px] font-medium" style={{ color: MUTED }}>
+          <Icon className="size-[7px]" />
+          {type}
+          <span className="opacity-50">|</span>
+          <span style={{ color: INK }}>{label}</span>
+        </span>
+        {children}
+      </div>
+      <div className="mt-[4px] flex h-[18px] items-center rounded-[5px] border bg-white px-[6px] text-[7.5px]" style={{ borderColor: "#d9dce4" }}>
+        {value ?? <span style={{ color: "#b3b7c2" }}>Content Required</span>}
+      </div>
+    </div>
+  );
+}
+
+/** The document beside the fields, with the address filling in as it's typed. */
+function FieldPreview({ typed }: { typed: boolean }) {
+  return (
+    <Sheet style={{ left: 250, top: 54, width: 168, height: 220 }}>
+      <div className="flex flex-col gap-[5px] px-[12px] pt-[14px]">
+        <Bar w="60%" h={5} color="#cdd1dc" className="mx-auto mb-[6px]" />
+        <Bar w="40%" h={3} color="#cdd1dc" />
+        <div className="relative h-[12px] rounded-[2px] border" style={{ borderColor: "#9bb6f6", background: "#f3f6ff" }}>
+          <motion.span
+            className="absolute inset-y-0 left-[3px] flex items-center overflow-hidden text-[5.5px] whitespace-nowrap"
+            initial={false}
+            animate={{ width: typed ? "92%" : "0%" }}
+            transition={{ duration: typed ? 1.2 : 0.2, ease: "linear" }}
+          >
+            {ADDRESS}
+          </motion.span>
+        </div>
+        {[100, 92, 84, 100, 70, 96, 88, 60, 100, 90, 76].map((w, i) => (
+          <Bar key={i} w={`${w}%`} h={2.5} />
+        ))}
+      </div>
+    </Sheet>
+  );
+}
+
+function LinkFieldScene({ s }: { s: number }) {
+  const typed = s >= 2;
+  const modal = s === 4 || s === 5;
+  const linked = s >= 6;
+  return (
+    <>
+      <motion.div className="absolute inset-0" initial={false} animate={{ filter: modal ? "blur(2px)" : "blur(0px)" }} transition={{ duration: 0.3 }}>
+        <AppWindow>
+          <DraftsChrome crumbs={["Batch Overview", "Tenancy Agreement", "Field Content"]} />
+          <div className="absolute top-[42px] bottom-0 left-[14px]" style={{ width: 222 }}>
+            <span className="mt-[10px] block text-[14px] font-semibold">Field Content</span>
+            <Bar w={150} h={4} className="mt-[5px]" />
+            <div className="mt-[8px] flex items-center gap-[4px] text-[7px]">
+              <span className="rounded-full border bg-white px-[5px] py-[2px]" style={{ borderColor: LINE, color: MUTED }}>
+                Filling fields for: <span style={{ color: INK }}>Sender</span>
+              </span>
+              <span className="rounded-full px-[4px] py-[1px] font-semibold" style={{ background: "#ffecee", color: "#d4302e" }}>
+                {typed ? 3 : 4} Required
+              </span>
+            </div>
+            <SenderField
+              icon={Bars3BottomLeftIcon}
+              type="Text"
+              label="Property Address"
+              top={66}
+              value={
+                typed ? (
+                  <motion.span className="overflow-hidden whitespace-nowrap" initial={{ width: 0 }} animate={{ width: "auto" }} transition={{ duration: 1.2, ease: "linear" }}>
+                    {ADDRESS}
+                  </motion.span>
+                ) : undefined
+              }
+            >
+              <motion.span
+                className="ml-auto rounded-[4px] px-[4px] py-[1px] text-[6.5px] font-semibold"
+                style={{ background: "#dae7fe", color: "#283399" }}
+                initial={false}
+                animate={{ opacity: linked ? 1 : 0, scale: linked ? 1 : 0.8 }}
+              >
+                Linked
+              </motion.span>
+            </SenderField>
+            <div className="absolute inset-x-0 flex items-center justify-between text-[6.5px]" style={{ top: 105, color: MUTED }}>
+              <span>{linked ? "Field content linked across 3 documents." : "Same field found in 3 documents."}</span>
+              <span className="flex items-center gap-[2px] font-medium" style={{ color: PRIMARY }}>
+                <LinkIcon className="size-[7px]" />
+                {linked ? "Break Field Link" : "Link Field Content"}
+              </span>
+            </div>
+            <SenderField icon={CalendarIcon} type="Date" label="Move-in Date" top={124} />
+            <SenderField icon={HashtagIcon} type="Number" label="Monthly Rent" top={164} />
+            <div className="absolute inset-x-0 flex items-center justify-between text-[8px] font-medium" style={{ top: 238 }}>
+              <span style={{ color: MUTED }}>Reset Field Content</span>
+              <span className="flex items-center gap-[3px] rounded-[5px] px-[8px] py-[4px] text-white" style={{ background: PRIMARY }}>
+                <CheckIcon className="size-[8px]" />
+                Done
+              </span>
+            </div>
+          </div>
+          <FieldPreview typed={typed} />
+        </AppWindow>
+      </motion.div>
+      <motion.div className="absolute inset-0 bg-[#1a2160]" initial={false} animate={{ opacity: modal ? 0.3 : 0 }} transition={{ duration: 0.3 }} />
+      <motion.div
+        className="absolute rounded-[12px] bg-white p-[12px]"
+        style={{ ...LINK_MODAL, boxShadow: SHADOW }}
+        initial={false}
+        animate={{ opacity: modal ? 1 : 0, scale: modal ? 1 : 0.94, y: modal ? 0 : 8 }}
+        transition={{ duration: 0.3, ease: EASE }}
+      >
+        <div className="flex items-center gap-[5px]">
+          <span className="flex size-[16px] items-center justify-center rounded-[5px]" style={{ background: PRIMARY_SOFT, color: PRIMARY }}>
+            <LinkIcon className="size-[9px]" />
+          </span>
+          <span className="text-[11px] font-semibold">Link Field Content</span>
+        </div>
+        <p className="mt-[8px] text-[7.5px] leading-snug" style={{ color: MUTED }}>
+          Save time by automatically linking Sender Fields across multiple Documents. All matching fields will initially adopt the value entered in this field.
+        </p>
+        <div className="mt-[12px] flex justify-end gap-[5px] text-[8px] font-medium">
+          <span className="rounded-[5px] border px-[8px] py-[4px]" style={{ borderColor: "#d3d6de" }}>
+            Cancel
+          </span>
+          <span className="rounded-[5px] px-[8px] py-[4px] text-white" style={{ background: PRIMARY }}>
+            Link Fields
+          </span>
+        </div>
+      </motion.div>
+      <Toast show={linked} text="Field linked across 3 documents" />
+    </>
+  );
+}
+
+/** The green note in the corner that confirms a change. */
+function Toast({ show, text }: { show: boolean; text: string }) {
+  return (
+    <motion.div
+      className="absolute flex items-center gap-[5px] rounded-[7px] border bg-white px-[8px] py-[5px] text-[8px] font-medium"
+      style={{ left: 36, bottom: 62, borderColor: "#bfeedc", boxShadow: "0 6px 16px -8px rgba(20,20,80,0.35)" }}
+      initial={false}
+      animate={{ opacity: show ? 1 : 0, y: show ? 0 : 8 }}
+      transition={{ duration: 0.35, ease: EASE, delay: show ? 0.25 : 0 }}
+    >
+      <CheckCircleIcon className="size-[10px]" style={{ color: "#22b07d" }} />
+      {text}
+    </motion.div>
+  );
+}
+
+/* Manage Linked Fields ------------------------------------------------------ */
+
+const MANAGE = { left: 84, top: 18, width: 312, height: 324 };
+const MANAGE_AT = (x: number, y: number): [number, number] => [MANAGE.left + x, MANAGE.top + y];
+const LINK_BTN_AT = MANAGE_AT(268, 187);
+const PICK_AT = MANAGE_AT(70, 219);
+const CONFIRM_AT = MANAGE_AT(278, 255);
+
+/** One shared label in Manage Linked Fields: its value in every document. */
+function LinkGroup({
+  icon: Icon,
+  type,
+  label,
+  docs,
+  linked,
+  top,
+  children,
+}: {
+  icon: typeof LinkIcon;
+  type: string;
+  label: string;
+  docs: { name: string; value: string | null }[];
+  linked: boolean;
+  top: number;
+  children?: ReactNode;
+}) {
+  return (
+    <motion.div className="absolute inset-x-[12px] overflow-hidden rounded-[8px] border bg-white" style={{ top, borderColor: LINE }} layout transition={{ duration: 0.4, ease: EASE }}>
+      <div className="flex h-[20px] items-center gap-[4px] border-b px-[6px] text-[7.5px]" style={{ borderColor: LINE }}>
+        <span className="flex items-center gap-[2px] rounded-[3px] bg-[#eceef3] px-[3px] text-[6.5px]" style={{ color: MUTED }}>
+          <Icon className="size-[7px]" />
+          {type}
+        </span>
+        <span className="font-semibold">{label}</span>
+        <span className="text-[6.5px]" style={{ color: MUTED }}>
+          {linked ? `Linked across ${docs.length} Documents` : `Found in ${docs.length} Documents`}
+        </span>
+        <motion.span
+          className="ml-auto rounded-[4px] px-[4px] py-[1px] text-[6.5px] font-semibold"
+          initial={false}
+          animate={{ backgroundColor: linked ? "#dae7fe" : "#eceef3", color: linked ? "#283399" : MUTED }}
+        >
+          {linked ? "Linked" : "Unlinked"}
+        </motion.span>
+      </div>
+      {docs.map((d) => (
+        <div key={d.name} className="flex h-[13px] items-center gap-[4px] border-b bg-[#f7f8fa] px-[6px] text-[6.5px]" style={{ borderColor: LINE }}>
+          <DocOutlineIcon className="size-[8px]" style={{ color: MUTED }} />
+          <span className="font-medium">{d.name}</span>
+          <span style={{ color: MUTED }}>
+            · Value: <span style={{ color: d.value ? INK : MUTED }}>{d.value ?? "No Value Entered"}</span>
+          </span>
+          <LinkIcon className="ml-auto size-[7px]" style={{ color: linked ? PRIMARY : "#c3c6cf" }} />
+        </div>
+      ))}
+      {children}
+    </motion.div>
+  );
+}
+
+function Radio({ on, label }: { on: boolean; label: string }) {
+  return (
+    <motion.div
+      className="flex h-[14px] items-center gap-[5px] rounded-[5px] border px-[5px] text-[7px]"
+      initial={false}
+      animate={{ borderColor: on ? "#9bb6f6" : LINE, backgroundColor: on ? PRIMARY_SOFT : "#f7f8fa" }}
+    >
+      <span className="flex size-[7px] items-center justify-center rounded-full border" style={{ borderColor: on ? PRIMARY : "#c3c6cf" }}>
+        <motion.span className="size-[4px] rounded-full" style={{ background: PRIMARY }} initial={false} animate={{ scale: on ? 1 : 0 }} />
+      </span>
+      {label}
+    </motion.div>
+  );
+}
+
+function ManageScene({ s }: { s: number }) {
+  const picking = s >= 2 && s <= 5;
+  const picked = s >= 4;
+  const linked = s >= 6;
+  const date = "01/12/2026";
+  return (
+    <>
+      <div className="absolute inset-0 blur-[2px]">
+        <AppWindow>
+          <DraftsChrome crumbs={["Batch Overview", "Inventory and Key Handover", "Field Content"]} />
+          <div className="absolute top-[52px] left-[14px] w-[222px]">
+            <Bar w={90} h={9} color="#c9ccd6" />
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="mt-[14px] flex flex-col gap-[4px]">
+                <Bar w={80} h={5} />
+                <span className="block h-[18px] rounded-[5px] border bg-white" style={{ borderColor: "#d9dce4" }} />
+              </div>
+            ))}
+          </div>
+          <Sheet style={{ left: 250, top: 54, width: 168, height: 220 }}>
+            <Page lines={3} />
+          </Sheet>
+        </AppWindow>
+      </div>
+      <div className="absolute inset-0 bg-[#1a2160]/30" />
+      <div className="absolute overflow-hidden rounded-[14px] bg-white" style={{ ...MANAGE, boxShadow: SHADOW }}>
+        <div className="flex items-center justify-between px-[12px] pt-[12px]">
+          <span className="text-[12px] font-semibold">Manage Linked Fields</span>
+          <XMarkIcon className="size-[11px]" style={{ color: MUTED }} />
+        </div>
+        <div className="mt-[8px] border-l-2 px-[10px] py-[5px] text-[7px]" style={{ background: PRIMARY_SOFT, borderColor: PRIMARY, color: "#283399" }}>
+          Link fields with the same label across Documents so content only needs to be entered once.
+        </div>
+        <LinkGroup
+          icon={Bars3BottomLeftIcon}
+          type="Text"
+          label="Property Address"
+          linked
+          top={62}
+          docs={BATCH.map((d) => ({ name: d.name, value: "14 Albert House, Kensington…" }))}
+        />
+        <LinkGroup
+          icon={CalendarIcon}
+          type="Date"
+          label="Move-in Date"
+          linked={linked}
+          top={128}
+          docs={[
+            { name: "Tenancy Agreement", value: date },
+            { name: "Inventory and Key Handover", value: linked ? date : null },
+          ]}
+        >
+          <AnimatePresence initial={false} mode="popLayout">
+            {picking ? (
+              <motion.div key="pick" className="flex flex-col gap-[3px] px-[6px] py-[6px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <span className="flex h-[12px] items-center gap-[4px] text-[7.5px] font-semibold">
+                  Select Linked Value
+                  <span className="text-[6px] font-normal" style={{ color: MUTED }}>
+                    The value every document will use.
+                  </span>
+                </span>
+                <Radio on={false} label="No Value (Leave Blank)" />
+                <Radio on={picked} label={date} />
+                <Radio on={false} label="Enter Linked Value" />
+                <div className="mt-[1px] flex h-[16px] items-center justify-end gap-[4px] text-[7px] font-medium">
+                  <span className="rounded-[4px] border px-[6px] py-[2px]" style={{ borderColor: "#d3d6de" }}>
+                    Cancel
+                  </span>
+                  <motion.span className="rounded-[4px] px-[6px] py-[2px] text-white" initial={false} animate={{ backgroundColor: picked ? PRIMARY : PRIMARY_OFF }}>
+                    Confirm
+                  </motion.span>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div key={linked ? "linked" : "link"} className="flex h-[26px] items-center gap-[4px] px-[6px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <span className="flex flex-col">
+                  <span className="text-[7px] font-semibold">{linked ? "2 Fields Linked" : "Available to Link"}</span>
+                  <span className="text-[6px]" style={{ color: MUTED }}>
+                    {linked ? "Editing linked fields will update all Documents." : "Once linked, editing any one updates them all."}
+                  </span>
+                </span>
+                {linked ? (
+                  <span className="ml-auto rounded-[4px] border px-[5px] py-[2px] text-[7px] font-medium" style={{ borderColor: "#d3d6de" }}>
+                    Break Links
+                  </span>
+                ) : (
+                  <span className="ml-auto flex items-center gap-[2px] rounded-[4px] px-[6px] py-[3px] text-[7px] font-semibold text-white" style={{ background: PRIMARY }}>
+                    <LinkIcon className="size-[7px]" />
+                    Link Fields
+                  </span>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </LinkGroup>
+        <div className="absolute inset-x-0 bottom-0 flex justify-end gap-[5px] border-t px-[12px] py-[8px] text-[8px] font-medium" style={{ borderColor: LINE }}>
+          <span className="rounded-[5px] border px-[8px] py-[3px]" style={{ borderColor: "#d3d6de" }}>
+            Cancel
+          </span>
+          <span className="rounded-[5px] px-[9px] py-[3px] text-white" style={{ background: PRIMARY }}>
+            Done
+          </span>
+        </div>
+      </div>
+      <Toast show={linked} text="Fields linked successfully" />
+    </>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
 
 const REST: [number, number] = [430, 330];
 
@@ -1545,5 +2338,80 @@ const LOOPS: Record<DecisionLoopName, Loop> = {
     ],
     still: 4,
     Scene: AgainScene,
+  },
+  details: {
+    label: "Selecting a document in the batch slides the list over and opens a details panel with its template, pages and participants; selecting another swaps the panel to that document, and selecting it again closes the panel.",
+    steps: [
+      { ms: 800, cursor: REST },
+      { ms: 700, cursor: DOC_AT(0, false) },
+      { ms: 2000, cursor: DOC_AT(0, false), click: true },
+      { ms: 700, cursor: DOC_AT(1, true) },
+      { ms: 2200, cursor: DOC_AT(1, true), click: true },
+      { ms: 1400, cursor: DOC_AT(1, true), click: true },
+      { ms: 900, cursor: REST },
+    ],
+    still: 4,
+    Scene: DetailsScene,
+  },
+  drill: {
+    label: "Prepare on a document in the batch opens its overview, with every section as a card that says if it needs preparing; the Batch Overview breadcrumb goes straight back.",
+    steps: [
+      { ms: 800, cursor: REST },
+      { ms: 700, cursor: PREPARE_AT(1) },
+      { ms: 2400, cursor: PREPARE_AT(1), click: true },
+      { ms: 800, cursor: CRUMB_AT },
+      { ms: 1800, cursor: CRUMB_AT, click: true },
+    ],
+    still: 2,
+    Scene: DrillScene,
+  },
+  todo: {
+    label: "The to-do list drills from the documents in the batch, to a document's sections, to the exact fields still missing; once everything is prepared it turns green and says all documents are ready to send.",
+    steps: [
+      { ms: 700, cursor: REST },
+      { ms: 600, cursor: TODO_AT },
+      { ms: 1400, cursor: TODO_AT, click: true },
+      { ms: 600, cursor: TODO_ROW_AT(0) },
+      { ms: 1400, cursor: TODO_ROW_AT(0), click: true },
+      { ms: 600, cursor: TODO_ROW_AT(1) },
+      { ms: 2000, cursor: TODO_ROW_AT(1), click: true },
+      { ms: 600, cursor: TODO_AT },
+      { ms: 900, cursor: TODO_AT, click: true },
+      { ms: 2200, cursor: [400, 120] },
+      { ms: 2400, cursor: TODO_AT, click: true },
+      { ms: 800, cursor: TODO_AT, click: true },
+    ],
+    still: 6,
+    Scene: TodoScene,
+  },
+  linkField: {
+    label: "Typing a property address into a sender field fills it on the document; the field notes it's found in three documents, and Link Field Content, confirmed in a dialog, links it so it fills everywhere.",
+    steps: [
+      { ms: 700, cursor: REST },
+      { ms: 600, cursor: FIELD_INPUT_AT },
+      { ms: 1700, cursor: FIELD_INPUT_AT, click: true },
+      { ms: 700, cursor: LINK_AT },
+      { ms: 1500, cursor: LINK_AT, click: true },
+      { ms: 600, cursor: LINK_FIELDS_AT },
+      { ms: 2800, cursor: LINK_FIELDS_AT, click: true },
+      { ms: 800, cursor: REST },
+    ],
+    still: 6,
+    Scene: LinkFieldScene,
+  },
+  manageLinks: {
+    label: "Manage Linked Fields lists every label shared across the documents with its value in each; linking the Move-in Date asks which value to keep, and picking the one already entered fills it in both documents.",
+    steps: [
+      { ms: 900, cursor: REST },
+      { ms: 700, cursor: LINK_BTN_AT },
+      { ms: 1200, cursor: LINK_BTN_AT, click: true },
+      { ms: 600, cursor: PICK_AT },
+      { ms: 900, cursor: PICK_AT, click: true },
+      { ms: 600, cursor: CONFIRM_AT },
+      { ms: 2800, cursor: CONFIRM_AT, click: true },
+      { ms: 900, cursor: REST },
+    ],
+    still: 6,
+    Scene: ManageScene,
   },
 };

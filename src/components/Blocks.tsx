@@ -640,7 +640,7 @@ function BlockView({
       );
     }
     case "callouts": {
-      const withImages = b.items.some((it) => it.image?.src);
+      const withImages = b.items.some((it) => it.image?.src || it.loop);
       const intro = (
         <>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
@@ -850,10 +850,12 @@ function BlockView({
                       <h3 className="mt-4 text-[clamp(2rem,4.4vw,3.75rem)] leading-[1] font-bold tracking-[-0.035em] text-balance">
                         {it.title}
                       </h3>
-                      {it.image && <div className="mt-6 max-w-md">{words}</div>}
+                      {(it.image || it.loop) && <div className="mt-6 max-w-md">{words}</div>}
                     </div>
-                    <div className={`md:col-span-6 ${it.image ? "" : "self-end md:pb-1"}`}>
-                      {it.image?.src ? (
+                    <div className={`md:col-span-6 ${it.image || it.loop ? "" : "self-end md:pb-1"}`}>
+                      {it.loop ? (
+                        <DecisionLoop name={it.loop} />
+                      ) : it.image?.src ? (
                         <div className="overflow-hidden rounded-2xl border border-line bg-raised">
                           <Image
                             src={it.image.src}
