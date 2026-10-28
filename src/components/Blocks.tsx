@@ -31,6 +31,7 @@ import { Shortlist } from "./Shortlist";
 import { DoubleDiamond } from "./DoubleDiamond";
 import { LogicMap, StateMatrix } from "./LogicMap";
 import { Untangle } from "./Untangle";
+import { Skeleton } from "./Skeleton";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -992,6 +993,18 @@ function BlockView({
             </Reveal>
           )}
           {b.type === "logic-map" ? <LogicMap modes={b.modes} levels={b.levels} out={b.out} note={b.note} /> : <StateMatrix columns={b.columns} rows={b.rows} note={b.note} />}
+        </Section>
+      );
+    case "skeleton":
+      return (
+        <Section id={b.id}>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <Skeleton screens={b.screens} notes={b.notes} />
         </Section>
       );
     case "untangle":

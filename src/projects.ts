@@ -166,6 +166,28 @@ export type Block =
       principle?: { eyebrow?: string; heading: string; body: string[]; quote?: { text: string; by: string; url: string; logo?: "linear" } };
     }
   | { type: "gallery"; eyebrow?: string; heading: string; images: Img[] }
+  // A low-fidelity pass at a flow: grey-box screens joined by the moves
+  // between them (`next` and `back` label the way on and the way back from
+  // each screen), with numbered pins on shared parts. Pin n matches notes[n-1].
+  | {
+      type: "skeleton";
+      id?: string;
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      screens: {
+        name: string;
+        crumbs: string[];
+        rows: { label: string; status?: "prepare" | "ready" }[];
+        panel?: boolean;
+        secondary: string[];
+        primary: string;
+        next?: string;
+        back?: string;
+        marks?: { crumbs?: number; todo?: number; rows?: number; panel?: number; actions?: number };
+      }[];
+      notes: { title: string; body: string }[];
+    }
   // Every rule a feature has to honour, drawn as a knot that pulls straight
   // into the sections that own them as the page scrolls. `links` joins rules
   // that affect each other; `before` and `after` caption the two ends.
@@ -1578,6 +1600,64 @@ export const projects: Project[] = [
             body: "Next came a tabbed hub that also took in batch and bulk sending. It showed how far the idea could go, and how much it would cost to build. That told me where to cut for the first release.",
             image: { src: "/work/drafts/ideation-hub.webp", w: 1516, h: 1102, alt: "Early concept of a tabbed drafts hub covering batch sending", caption: "Ideation: a tabbed hub that tried to hold every kind of send." },
           },
+        ],
+      },
+      {
+        type: "skeleton",
+        id: "drafts-skeleton",
+        eyebrow: "The skeleton",
+        heading: "One frame for every screen, so drilling in never means getting lost.",
+        body: "With every rule given a home, the next job was the frame around them. Three levels, each with the same parts in the same places, so a sender always knows how deep they are, what's left, and how to get back.",
+        screens: [
+          {
+            name: "Send overview",
+            crumbs: ["Send overview"],
+            rows: [
+              { label: "Rental Agreement", status: "prepare" },
+              { label: "Lease Contract", status: "prepare" },
+              { label: "Service Agreement", status: "ready" },
+            ],
+            panel: true,
+            secondary: ["Reset draft", "Exit"],
+            primary: "Send",
+            next: "Prepare",
+            back: "Done",
+            marks: { todo: 2, rows: 3, panel: 4, actions: 6 },
+          },
+          {
+            name: "Document overview",
+            crumbs: ["Send overview", "Rental Agreement"],
+            rows: [
+              { label: "Document name", status: "ready" },
+              { label: "Underlying file", status: "ready" },
+              { label: "Template preparation", status: "ready" },
+              { label: "Field content", status: "prepare" },
+              { label: "Recipient details", status: "prepare" },
+              { label: "Recipient options", status: "ready" },
+              { label: "Document options", status: "ready" },
+            ],
+            secondary: ["Reset document"],
+            primary: "Done",
+            next: "Prepare",
+            back: "Done",
+            marks: { crumbs: 1, rows: 5 },
+          },
+          {
+            name: "Recipient details",
+            crumbs: ["Send overview", "Rental Agreement", "Recipient details"],
+            rows: [{ label: "Recipient 01 · Buyer" }, { label: "Recipient 02 · Buyer" }, { label: "Recipient 03 · Solicitor" }],
+            secondary: ["Reset", "Cancel"],
+            primary: "Done",
+            marks: { actions: 6 },
+          },
+        ],
+        notes: [
+          { title: "Breadcrumbs", body: "Always show how deep you are and the way back out." },
+          { title: "One to-do list", body: "In the same top-right spot on every screen, listing everything left before sending." },
+          { title: "A status on every card", body: "Preparation Required or Ready, and nothing more to decode." },
+          { title: "Peek before opening", body: "A details panel shows what a document already holds." },
+          { title: "Seven sections, same order", body: "Every document is prepared the same way, one section at a time." },
+          { title: "Actions in fixed places", body: "Reset on the left, Done or Send on the right, on every screen." },
         ],
       },
       {
