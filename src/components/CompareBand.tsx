@@ -1,16 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { basePath } from "@/lib/basePath";
 import type { Block } from "@/projects";
 import { LoopVideo } from "./LoopVideo";
 
 type Item = Extract<Block, { type: "comparison" }>["items"][number];
 
-// A deep blue from the band, for the line and its handle.
-const NAVY = "#1b2478";
-
+// The product's primary button blue, for the line and its handle.
+const BLUE = "#3949f3";
 
 /**
  * A before and after across the full width of the page: the section's words
@@ -70,7 +75,8 @@ export function CompareBand({
   // got there first or prefers less motion.
   useEffect(() => {
     const el = band.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      return;
     let raf = 0;
     const io = new IntersectionObserver(
       ([e]) => {
@@ -79,7 +85,8 @@ export function CompareBand({
         const keys = [0.5, 0.8, 0.2, 0.5];
         const leg = 1100;
         const start = performance.now() + 600;
-        const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+        const ease = (t: number) =>
+          t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
         const tick = (now: number) => {
           if (touched.current) return;
           const t = Math.max(0, now - start) / leg;
@@ -99,22 +106,36 @@ export function CompareBand({
     };
   }, []);
 
-  const moveTo = useCallback((clientX: number) => {
-    const b = band.current?.getBoundingClientRect();
-    if (!b) return;
-    setPos(clamp((clientX - b.left) / b.width));
-  }, [clamp]);
+  const moveTo = useCallback(
+    (clientX: number) => {
+      const b = band.current?.getBoundingClientRect();
+      if (!b) return;
+      setPos(clamp((clientX - b.left) / b.width));
+    },
+    [clamp],
+  );
 
   // How much of the window shows the before side, from its left edge.
   const shown = Math.min(1, Math.max(0, (pos - geo.left) / geo.width));
 
   return (
-    <div className="relative overflow-hidden py-16 text-white md:py-20" style={{ background: "linear-gradient(135deg, #5185ff, #4456f6)" }}>
+    <div
+      className="relative overflow-hidden py-16 text-white md:py-20"
+      style={{ background: "linear-gradient(135deg, #5185ff, #4456f6)" }}
+    >
       {(heading || body) && (
         <div className="mx-auto w-[84%] max-w-[1100px]">
           {eyebrow && <p className="eyebrow !text-white/70">{eyebrow}</p>}
-          {heading && <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">{heading}</h2>}
-          {body && <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">{body}</p>}
+          {heading && (
+            <h2 className="mt-4 max-w-3xl text-3xl leading-tight font-semibold tracking-tight md:text-5xl">
+              {heading}
+            </h2>
+          )}
+          {body && (
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/80">
+              {body}
+            </p>
+          )}
         </div>
       )}
 
@@ -132,29 +153,63 @@ export function CompareBand({
         onPointerUp={() => (dragging.current = false)}
         onPointerCancel={() => (dragging.current = false)}
       >
-        <div
-          ref={frame}
-          className="relative mx-auto w-[84%] max-w-[1100px] overflow-hidden rounded-[clamp(8px,1.4vw,18px)] bg-[#f4f5f8] shadow-[0_30px_60px_-20px_rgba(10,20,90,0.45)] ring-1 ring-white/40"
-        >
-          {/* The browser's tab and address bars, from the template. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${basePath}/work/quick-send/browser-bar.svg`} alt="" width={1440} height={79} className="pointer-events-none block h-auto w-full" draggable={false} />
-          <div className="pointer-events-none relative" style={{ aspectRatio: `${w} / ${h}` }}>
-            <Side still={c.after} alt={`${c.label}: ${afterName}`} video={c.videos?.after} />
-            <div className="absolute inset-0" style={{ clipPath: `inset(0 ${(1 - shown) * 100}% 0 0)` }}>
-              <Side still={c.before} alt={`${c.label}: ${beforeName}`} video={c.videos?.before} />
+        <div className="relative mx-auto w-[84%] max-w-[1100px]">
+          {/* Which side is which, running up the band beside the window. */}
+          <Side2
+            className="right-full mr-2 rotate-180 md:mr-5"
+            dim={shown < 0.04}
+          >
+            {beforeName}
+          </Side2>
+          <Side2 className="left-full ml-2 md:ml-5" dim={shown > 0.96}>
+            {afterName}
+          </Side2>
+          <div
+            ref={frame}
+            className="relative overflow-hidden rounded-[clamp(8px,1.4vw,18px)] bg-[#f4f5f8] shadow-[0_30px_60px_-20px_rgba(10,20,90,0.45)] ring-1 ring-white/40"
+          >
+            {/* The browser's tab and address bars, from the template. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${basePath}/work/quick-send/browser-bar.svg`}
+              alt=""
+              width={1440}
+              height={79}
+              className="pointer-events-none block h-auto w-full"
+              draggable={false}
+            />
+            <div
+              className="pointer-events-none relative"
+              style={{ aspectRatio: `${w} / ${h}` }}
+            >
+              <Side
+                still={c.after}
+                alt={`${c.label}: ${afterName}`}
+                video={c.videos?.after}
+              />
+              <div
+                className="absolute inset-0"
+                style={{ clipPath: `inset(0 ${(1 - shown) * 100}% 0 0)` }}
+              >
+                <Side
+                  still={c.before}
+                  alt={`${c.label}: ${beforeName}`}
+                  video={c.videos?.before}
+                />
+              </div>
             </div>
-            <Tag className="left-2 md:left-4" visible={shown > 0.04}>
-              {beforeName}
-            </Tag>
-            <Tag className="right-2 md:right-4" visible={shown < 0.96}>
-              {afterName}
-            </Tag>
           </div>
         </div>
 
         {/* A slim line through the window and a little past it, with a small handle level with the screen's middle. */}
-        <div className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 rounded-full" style={{ left: `${pos * 100}%`, background: NAVY }}>
+        <div
+          className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 rounded-full"
+          style={{
+            left: `${pos * 100}%`,
+            background: BLUE,
+            boxShadow: "0 0 0 1px rgba(255,255,255,0.45)",
+          }}
+        >
           <button
             type="button"
             role="slider"
@@ -173,36 +228,64 @@ export function CompareBand({
               e.preventDefault();
               touched.current = true;
             }}
-            className="pointer-events-auto absolute top-1/2 left-1/2 flex h-10 w-7 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center gap-[3px] rounded-full text-white shadow-[0_6px_18px_rgba(10,20,90,0.35)] transition-transform outline-none hover:scale-105 focus-visible:ring-2 focus-visible:ring-white md:h-12 md:w-8"
-            style={{ background: NAVY }}
+            className="pointer-events-auto absolute top-1/2 left-1/2 flex size-9 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize items-center justify-center rounded-full text-white shadow-[0_6px_18px_rgba(10,20,90,0.35)] ring-2 ring-white transition-transform outline-none hover:scale-105 focus-visible:ring-4 md:size-10"
+            style={{ background: BLUE }}
           >
-            <span className="h-4 w-px rounded-full bg-white/80 md:h-5" />
-            <span className="h-4 w-px rounded-full bg-white/80 md:h-5" />
+            {/* The usual left-right drag arrows. */}
+            <svg
+              viewBox="0 0 24 24"
+              className="size-[18px] md:size-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4" />
+            </svg>
           </button>
         </div>
       </div>
 
       <div className="mx-auto mt-2 flex w-[84%] max-w-[1100px] flex-col gap-3 text-sm md:mt-4 md:flex-row md:items-start md:justify-between md:gap-10">
-        {caption && <p className="max-w-2xl leading-relaxed text-white/75">{caption}</p>}
+        {caption && (
+          <p className="max-w-2xl leading-relaxed text-white/75">{caption}</p>
+        )}
         {hint && <p className="shrink-0 font-medium text-white/90">{hint}</p>}
       </div>
     </div>
   );
 }
 
-/** Which side is which, in a corner of the screen, gone once that side is out of view. */
-function Tag({ children, className, visible }: { children: React.ReactNode; className: string; visible: boolean }) {
+/** A side's name, set vertically beside the window, dimmed once that side is out of view. */
+function Side2({
+  children,
+  className,
+  dim,
+}: {
+  children: React.ReactNode;
+  className: string;
+  dim: boolean;
+}) {
   return (
     <span
-      className={`absolute top-2 rounded-full px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur transition-opacity md:top-4 md:px-3 md:text-xs ${className} ${visible ? "opacity-100" : "opacity-0"}`}
-      style={{ background: "rgba(27, 36, 120, 0.78)" }}
+      className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-[10px] font-semibold tracking-[0.2em] text-white uppercase transition-opacity [writing-mode:vertical-rl] md:text-sm ${className} ${dim ? "opacity-40" : "opacity-90"}`}
     >
       {children}
     </span>
   );
 }
 
-function Side({ still, alt, video }: { still: string | null; alt: string; video?: { src: string; poster: string; label: string } }) {
+function Side({
+  still,
+  alt,
+  video,
+}: {
+  still: string | null;
+  alt: string;
+  video?: { src: string; poster: string; label: string };
+}) {
   if (video)
     return (
       <LoopVideo
@@ -215,5 +298,14 @@ function Side({ still, alt, video }: { still: string | null; alt: string; video?
       />
     );
   if (!still) return null;
-  return <Image src={still} alt={alt} fill sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-top" draggable={false} />;
+  return (
+    <Image
+      src={still}
+      alt={alt}
+      fill
+      sizes="(min-width: 1280px) 1200px, 100vw"
+      className="object-cover object-top"
+      draggable={false}
+    />
+  );
 }
