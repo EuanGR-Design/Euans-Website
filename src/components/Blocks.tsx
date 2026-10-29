@@ -34,6 +34,7 @@ import { LogicMap, StateMatrix } from "./LogicMap";
 import { Untangle } from "./Untangle";
 import { Skeleton } from "./Skeleton";
 import { Handoff } from "./Handoff";
+import { Annotated } from "./Annotated";
 import { Icon, IconTile } from "./Icon";
 import { ArrowDownIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
@@ -133,6 +134,11 @@ function BlockView({
         return (
           <Section>
             <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
             <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {b.items.map((p, i) => {
                 // A last card on its own takes the whole row, side by side.
@@ -157,6 +163,11 @@ function BlockView({
       return (
         <Section>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
+            {b.body && (
+              <Reveal>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+              </Reveal>
+            )}
           <div
             className={`mt-12 grid gap-4 ${
               b.items.length % 3 === 0 ? "md:grid-cols-3" : "md:grid-cols-2"
@@ -307,8 +318,13 @@ function BlockView({
       );
     case "comparison":
       return (
-        <Section>
+        <Section id={b.id}>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
           <Reveal className="mt-10">
             <BeforeAfter items={b.items} />
           </Reveal>
@@ -1144,6 +1160,27 @@ function BlockView({
             </Reveal>
           )}
           <Skeleton screens={b.screens} notes={b.notes} />
+          <More d={b.deeper} name={name} />
+        </Section>
+      );
+    case "annotated":
+      return (
+        <Section id={b.id}>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <Annotated frames={b.frames} />
+          {b.turn && (
+            <Reveal>
+              <p className="mx-auto mt-14 max-w-2xl text-center text-[clamp(1.5rem,3vw,2.25rem)] leading-tight font-semibold tracking-tight text-balance">
+                {b.turn}
+              </p>
+            </Reveal>
+          )}
+          <More d={b.deeper} name={name} />
         </Section>
       );
     case "handoff":

@@ -144,6 +144,7 @@ export type Block =
       type: "points";
       eyebrow?: string;
       heading: string;
+      body?: string;
       items: { title: string; body: string; icon?: IconName; loop?: DecisionLoopName }[];
       deeper?: Deeper;
     }
@@ -205,6 +206,20 @@ export type Block =
         marks?: { crumbs?: number; backButton?: number; todo?: number; more?: number; banner?: number; rows?: number; panel?: number; actions?: number };
       }[];
       notes: { title: string; body: string }[];
+      deeper?: Deeper;
+    }
+  // Real screens with numbered pins on what was wrong with them, each problem
+  // listed underneath with what fixed it. `x` and `y` are percent of the screen.
+  | {
+      type: "annotated";
+      id?: string;
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      frames: { title?: string; image: Img; pins: { x: number; y: number; title: string; body: string; fix?: string }[] }[];
+      // A closing line under the screens: where the story turns next.
+      turn?: string;
+      deeper?: Deeper;
     }
   // The handoff file, a screen at a time: each step is one screen with the
   // annotations written on it in Figma. A note's x, y, w and h place the part
@@ -262,8 +277,10 @@ export type Block =
     }
   | {
       type: "comparison";
+      id?: string;
       eyebrow?: string;
       heading: string;
+      body?: string;
       // Leave a side null until its screenshot exists (2400×1337 to match the
       // others). `missing` explains a before that never existed.
       items: {
@@ -273,6 +290,10 @@ export type Block =
         after: string | null;
         caption: string;
         missing?: { title: string; body: string };
+        // What the two sides are called, and the screens' shape, if not the
+        // legacy app against Console at 2400×1337.
+        names?: [string, string];
+        ratio?: [number, number];
       }[];
     }
   | {
@@ -1316,178 +1337,265 @@ export const projects: Project[] = [
     slug: "drafts",
     era: "legalesign",
     title: "Untangling Complex Logic",
-    summary: "Drafts: the rules, states and flows behind one of the most complex parts of Console.",
+    summary: "Drafts: dozens of tangled rules, made simple enough for any sender.",
     role: "Design lead, product owner",
     tags: ["Systems thinking", "Complex flows", "Requirements"],
     cover: { src: "/work/drafts-v2-cover.png", w: 800, h: 566, alt: "Drafts V2 Figma file cover" },
     intro:
-      "A feature where the hard part was the logic, not the screens: Drafts, which lets admins pre-fill and lock down sending for their teams.",
-    statement: "Making one of Console's most complex features feel simple.",
+      "Drafts lets a team set up a send once and reuse it. The screens weren't the hard part. The rules were: dozens of them, all touching each other, on top of a Send screen people already got lost in.",
+    statement: "Making one of Legalesign's most complex features feel simple.",
     context: legalesignContext("Admins, senders and recipients", "Design lead, product owner"),
     blocks: [
       {
-        type: "text",
-        eyebrow: "The problem",
-        heading: "Enterprise teams needed control over how their documents were sent.",
-        body: [
-          "Customer after customer asked for the same thing: a way to set a send up once and have their team reuse it, exactly as intended, every time. Larger organisations run complex workflows, with several documents, fixed signers, set orders and rules about who can change what, and our send flow couldn't hold any of it.",
-          "It was a missing part of the product. Without it we couldn't win or keep the enterprise customers whose workflows depended on it, including some moving to us from other e-signature products. Drafts was about growing what Legalesign could do for them.",
+        type: "comparison",
+        id: "drafts-before-after",
+        eyebrow: "Before and after",
+        heading: "The same send, before and after.",
+        body: "Three documents and five people, sent with the old Send and then with Drafts. Drag to compare.",
+        items: [
+          {
+            id: "send",
+            label: "Sending a move-in pack",
+            before: "/work/drafts/old-send.webp",
+            after: "/work/drafts/new-send.webp",
+            caption: "The old Send puts steps, tabs and every setting on one screen. Drafts opens on one overview of the documents, and what each still needs.",
+            names: ["Old Send", "Drafts"],
+            ratio: [2400, 1280],
+          },
         ],
       },
       {
         type: "points",
-        eyebrow: "Drafts",
-        heading: "Admins set it up once. Senders just fill it in.",
+        eyebrow: "The ask",
+        heading: "Set a send up once, and let the team reuse it.",
+        body: "Enterprise teams kept asking for it, and without it we couldn't win or keep them. Think of a letting agent's move-in pack: the same three documents and landlord every time, with only the tenants changing.",
         items: [
           {
-            title: "A saved send",
-            body: "An admin saves a draft of how a send should go: the template, how many recipients, each recipient's presets, and the send settings.",
+            title: "Admins set it up",
+            body: "They pick the documents and the people, and fill in whatever stays the same.",
             icon: "AdjustmentsHorizontal",
           },
           {
-            title: "Filled in, or left open",
-            body: "Any part can be filled in ahead of time or left for the sender, so a draft can be almost ready to go or just a starting point.",
+            title: "Senders fill in the rest",
+            body: "They open the draft and complete only what's left, like the new tenants' details.",
             icon: "PencilSquare",
           },
           {
-            title: "Less to fill in",
-            body: "Everyday senders pick a draft and complete only what's left, inside the limits the admin set.",
-            icon: "PaperAirplane",
-          },
-          {
-            title: "Flexible by design",
-            body: "An admin can leave a sender just one thing to fill in, or open up every setting for detailed sends. One feature fits many workflows instead of the one it started with.",
-            icon: "Squares2X2",
+            title: "The draft never changes",
+            body: "Whatever a sender changes applies to that one send. The saved draft stays as it was.",
+            icon: "ShieldCheck",
           },
         ],
-      },
-      {
-        type: "converge",
-        id: "drafts-send",
-        eyebrow: "The bigger problem",
-        heading: "It became a new Send, too.",
-        body: "None of it was one big mistake. Each change made sense for the customer who asked for it, and together they made Send hard to use and harder to change.",
-        problems: [
-          {
-            title: "No clear direction",
-            body: "Features went in one customer request at a time, and nobody looked at what each one did to the flow.",
-            icon: "ArrowsSplit",
-          },
-          {
-            title: "A journey that came apart",
-            body: "Send was built as the last step of one flow, from upload to send. Most senders now start in the middle.",
-            icon: "QueueList",
-          },
-          {
-            title: "Steps on top of tabs",
-            body: "A stepper across the top and a tab per document below, so you could step inside a tab or across them.",
-            icon: "ViewColumns",
-          },
-          {
-            title: "Senders getting lost",
-            body: "Feedback tickets, Hotjar recordings full of U-turns, and senders saying they couldn't find the next thing to do.",
-            icon: "ArrowUturnLeft",
-          },
-          {
-            title: "Users who'd learned it",
-            body: "Long-time senders were fast from muscle memory, so any change felt like a step back.",
-            icon: "UserGroup",
-          },
-          {
-            title: "A blocked roadmap",
-            body: "Customers needed Drafts, but its template page was waiting on the Compose component.",
-            icon: "PuzzlePiece",
-          },
-        ],
-        bridge: "I'd pushed for a standalone Send for years. Drafts was the chance to fix it all at once.",
-        solution: {
-          statement: "Two birds, one stone.",
-          body: "Drafts is the feature customers asked for, and a new Send we could test without breaking the old one. Because it solved both, it was easy to justify and budget for.",
-          steps: [
-            { title: "Quick Send took the first send", body: "New users get the joined-up journey there, so the rest of Console can be standalone pages." },
-            { title: "Quick Send proved Compose", body: "Testing it there unblocked the template page Drafts needed." },
-            { title: "Drafts became the new Send", body: "No stepper and no tabs. Documents in a hub you drill into and back out of, always showing where you are." },
-            { title: "Side by side, not forced", body: "New features only go into the new Send, so senders move when they need something, and settle in fast." },
+        deeper: {
+          label: "Read the brief",
+          heading: "The brief I wrote as product owner.",
+          blocks: [
+            {
+              type: "brief",
+              id: "drafts-brief",
+              eyebrow: "The brief",
+              heading: "Flexible but controlled. Powerful but safe.",
+              body: "I wrote the brief as product owner: a modular way to set up a send, built once by an admin and reused by everyone else, replacing the old one-way template, send and draft flow.",
+              recreation: "A simplified recreation of the brief I wrote. The original stayed with Legalesign.",
+              title: "Modular send configuration",
+              meta: [
+                { label: "Owner", value: "Euan Robertson, design and product" },
+                { label: "For", value: "Enterprise admins and everyday senders" },
+                { label: "Replaces", value: "The linear template, send and draft flow" },
+              ],
+              sections: [
+                {
+                  label: "Background",
+                  body: "Customers kept asking for a send they could set up once and reuse across their team without mistakes. Enterprise teams with complex workflows needed it to meet their own requirements, and without it they couldn't choose us. Our flow ran one way, from template to send to draft, and couldn't hold a send that was partly set up.",
+                },
+                {
+                  label: "Objective",
+                  body: "Let admins set up any send, from one document to a batch, part by part, save it and share it with their team. Let senders finish what's left and send it, without ever changing the saved draft.",
+                },
+                {
+                  label: "Who it's for",
+                  items: [
+                    { icon: "AdjustmentsHorizontal", title: "Admins and draft owners", body: "Build the draft in editing mode: the documents, presets, recipients and options. Decide what's filled in and what's left open." },
+                    { icon: "PaperAirplane", title: "Everyday senders", body: "Use the draft in sending mode. Fill in only what's left, change what they need for this send, and send." },
+                  ],
+                },
+                {
+                  label: "Scope",
+                  items: [
+                    { icon: "QueueList", title: "Single, multi-document and batch", body: "Documents can be reordered, and a batch has its own name and Enforce Ordering." },
+                    { icon: "Squares2X2", title: "Seven sections per document", body: "Name, file, template, field content, recipient details, recipient options and document options, each prepared on its own." },
+                    { icon: "UserGroup", title: "Linked fields and recipients", body: "Fill a field or a recipient once across every document. Fields link by label, recipients by order or label." },
+                    { icon: "ListBullet", title: "Required actions", body: "One list of everything left, by document, section and issue." },
+                    { icon: "DocumentDuplicate", title: "Save, Save a copy, Reset", body: "Save once something has changed, keep a copy as a new base draft, or reset to the last save or the draft base." },
+                    { icon: "Users", title: "Shared with the team", body: "Drafts live in the team's library under a name that says what they're for." },
+                  ],
+                },
+                {
+                  label: "Principles",
+                  items: [
+                    { icon: "Squares2X2", title: "A control tower", body: "One overview shows every part of the send at a glance." },
+                    { icon: "PencilSquare", title: "Focused workspaces", body: "Each part is edited on its own page." },
+                    { icon: "Eye", title: "Always visible", body: "Every part shows if it's ready, and a disabled Send says why." },
+                    { icon: "ShieldCheck", title: "Non-destructive", body: "Sending never changes the saved draft, and nothing is lost without a warning." },
+                    { icon: "ArrowPath", title: "No silent cascades", body: "When one part breaks another, the user is told and shown the fix." },
+                    { icon: "AdjustmentsHorizontal", title: "Robust, not playful", body: "An enterprise feature that should feel solid." },
+                  ],
+                },
+                {
+                  label: "Rules",
+                  body: "Send is enabled only in sending mode, and only when every document is ready. A draft always has a file. Changing the template, file or participants can invalidate fields and recipients; the draft says so, offers a force update, and marks the section as needing preparation. Signers need a signature field; approvers don't.",
+                },
+                {
+                  label: "Edge cases",
+                  items: [
+                    { icon: "DocumentText", title: "A smaller file", body: "Fields on missing pages are lost, with a warning first." },
+                    { icon: "ArrowPath", title: "A changed or deleted template", body: "Sync the fields and recipients, or replace or remove the document." },
+                    { icon: "ArrowsSplit", title: "Switching modes", body: "Bring unsaved changes across or discard them; a swapped template stays behind." },
+                    { icon: "UserPlus", title: "Skipped or undecided recipients", body: "Never skip everyone; let the previous recipient decide who's next." },
+                  ],
+                },
+                {
+                  label: "Out of scope",
+                  body: "Locking individual sections, descriptions and labels on drafts, and choosing templates while creating a draft, until the MVP has been used.",
+                },
+                { label: "Success looks like", body: "Flexible but controlled. Powerful but safe. Modular but logically consistent." },
+              ],
+            },
           ],
         },
       },
       {
-        type: "brief",
-        id: "drafts-brief",
-        eyebrow: "The brief",
-        heading: "Flexible but controlled. Powerful but safe.",
-        body: "I wrote the brief as product owner: a modular way to set up a send, built once by an admin and reused by everyone else, replacing the old one-way template, send and draft flow.",
-        recreation: "A simplified recreation of the brief I wrote. The original stayed with Legalesign.",
-        title: "Modular send configuration",
-        meta: [
-          { label: "Owner", value: "Euan Robertson, design and product" },
-          { label: "For", value: "Enterprise admins and everyday senders" },
-          { label: "Replaces", value: "The linear template, send and draft flow" },
+        type: "annotated",
+        id: "drafts-old-send",
+        eyebrow: "Why it was hard",
+        heading: "It had to replace a screen people already got lost in.",
+        body: "Send grew one customer request at a time, and nobody looked at the whole screen. This is it today, sending the same move-in pack.",
+        frames: [
+          {
+            image: { src: "/work/drafts/old-send.webp", w: 2400, h: 1280, alt: "The old Send screen: a step counter and Next button above a row of document tabs, document options, a small preview and sender fields with a red warning count" },
+            pins: [
+              {
+                x: 31,
+                y: 11.6,
+                title: "Two kinds of navigation, stacked",
+                body: "Steps across the top, a tab for each document below. Which one are you in?",
+                fix: "one overview you go into and back out of.",
+              },
+              {
+                x: 87.5,
+                y: 5.8,
+                title: "Next, but no Send",
+                body: "Send only appears after the last step, so it's never clear how close you are.",
+                fix: "Send is always in the same place, and stays off until nothing blocks it.",
+              },
+              {
+                x: 60,
+                y: 37,
+                title: "Settings in a jumble",
+                body: "Name, password and copies are mixed together, and settings for the whole send hide under a tiny cog.",
+                fix: "seven sections, always in the same order.",
+              },
+              {
+                x: 45,
+                y: 61,
+                title: "Warnings you can miss",
+                body: "A small red count, and no word on how to fix it.",
+                fix: "every problem says how to fix it, right where it is.",
+              },
+            ],
+          },
+          {
+            title: "Then people got stuck.",
+            image: { src: "/work/drafts/old-send-stuck.webp", w: 2400, h: 1280, alt: "The old Send's recipients step with the to-do list open, listing Doc 2: Email first, and the witness hidden behind a To Be Decided banner. Email addresses are blurred." },
+            pins: [
+              {
+                x: 87,
+                y: 10.6,
+                title: "The list says an email is wrong",
+                body: "Every email on screen looks fine, and the list doesn't take you to the one that isn't.",
+                fix: "every line of the to-do list takes you straight to the problem.",
+              },
+              {
+                x: 15.4,
+                y: 85.8,
+                title: "The problem hides here",
+                body: "The witness had the same email as a signer, which isn't allowed. The error sat behind this banner.",
+                fix: "a problem shows where it is, with the button that fixes it.",
+              },
+              {
+                x: 25.2,
+                y: 11.6,
+                title: "Tabs that say done",
+                body: "A green tick on a document, but the send still can't go.",
+                fix: "a document is Ready only when nothing in it needs you.",
+              },
+            ],
+          },
         ],
-        sections: [
-          {
-            label: "Background",
-            body: "Customers kept asking for a send they could set up once and reuse across their team without mistakes. Enterprise teams with complex workflows needed it to meet their own requirements, and without it they couldn't choose us. Our flow ran one way, from template to send to draft, and couldn't hold a send that was partly set up.",
-          },
-          {
-            label: "Objective",
-            body: "Let admins set up any send, from one document to a batch, part by part, save it and share it with their team. Let senders finish what's left and send it, without ever changing the saved draft.",
-          },
-          {
-            label: "Who it's for",
-            items: [
-              { icon: "AdjustmentsHorizontal", title: "Admins and draft owners", body: "Build the draft in editing mode: the documents, presets, recipients and options. Decide what's filled in and what's left open." },
-              { icon: "PaperAirplane", title: "Everyday senders", body: "Use the draft in sending mode. Fill in only what's left, change what they need for this send, and send." },
-            ],
-          },
-          {
-            label: "Scope",
-            items: [
-              { icon: "QueueList", title: "Single, multi-document and batch", body: "Documents can be reordered, and a batch has its own name and Enforce Ordering." },
-              { icon: "Squares2X2", title: "Seven sections per document", body: "Name, file, template, field content, recipient details, recipient options and document options, each prepared on its own." },
-              { icon: "UserGroup", title: "Linked fields and recipients", body: "Fill a field or a recipient once across every document. Fields link by label, recipients by order or label." },
-              { icon: "ListBullet", title: "Required actions", body: "One list of everything left, by document, section and issue." },
-              { icon: "DocumentDuplicate", title: "Save, Save a copy, Reset", body: "Save once something has changed, keep a copy as a new base draft, or reset to the last save or the draft base." },
-              { icon: "Users", title: "Shared with the team", body: "Drafts live in the team's library under a name that says what they're for." },
-            ],
-          },
-          {
-            label: "Principles",
-            items: [
-              { icon: "Squares2X2", title: "A control tower", body: "One overview shows every part of the send at a glance." },
-              { icon: "PencilSquare", title: "Focused workspaces", body: "Each part is edited on its own page." },
-              { icon: "Eye", title: "Always visible", body: "Every part shows if it's ready, and a disabled Send says why." },
-              { icon: "ShieldCheck", title: "Non-destructive", body: "Sending never changes the saved draft, and nothing is lost without a warning." },
-              { icon: "ArrowPath", title: "No silent cascades", body: "When one part breaks another, the user is told and shown the fix." },
-              { icon: "AdjustmentsHorizontal", title: "Robust, not playful", body: "An enterprise feature that should feel solid." },
-            ],
-          },
-          {
-            label: "Rules",
-            body: "Send is enabled only in sending mode, and only when every document is ready. A draft always has a file. Changing the template, file or participants can invalidate fields and recipients; the draft says so, offers a force update, and marks the section as needing preparation. Signers need a signature field; approvers don't.",
-          },
-          {
-            label: "Edge cases",
-            items: [
-              { icon: "DocumentText", title: "A smaller file", body: "Fields on missing pages are lost, with a warning first." },
-              { icon: "ArrowPath", title: "A changed or deleted template", body: "Sync the fields and recipients, or replace or remove the document." },
-              { icon: "ArrowsSplit", title: "Switching modes", body: "Bring unsaved changes across or discard them; a swapped template stays behind." },
-              { icon: "UserPlus", title: "Skipped or undecided recipients", body: "Never skip everyone; let the previous recipient decide who's next." },
-            ],
-          },
-          {
-            label: "Out of scope",
-            body: "Locking individual sections, descriptions and labels on drafts, and choosing templates while creating a draft, until the MVP has been used.",
-          },
-          { label: "Success looks like", body: "Flexible but controlled. Powerful but safe. Modular but logically consistent." },
-        ],
+        turn: "So Drafts had two jobs: the feature customers asked for, and a new Send without these problems.",
+        deeper: {
+          label: "How Drafts became the new Send",
+          heading: "Two birds, one stone.",
+          blocks: [
+            {
+              type: "converge",
+              id: "drafts-send",
+              eyebrow: "The bigger problem",
+              heading: "It became a new Send, too.",
+              body: "None of it was one big mistake. Each change made sense for the customer who asked for it, and together they made Send hard to use and harder to change.",
+              problems: [
+                {
+                  title: "No clear direction",
+                  body: "Features went in one customer request at a time, and nobody looked at what each one did to the flow.",
+                  icon: "ArrowsSplit",
+                },
+                {
+                  title: "A journey that came apart",
+                  body: "Send was built as the last step of one flow, from upload to send. Most senders now start in the middle.",
+                  icon: "QueueList",
+                },
+                {
+                  title: "Steps on top of tabs",
+                  body: "A stepper across the top and a tab per document below, so you could step inside a tab or across them.",
+                  icon: "ViewColumns",
+                },
+                {
+                  title: "Senders getting lost",
+                  body: "Feedback tickets, Hotjar recordings full of U-turns, and senders saying they couldn't find the next thing to do.",
+                  icon: "ArrowUturnLeft",
+                },
+                {
+                  title: "Users who'd learned it",
+                  body: "Long-time senders were fast from muscle memory, so any change felt like a step back.",
+                  icon: "UserGroup",
+                },
+                {
+                  title: "A blocked roadmap",
+                  body: "Customers needed Drafts, but its template page was waiting on the Compose component.",
+                  icon: "PuzzlePiece",
+                },
+              ],
+              bridge: "I'd pushed for a standalone Send for years. Drafts was the chance to fix it all at once.",
+              solution: {
+                statement: "Two birds, one stone.",
+                body: "Drafts is the feature customers asked for, and a new Send we could test without breaking the old one. Because it solved both, it was easy to justify and budget for.",
+                steps: [
+                  { title: "Quick Send took the first send", body: "New users get the joined-up journey there, so the rest of Console can be standalone pages." },
+                  { title: "Quick Send proved Compose", body: "Testing it there unblocked the template page Drafts needed." },
+                  { title: "Drafts became the new Send", body: "No stepper and no tabs. Documents in a hub you drill into and back out of, always showing where you are." },
+                  { title: "Side by side, not forced", body: "New features only go into the new Send, so senders move when they need something, and settle in fast." },
+                ],
+              },
+            },
+          ],
+        },
       },
       {
         type: "untangle",
         id: "drafts-tangle",
         eyebrow: "The tangle",
         heading: "Dozens of rules, and almost every one touches another.",
-        body: "Swap a template and the fields stop matching. Skip a recipient and the signing order changes. Link a recipient and every document follows. Before designing anything, I mapped every rule, every dependency and everything that could stop a send, then gave each one a single home.",
+        body: "Swap a template and the fields stop matching. Skip a recipient and the signing order changes. Before drawing a screen, I mapped every rule and gave each one a single home.",
         stats: [
           { value: "2", label: "modes: editing the draft, or sending it" },
           { value: "3", label: "kinds of send: single, multi-document, batch" },
@@ -1719,18 +1827,11 @@ export const projects: Project[] = [
         },
       },
       {
-        type: "flow",
-        eyebrow: "Ideation",
-        heading: "The whole ideation page, mess and all.",
-        body: "I started wide: around 190 frames of single documents, a hub for batch and bulk sending, editors, recipient flows and library states. Tabs and steppers kept coming back, and kept getting in the way. Everything pointed to one hub you drill into and back out of. Scroll to pan across the real page from the Figma file.",
-        image: { src: "/work/drafts/ideation-canvas.webp", w: 7516, h: 2285, alt: "The full Drafts ideation page in Figma, with around 190 frames of explorations" },
-      },
-      {
         type: "skeleton",
         id: "drafts-skeleton",
         eyebrow: "The skeleton",
-        heading: "One frame for every screen, so drilling in never means getting lost.",
-        body: "With every rule given a home, the next job was the frame around them. Three levels, each with the same parts in the same places, so a sender always knows how deep they are, what's left, and how to get back.",
+        heading: "One frame for every screen, so you never get lost.",
+        body: "Every screen has the same parts in the same places. Wherever senders are, they can see how deep they are, what's left, and the way back.",
         screens: [
           {
             name: "Send overview",
@@ -1746,7 +1847,7 @@ export const projects: Project[] = [
             primary: "Send",
             next: "Prepare",
             back: "Done",
-            marks: { todo: 3, more: 4, rows: 6, panel: 7, actions: 9 },
+            marks: { todo: 2, rows: 3, actions: 5 },
           },
           {
             name: "Document overview",
@@ -1766,7 +1867,7 @@ export const projects: Project[] = [
             primary: "Done",
             next: "Prepare",
             back: "Done",
-            marks: { crumbs: 1, backButton: 2, banner: 5, rows: 8 },
+            marks: { crumbs: 1, backButton: 1, rows: 4 },
           },
           {
             name: "Recipient details",
@@ -1776,27 +1877,36 @@ export const projects: Project[] = [
             more: "Linked recipients",
             secondary: ["Reset", "Cancel"],
             primary: "Done",
-            marks: { more: 4, actions: 9 },
+            marks: { actions: 5 },
           },
         ],
         notes: [
-          { title: "Breadcrumbs", body: "Always show how deep you are and the way back out." },
-          { title: "A back button", body: "Once you're drilled in, a round back button always sits just before the title." },
+          { title: "A way back", body: "Breadcrumbs show how deep you are, and a back button sits before every title." },
           { title: "One to-do list", body: "In the same top-right spot on every screen, listing everything left before sending." },
-          { title: "More, beside the title", body: "Anything extra a page can do, like settings or managing links, opens from right of its title." },
-          { title: "Banners in one place", body: "Anything you need to know sits under the title, above the work, or inside the card it's about, like a prompt to force update." },
-          { title: "A status on every card", body: "Any card with something to do inside says Preparation Required. Otherwise it's Ready." },
-          { title: "Peek before opening", body: "A details panel shows what a document already holds." },
-          { title: "Seven sections, same order", body: "Every document is prepared the same way, one section at a time." },
+          { title: "A status on every card", body: "Preparation Required, or Ready. Nothing in between." },
+          { title: "Same sections, same order", body: "Every document is prepared the same way, one section at a time." },
           { title: "Actions in fixed places", body: "Reset on the left, Done or Send on the right, on every screen." },
         ],
+        deeper: {
+          label: "See the ideation",
+          heading: "The whole ideation page, mess and all.",
+          blocks: [
+            {
+              type: "flow",
+              eyebrow: "Ideation",
+              heading: "The whole ideation page, mess and all.",
+              body: "I started wide: around 190 frames of single documents, a hub for batch and bulk sending, editors, recipient flows and library states. Tabs and steppers kept coming back, and kept getting in the way. Everything pointed to one hub you drill into and back out of. Scroll to pan across the real page from the Figma file.",
+              image: { src: "/work/drafts/ideation-canvas.webp", w: 7516, h: 2285, alt: "The full Drafts ideation page in Figma, with around 190 frames of explorations" },
+            },
+          ],
+        },
       },
       {
         type: "callouts",
         id: "drafts-ui",
         eyebrow: "Making it simple",
         heading: "All of that, without the sender ever having to see it.",
-        body: "The same screens serve two people. A draft's owner can dig into every setting and tweak every detail. A sender sees only what's left for them to do, and how to get there. Everything else stays out of the way until someone goes looking for it.",
+        body: "Owners can dig into every setting. Senders only see what's left for them, and how to get there.",
         look: "bento",
         items: [
           {
@@ -1837,89 +1947,95 @@ export const projects: Project[] = [
             video: { src: "/work/drafts/clips/way-back.mp4", poster: "/work/drafts/clips/way-back-poster.jpg", label: "Going into two documents and one of their sections, with the breadcrumbs updating, and back out each time" },
           },
         ],
-      },
-      {
-        type: "handoff",
-        id: "drafts-handoff",
-        eyebrow: "Dev handoff",
-        heading: "Every screen annotated for the build.",
-        body: "The MVP flow went to the developers with 80 annotations written on it in Figma: what each control does, when it's available, and what was left out of the first release. Step through the main screens to read the notes as the developers did.",
-        steps: [
-          {
-            label: "Send overview",
-            image: { src: "/work/drafts/handoff-send-overview.webp", w: 1440, h: 1204, alt: "Send overview with three documents ready to send and the details panel open" },
-            notes: [
-              { x: 0.008, y: 0.007, w: 0.034, h: 0.017, text: "Exit opens the same dialog as Exit Draft before letting the sender leave." },
-              { x: 0.938, y: 0.048, w: 0.022, h: 0.027, text: "The to-do list shows as complete, with a green check, once every document is prepared and ready to send." },
-              { x: 0.177, y: 0.254, w: 0.066, h: 0.017, text: "The status changes to Ready to Send when all the required fields are complete." },
-              { x: 0.543, y: 0.233, w: 0.031, h: 0.037, text: "Removing a document opens a dialog warning that anything added to it will be lost." },
-              { x: 0.07, y: 0.491, w: 0.098, h: 0.043, text: "Reset Draft is active now there are changes. It takes the draft back to its saved version, after a dialog to confirm, as anything since the last save will be lost." },
-              { x: 0.419, y: 0.491, w: 0.087, h: 0.043, text: "Exit Draft opens an exit-without-saving dialog, so the sender can save and exit or leave without saving." },
-              { x: 0.523, y: 0.491, w: 0.061, h: 0.043, text: "Save is only there for the draft's owner. It saves over the draft, so it opens a dialog to confirm, with the option to name or rename it." },
-            ],
-          },
-          {
-            label: "Several documents",
-            image: { src: "/work/drafts/handoff-multi-doc.webp", w: 1440, h: 1086, alt: "Send overview with three documents that each need preparing" },
-            notes: [
-              { x: 0.338, y: 0.007, w: 0.324, h: 0.018, text: "Title structure: Sending / Draft: the name it was saved with / the template, or the document name if one is given. Batch drafts differ." },
-              { x: 0.933, y: 0.048, w: 0.05, h: 0.04, text: "The same to-do list as today: it shows what has to be filled in before the whole draft is ready to send." },
-              { x: 0.726, y: 0.126, w: 0.031, h: 0.041, text: "Opens the Multi-Doc Options." },
-              { x: 0.243, y: 0.267, w: 0.017, h: 0.022, text: "Drag handles set the order of the documents. This matters most in a batch with Enforce Ordering on." },
-            ],
-          },
-          {
-            label: "Document overview",
-            image: { src: "/work/drafts/handoff-document-overview.webp", w: 1440, h: 1450, alt: "Document overview with its sections as cards and Field Content needing preparation" },
-            notes: [
-              { x: 0.167, y: 0.0447, w: 0.179, h: 0.0142, text: "Breadcrumbs show where the sender has come from. The blue one is the current page." },
-              { x: 0.243, y: 0.0948, w: 0.031, h: 0.0304, text: "The back button returns to the Send Overview." },
-              { x: 0.676, y: 0.319, w: 0.065, h: 0.0313, text: "Cards get a larger shadow and a blue outline on hover. Edit opens that section to change it on its own." },
-              { x: 0.384, y: 0.7927, w: 0.093, h: 0.0137, text: "This label tells the sender the section needs required actions before it's ready to send." },
-              { x: 0.672, y: 0.7907, w: 0.068, h: 0.0313, text: "The button says Prepare, and is primary, while the section needs action. Once it's ready to send it turns secondary and says Edit." },
-              { x: 0.527, y: 0.8436, w: 0.206, h: 0.0157, text: "Warns the sender there are required sender fields to fill in before the document can be sent." },
-              { x: 0.448, y: 0.9062, w: 0.103, h: 0.0196, text: "Expands to show all of the sender's fields." },
-            ],
-          },
-          {
-            label: "Underlying file",
-            image: { src: "/work/drafts/handoff-underlying-file.webp", w: 1440, h: 1026, alt: "The underlying file page, with a preview of the document and a Replace button" },
-            notes: [
-              { x: 0.66, y: 0.279, w: 0.085, h: 0.043, text: "Replace swaps the underlying file. It doesn't touch the base template: a draft send works on a copy of the original." },
-              { x: 0.243, y: 0.263, w: 0.514, h: 0.596, text: "A preview of the file used in the base template, for the sender to review." },
-              { x: 0.654, y: 0.345, w: 0.025, h: 0.035, text: "Opens the file full screen." },
-              { x: 0.693, y: 0.485, w: 0.044, h: 0.086, text: "Choosing a page thumbnail shows it larger." },
-            ],
-          },
-          {
-            label: "Template preparation",
-            image: { src: "/work/drafts/handoff-template-prep.webp", w: 1440, h: 1026, alt: "Template preparation, with participant fields in a left toolbar beside the document" },
-            intro: "A slightly updated version of the new editor, with a simpler left toolbar to line up with the changes made to Compose.",
-            notes: [
-              { x: 0.019, y: 0.141, w: 0.193, h: 0.837, text: "Two buttons, Template Settings and Manage Recipients, replace the tabs. That saves a lot of horizontal space and matches the modals in Quick Send." },
-              { x: 0.031, y: 0.237, w: 0.171, h: 0.047, text: "Feedback said the floating participant selector took too much space and covered the document, so it moved into the toolbar. It sets who fields are being placed for." },
-              { x: 0.031, y: 0.885, w: 0.171, h: 0.035, text: "Opens a modal with the template settings." },
-              { x: 0.031, y: 0.928, w: 0.171, h: 0.035, text: "Opens the participants modal, following the new design from Quick Send." },
-            ],
-          },
-          {
-            label: "Field content",
-            image: { src: "/work/drafts/handoff-field-content.webp", w: 1440, h: 1026, alt: "Field content, where the sender fills in their own fields beside the document" },
-            notes: [
-              { x: 0.24, y: 0.283, w: 0.243, h: 0.047, text: "A participant selector, so the sender can choose whose fields they're seeing." },
-              { x: 0.404, y: 0.296, w: 0.047, h: 0.019, text: "Shows how many required fields are left for the sender to fill in." },
-            ],
-          },
-          {
-            label: "Recipient details",
-            image: { src: "/work/drafts/handoff-recipient-details.webp", w: 1440, h: 1026, alt: "Recipient details for a batch, with an option to link a recipient across documents" },
-            notes: [
-              { x: 0.26, y: 0.502, w: 0.143, h: 0.035, text: "Experience and time zone sit apart from the other presets. They can only be applied per recipient, and always are by default." },
-              { x: 0.715, y: 0.451, w: 0.025, h: 0.035, text: "Let Previous Decide isn't available for the first recipient." },
-              { x: 0.26, y: 0.553, w: 0.481, h: 0.074, text: "This option only appears when there are several documents in the send, or a batch." },
-            ],
-          },
-        ],
+        deeper: {
+          label: "See the dev handoff",
+          heading: "Every screen annotated for the build.",
+          blocks: [
+            {
+              type: "handoff",
+              id: "drafts-handoff",
+              eyebrow: "Dev handoff",
+              heading: "Every screen annotated for the build.",
+              body: "The MVP flow went to the developers with 80 annotations written on it in Figma: what each control does, when it's available, and what was left out of the first release. Step through the main screens to read the notes as the developers did.",
+              steps: [
+                {
+                  label: "Send overview",
+                  image: { src: "/work/drafts/handoff-send-overview.webp", w: 1440, h: 1204, alt: "Send overview with three documents ready to send and the details panel open" },
+                  notes: [
+                    { x: 0.008, y: 0.007, w: 0.034, h: 0.017, text: "Exit opens the same dialog as Exit Draft before letting the sender leave." },
+                    { x: 0.938, y: 0.048, w: 0.022, h: 0.027, text: "The to-do list shows as complete, with a green check, once every document is prepared and ready to send." },
+                    { x: 0.177, y: 0.254, w: 0.066, h: 0.017, text: "The status changes to Ready to Send when all the required fields are complete." },
+                    { x: 0.543, y: 0.233, w: 0.031, h: 0.037, text: "Removing a document opens a dialog warning that anything added to it will be lost." },
+                    { x: 0.07, y: 0.491, w: 0.098, h: 0.043, text: "Reset Draft is active now there are changes. It takes the draft back to its saved version, after a dialog to confirm, as anything since the last save will be lost." },
+                    { x: 0.419, y: 0.491, w: 0.087, h: 0.043, text: "Exit Draft opens an exit-without-saving dialog, so the sender can save and exit or leave without saving." },
+                    { x: 0.523, y: 0.491, w: 0.061, h: 0.043, text: "Save is only there for the draft's owner. It saves over the draft, so it opens a dialog to confirm, with the option to name or rename it." },
+                  ],
+                },
+                {
+                  label: "Several documents",
+                  image: { src: "/work/drafts/handoff-multi-doc.webp", w: 1440, h: 1086, alt: "Send overview with three documents that each need preparing" },
+                  notes: [
+                    { x: 0.338, y: 0.007, w: 0.324, h: 0.018, text: "Title structure: Sending / Draft: the name it was saved with / the template, or the document name if one is given. Batch drafts differ." },
+                    { x: 0.933, y: 0.048, w: 0.05, h: 0.04, text: "The same to-do list as today: it shows what has to be filled in before the whole draft is ready to send." },
+                    { x: 0.726, y: 0.126, w: 0.031, h: 0.041, text: "Opens the Multi-Doc Options." },
+                    { x: 0.243, y: 0.267, w: 0.017, h: 0.022, text: "Drag handles set the order of the documents. This matters most in a batch with Enforce Ordering on." },
+                  ],
+                },
+                {
+                  label: "Document overview",
+                  image: { src: "/work/drafts/handoff-document-overview.webp", w: 1440, h: 1450, alt: "Document overview with its sections as cards and Field Content needing preparation" },
+                  notes: [
+                    { x: 0.167, y: 0.0447, w: 0.179, h: 0.0142, text: "Breadcrumbs show where the sender has come from. The blue one is the current page." },
+                    { x: 0.243, y: 0.0948, w: 0.031, h: 0.0304, text: "The back button returns to the Send Overview." },
+                    { x: 0.676, y: 0.319, w: 0.065, h: 0.0313, text: "Cards get a larger shadow and a blue outline on hover. Edit opens that section to change it on its own." },
+                    { x: 0.384, y: 0.7927, w: 0.093, h: 0.0137, text: "This label tells the sender the section needs required actions before it's ready to send." },
+                    { x: 0.672, y: 0.7907, w: 0.068, h: 0.0313, text: "The button says Prepare, and is primary, while the section needs action. Once it's ready to send it turns secondary and says Edit." },
+                    { x: 0.527, y: 0.8436, w: 0.206, h: 0.0157, text: "Warns the sender there are required sender fields to fill in before the document can be sent." },
+                    { x: 0.448, y: 0.9062, w: 0.103, h: 0.0196, text: "Expands to show all of the sender's fields." },
+                  ],
+                },
+                {
+                  label: "Underlying file",
+                  image: { src: "/work/drafts/handoff-underlying-file.webp", w: 1440, h: 1026, alt: "The underlying file page, with a preview of the document and a Replace button" },
+                  notes: [
+                    { x: 0.66, y: 0.279, w: 0.085, h: 0.043, text: "Replace swaps the underlying file. It doesn't touch the base template: a draft send works on a copy of the original." },
+                    { x: 0.243, y: 0.263, w: 0.514, h: 0.596, text: "A preview of the file used in the base template, for the sender to review." },
+                    { x: 0.654, y: 0.345, w: 0.025, h: 0.035, text: "Opens the file full screen." },
+                    { x: 0.693, y: 0.485, w: 0.044, h: 0.086, text: "Choosing a page thumbnail shows it larger." },
+                  ],
+                },
+                {
+                  label: "Template preparation",
+                  image: { src: "/work/drafts/handoff-template-prep.webp", w: 1440, h: 1026, alt: "Template preparation, with participant fields in a left toolbar beside the document" },
+                  intro: "A slightly updated version of the new editor, with a simpler left toolbar to line up with the changes made to Compose.",
+                  notes: [
+                    { x: 0.019, y: 0.141, w: 0.193, h: 0.837, text: "Two buttons, Template Settings and Manage Recipients, replace the tabs. That saves a lot of horizontal space and matches the modals in Quick Send." },
+                    { x: 0.031, y: 0.237, w: 0.171, h: 0.047, text: "Feedback said the floating participant selector took too much space and covered the document, so it moved into the toolbar. It sets who fields are being placed for." },
+                    { x: 0.031, y: 0.885, w: 0.171, h: 0.035, text: "Opens a modal with the template settings." },
+                    { x: 0.031, y: 0.928, w: 0.171, h: 0.035, text: "Opens the participants modal, following the new design from Quick Send." },
+                  ],
+                },
+                {
+                  label: "Field content",
+                  image: { src: "/work/drafts/handoff-field-content.webp", w: 1440, h: 1026, alt: "Field content, where the sender fills in their own fields beside the document" },
+                  notes: [
+                    { x: 0.24, y: 0.283, w: 0.243, h: 0.047, text: "A participant selector, so the sender can choose whose fields they're seeing." },
+                    { x: 0.404, y: 0.296, w: 0.047, h: 0.019, text: "Shows how many required fields are left for the sender to fill in." },
+                  ],
+                },
+                {
+                  label: "Recipient details",
+                  image: { src: "/work/drafts/handoff-recipient-details.webp", w: 1440, h: 1026, alt: "Recipient details for a batch, with an option to link a recipient across documents" },
+                  notes: [
+                    { x: 0.26, y: 0.502, w: 0.143, h: 0.035, text: "Experience and time zone sit apart from the other presets. They can only be applied per recipient, and always are by default." },
+                    { x: 0.715, y: 0.451, w: 0.025, h: 0.035, text: "Let Previous Decide isn't available for the first recipient." },
+                    { x: 0.26, y: 0.553, w: 0.481, h: 0.074, text: "This option only appears when there are several documents in the send, or a batch." },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
       },
     ],
   },

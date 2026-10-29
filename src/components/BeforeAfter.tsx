@@ -87,11 +87,13 @@ export function BeforeAfter({ items: comparisons }: { items: Item[] }) {
 
 function Slider({ c }: { c: Item }) {
   const [pos, setPos] = useState(50);
+  const [beforeName, afterName] = c.names ?? ["Before", "Console"];
+  const [w, h] = c.ratio ?? [2400, 1337];
 
   if (!c.before && !c.after) {
     return (
       <figure>
-        <div className="relative aspect-[2400/1337] overflow-hidden rounded-3xl border border-line">
+        <div className="relative overflow-hidden rounded-3xl border border-line" style={{ aspectRatio: `${w} / ${h}` }}>
           <Pending label="Before & after" />
         </div>
         <figcaption className="mt-4 text-sm text-muted">
@@ -103,8 +105,8 @@ function Slider({ c }: { c: Item }) {
 
   return (
     <figure className="select-none">
-      <div className="relative aspect-[2400/1337] overflow-hidden rounded-3xl border border-line bg-raised">
-        <Side src={c.after} alt={`${c.label} in Console`} label="Console" />
+      <div className="relative overflow-hidden rounded-3xl border border-line bg-raised" style={{ aspectRatio: `${w} / ${h}` }}>
+        <Side src={c.after} alt={`${c.label}: ${afterName}`} label={afterName} />
         <div
           className="absolute inset-0"
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
@@ -112,8 +114,8 @@ function Slider({ c }: { c: Item }) {
           {c.before ? (
             <Side
               src={c.before}
-              alt={`${c.label} in the legacy app`}
-              label="Before"
+              alt={`${c.label}: ${beforeName}`}
+              label={beforeName}
             />
           ) : c.missing ? (
             <Missing {...c.missing} />
@@ -132,11 +134,11 @@ function Slider({ c }: { c: Item }) {
           </div>
         </div>
 
-        <span className="eyebrow absolute top-4 left-4 rounded-full bg-black/60 px-3 py-1 text-white/80 backdrop-blur">
-          Before
+        <span className="eyebrow absolute top-2 left-2 rounded-full bg-black/60 px-2 py-0.5 !text-[10px] !text-white/90 backdrop-blur md:top-4 md:left-4 md:px-3 md:py-1 md:!text-xs">
+          {beforeName}
         </span>
-        <span className="eyebrow absolute top-4 right-4 rounded-full bg-black/60 px-3 py-1 text-white/80 backdrop-blur">
-          Console
+        <span className="eyebrow absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 !text-[10px] !text-white/90 backdrop-blur md:top-4 md:right-4 md:px-3 md:py-1 md:!text-xs">
+          {afterName}
         </span>
 
         <input
@@ -145,7 +147,7 @@ function Slider({ c }: { c: Item }) {
           max={100}
           value={pos}
           onChange={(e) => setPos(Number(e.target.value))}
-          aria-label={`Compare the legacy ${c.label.toLowerCase()} with Console`}
+          aria-label={`Compare ${beforeName.toLowerCase()} with ${afterName}: ${c.label.toLowerCase()}`}
           className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
         />
       </div>
