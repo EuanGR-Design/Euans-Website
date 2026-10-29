@@ -1348,6 +1348,17 @@ export const projects: Project[] = [
         ],
       },
       {
+        type: "text",
+        eyebrow: "The bigger problem",
+        heading: "It became a new Send, too.",
+        body: [
+          "Console was rebuilt from Legalesign's first app and kept its big idea: a send is one journey, from upload to template to send, with a stepper across the top. When uploading and sending was most of what the product did, that worked.",
+          "Then the product grew around it. Uploads could go to the library, templates could be saved and left, and senders started going straight to Send from a template they'd made weeks before. The stepper stayed. Send opened partway through a journey they hadn't started, split into two steps of its own, with a tab for each document underneath, so you could step inside a tab or across them. Senders who'd learned it got by, but it was easy to lose your place and hard to find the way back.",
+          "I'd been pushing for standalone pages for a long time, and Quick Send made it possible. It took over the one place a connected journey still made sense, a new user's first send, so the rest of Console could become pages you go straight to.",
+          "Drafts was the chance to do that for Send. It's the drafts feature customers asked for, and a new Send we could test without breaking the old one: no stepper and no tabs, just documents as cards in a hub you drill into and back out of. Wherever you are, the screen tells you where you are and the way home.",
+        ],
+      },
+      {
         type: "brief",
         id: "drafts-brief",
         eyebrow: "The brief",
