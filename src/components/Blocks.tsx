@@ -7,6 +7,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import { sectionAnchor, type Block, type Deeper as DeeperData, type Img, type Notes as NotesData } from "@/projects";
 import { Reveal } from "./motion";
 import { BeforeAfter } from "./BeforeAfter";
+import { CompareBand } from "./CompareBand";
 import { Journey } from "./Journey";
 import { Prototype } from "./Prototype";
 import { Brand } from "./Brand";
@@ -317,6 +318,27 @@ function BlockView({
         </section>
       );
     case "comparison":
+      if (b.band)
+        return (
+          <section id={b.id} className="scroll-mt-16 border-t border-line pt-20 pb-16 md:pt-28 md:pb-24">
+            <div className="container-x">
+              <Heading eyebrow={b.eyebrow} heading={b.heading} />
+              {b.body && (
+                <Reveal>
+                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+                </Reveal>
+              )}
+            </div>
+            <Reveal className="mt-10 md:mt-14">
+              <CompareBand c={b.items[0]} hint={b.band.hint} />
+            </Reveal>
+            <div className="container-x">
+              <p className="mt-5 max-w-3xl text-sm text-muted">
+                <span className="text-fg">{b.items[0].label}.</span> {b.items[0].caption}
+              </p>
+            </div>
+          </section>
+        );
       return (
         <Section id={b.id}>
           <Heading eyebrow={b.eyebrow} heading={b.heading} />

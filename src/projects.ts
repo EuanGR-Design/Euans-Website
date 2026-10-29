@@ -283,6 +283,9 @@ export type Block =
       eyebrow?: string;
       heading: string;
       body?: string;
+      // Show the first item across the full width of the page, in a browser
+      // window on a coloured band, with a line to drag. See CompareBand.
+      band?: { hint?: string };
       // Leave a side null until its screenshot exists (2400×1337 to match the
       // others). `missing` explains a before that never existed.
       items: {
@@ -1356,7 +1359,8 @@ export const projects: Project[] = [
         id: "drafts-before-after",
         eyebrow: "Before and after",
         heading: "The same send, before and after.",
-        body: "The same three documents and five people, sent the old way and the new way. Drag to compare.",
+        body: "The same three documents and five people, sent the old way and the new way.",
+        band: { hint: "Slide the line back and forth: where sending started, and where it is now." },
         items: [
           {
             id: "send",
