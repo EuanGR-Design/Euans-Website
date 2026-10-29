@@ -2249,6 +2249,258 @@ function ManageScene({ s }: { s: number }) {
 
 /* ------------------------------------------------------------------------ */
 
+/* Drafts, low detail ------------------------------------------------------ */
+// The same screens with the words taken out: bars for text, colour for
+// state, so each loop shows one idea and nothing to read.
+
+const READY = { bg: "#e9ebf0", fg: "#c3c7d1" };
+const FIXED = { bg: "#e3f9ef", fg: "#2fb985" };
+const WARN = { bg: "#fdf3d2", fg: "#e0a21a", line: "#f6dc8a" };
+const ALERT = { bg: "#fdecec", fg: "#e5484d", line: "#f7c3c4" };
+
+/** The frame with no words: header, crumbs and the to-do button. */
+function LoFiChrome({ done = false, delay = 0 }: { done?: boolean; delay?: number }) {
+  return (
+    <>
+      <AppHeader />
+      <div className="absolute inset-x-0 top-[20px] flex h-[22px] items-center gap-[5px] border-b px-[10px]" style={{ borderColor: LINE }}>
+        <HomeIcon className="size-[10px]" style={{ color: PRIMARY }} />
+        <Bar w={34} h={4} color="#c8d3fb" />
+        <ChevronRightIcon className="size-[8px]" style={{ color: MUTED }} />
+        <Bar w={46} h={4} color="#c8d3fb" />
+        <span className="relative ml-auto">
+          <motion.span
+            className="flex size-[15px] items-center justify-center rounded-[4px]"
+            initial={false}
+            animate={{ backgroundColor: done ? "#d6f8ea" : "#fde58a", color: done ? "#1f7a57" : "#6b4a07" }}
+            transition={{ duration: 0.3, delay: done ? delay : 0 }}
+          >
+            {done ? <CheckIcon className="size-[10px]" /> : <ClipboardIcon className="size-[10px]" />}
+          </motion.span>
+          <motion.span
+            className="absolute -top-[3px] -right-[3px] size-[7px] rounded-full"
+            style={{ background: DANGER }}
+            initial={false}
+            animate={{ opacity: done ? 0 : 1, scale: done ? 0.4 : 1 }}
+            transition={{ duration: 0.3, delay: done ? delay : 0 }}
+          />
+        </span>
+      </div>
+    </>
+  );
+}
+
+/** A section card: icon, a title bar, its status and its button. */
+function LoFiRow({ ready, delay = 0, title }: { ready: boolean; delay?: number; title: number }) {
+  const t = { duration: 0.35, delay: ready ? delay : 0 };
+  return (
+    <div className="flex h-[28px] items-center gap-[8px] rounded-[7px] border bg-white px-[9px]" style={{ borderColor: LINE }}>
+      <span className="size-[13px] shrink-0 rounded-[4px]" style={{ background: "#e9ebf1" }} />
+      <Bar w={title} h={5} color="#d5d8e0" />
+      <motion.span
+        className="h-[8px] w-[34px] rounded-full"
+        initial={false}
+        animate={{ backgroundColor: ready ? READY.bg : WARN.bg }}
+        transition={t}
+      />
+      <motion.span
+        className="ml-auto h-[15px] w-[38px] rounded-[5px] border"
+        initial={false}
+        animate={{ backgroundColor: ready ? "#ffffff" : PRIMARY, borderColor: ready ? LINE : PRIMARY }}
+        transition={t}
+      />
+    </div>
+  );
+}
+
+const SECTION_TITLES = [70, 58, 96, 64, 84, 90, 76];
+// Sections the draft's owner has already set up, so they're ready from the start.
+const PRESET = [0, 1, 2, 5, 6];
+const SECTION_ROW = (i: number): [number, number] => [24 + 395, 24 + 64 + i * 33 + 15];
+
+function SectionsScene({ s }: { s: number }) {
+  const ready = (i: number) => (s >= 1 && PRESET.includes(i)) || (i === 3 && s >= 3) || (i === 4 && s >= 5);
+  return (
+    <AppWindow>
+      <LoFiChrome done={s >= 5} delay={0.6} />
+      <div className="absolute top-[50px] left-[16px] flex items-center gap-[6px]">
+        <span className="flex size-[12px] items-center justify-center rounded-full border" style={{ borderColor: LINE }}>
+          <ChevronLeftIcon className="size-[8px]" style={{ color: MUTED }} />
+        </span>
+        <Bar w={110} h={8} color="#c9ccd6" />
+      </div>
+      <div className="absolute inset-x-[16px] top-[64px] flex flex-col gap-[5px]">
+        {SECTION_TITLES.map((w, i) => (
+          <LoFiRow key={i} title={w} ready={ready(i)} delay={s === 1 ? 0.15 * PRESET.indexOf(i) : 0} />
+        ))}
+      </div>
+    </AppWindow>
+  );
+}
+
+/** A message that says what's wrong, with the button that fixes it. */
+function LoFiAlert({ show, fixed, tone, style }: { show: boolean; fixed: boolean; tone: typeof WARN; style: React.CSSProperties }) {
+  const c = fixed ? { bg: FIXED.bg, fg: FIXED.fg, line: "#b7ecd5" } : tone;
+  return (
+    <AnimatePresence initial={false}>
+      {show && (
+        <motion.div
+          className="absolute flex items-center gap-[7px] overflow-hidden rounded-[7px] border px-[9px]"
+          style={style}
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 28, backgroundColor: c.bg, borderColor: c.line }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <motion.span initial={false} animate={{ color: c.fg }} className="shrink-0">
+            {fixed ? <CheckCircleIcon className="size-[12px]" /> : <ExclamationTriangleIcon className="size-[12px]" />}
+          </motion.span>
+          <span className="flex flex-col gap-[4px]">
+            <Bar w={120} h={4} color={fixed ? "#a9e4c9" : tone === WARN ? "#f1d58a" : "#f2b4b6"} />
+            <Bar w={80} h={4} color={fixed ? "#c8eedc" : tone === WARN ? "#f6e3ad" : "#f7cfd0"} />
+          </span>
+          <motion.span
+            className="ml-auto h-[14px] w-[40px] rounded-[5px]"
+            initial={false}
+            animate={{ backgroundColor: fixed ? "#b7ecd5" : tone.fg, opacity: fixed ? 0.6 : 1 }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+const BANNER_TOP = 64;
+const BANNER_FIX: [number, number] = [24 + 395, 24 + BANNER_TOP + 14];
+const CARD_FIX: [number, number] = [24 + 387, 24 + 150 + 14];
+
+function AlertsScene({ s }: { s: number }) {
+  const banner = s >= 1 && s < 4;
+  const inline = s >= 1 && s < 7;
+  // The cards move down while the banner is in, then back up once it's gone.
+  const shift = banner ? 34 : 0;
+  return (
+    <AppWindow>
+      <LoFiChrome done={s >= 7} delay={0.3} />
+      <div className="absolute top-[50px] left-[16px]">
+        <Bar w={110} h={8} color="#c9ccd6" />
+      </div>
+      <LoFiAlert show={banner} fixed={s >= 3} tone={WARN} style={{ left: 16, right: 16, top: BANNER_TOP }} />
+      <motion.div className="absolute inset-x-[16px] flex flex-col gap-[5px]" style={{ top: 64 }} initial={false} animate={{ y: shift }}>
+        <LoFiRow title={70} ready />
+        <div className="relative rounded-[7px] border bg-white px-[9px] pt-[8px]" style={{ borderColor: LINE }}>
+          <div className="flex items-center gap-[8px]">
+            <span className="size-[13px] shrink-0 rounded-[4px]" style={{ background: "#e9ebf1" }} />
+            <Bar w={96} h={5} color="#d5d8e0" />
+            <motion.span className="h-[8px] w-[34px] rounded-full" initial={false} animate={{ backgroundColor: inline ? WARN.bg : READY.bg }} />
+          </div>
+          <div className="mt-[8px] flex gap-[8px] pb-[8px]">
+            <span className="h-[34px] w-[26px] rounded-[3px] border" style={{ borderColor: LINE, background: "#fafbfc" }} />
+            <span className="flex flex-col gap-[5px] pt-[3px]">
+              <Bar w={140} h={4} />
+              <Bar w={100} h={4} />
+              <Bar w={120} h={4} />
+            </span>
+          </div>
+          <motion.div initial={false} animate={{ height: inline ? 34 : 0 }} className="relative overflow-hidden">
+            <LoFiAlert show={inline} fixed={s >= 6} tone={ALERT} style={{ left: 0, right: 0, top: 0 }} />
+          </motion.div>
+        </div>
+        <LoFiRow title={64} ready />
+        <LoFiRow title={84} ready />
+      </motion.div>
+    </AppWindow>
+  );
+}
+
+// Three documents side by side, each with the same field near the top.
+const DOC_X = [12, 152, 292];
+const DOC_TOP = 54;
+const FIELD_Y = 46;
+const TYPE_AT: [number, number] = [24 + DOC_X[0] + 60, 24 + DOC_TOP + FIELD_Y + 10];
+const LINK_BTN: [number, number] = [24 + DOC_X[0] + 112, 24 + DOC_TOP + FIELD_Y - 7];
+
+function TypeOnceScene({ s }: { s: number }) {
+  const typed = s >= 2;
+  const linked = s >= 4;
+  return (
+    <AppWindow>
+      <LoFiChrome />
+      {DOC_X.map((x, d) => {
+        const filled = d === 0 ? typed : s >= 5;
+        return (
+          <div key={x} className="absolute rounded-[8px] border bg-white" style={{ left: x, top: DOC_TOP, width: 128, height: 240, borderColor: LINE }}>
+            <div className="flex items-center gap-[6px] px-[10px] pt-[10px]">
+              <DocOutlineIcon className="size-[13px]" style={{ color: MUTED }} />
+              <Bar w={[60, 48, 70][d]} h={5} color="#d5d8e0" />
+            </div>
+            {[0, 1, 2].map((f) => {
+              const top = FIELD_Y - 10 + f * 48;
+              const main = f === 0;
+              return (
+                <div key={f} className="absolute inset-x-[10px]" style={{ top }}>
+                  <div className="flex h-[10px] items-center justify-between">
+                    <Bar w={[44, 36, 50][f]} h={4} color="#dadde4" />
+                    {main && d === 0 && (
+                      <motion.span initial={false} animate={{ color: linked ? PRIMARY : MUTED }}>
+                        <LinkIcon className="size-[9px]" />
+                      </motion.span>
+                    )}
+                  </div>
+                  <motion.div
+                    className="relative mt-[4px] flex h-[18px] items-center rounded-[5px] border bg-white px-[6px]"
+                    initial={false}
+                    animate={{
+                      borderColor: main && linked ? "#9bb6f6" : main && d === 0 && s >= 2 && !linked ? PRIMARY : LINE,
+                      backgroundColor: main && linked ? PRIMARY_SOFT : "#ffffff",
+                    }}
+                  >
+                    {main && (
+                      <motion.span
+                        className="block h-[4px] rounded-full"
+                        style={{ background: INK }}
+                        initial={false}
+                        animate={{ width: filled ? 72 : 0 }}
+                        transition={{ duration: d === 0 ? 1 : 0.5, ease: d === 0 ? "linear" : EASE, delay: d === 0 ? 0 : 0.35 * d }}
+                      />
+                    )}
+                    {main && (
+                      <motion.span
+                        className="absolute -top-[5px] right-[4px] flex size-[11px] items-center justify-center rounded-full text-white"
+                        style={{ background: PRIMARY }}
+                        initial={false}
+                        animate={{ opacity: linked && filled ? 1 : 0, scale: linked && filled ? 1 : 0.4 }}
+                        transition={{ duration: 0.3, delay: linked && filled ? (d === 0 ? 0 : 0.35 * d + 0.3) : 0 }}
+                      >
+                        <LinkIcon className="size-[7px]" />
+                      </motion.span>
+                    )}
+                  </motion.div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
+      {/* The link itself, drawn between the documents. */}
+      <svg className="absolute inset-0" width={432} height={312} fill="none">
+        {[0, 1].map((i) => (
+          <motion.path
+            key={i}
+            d={`M${DOC_X[i] + 128 - 10} ${DOC_TOP + FIELD_Y + 13} H${DOC_X[i + 1] + 10}`}
+            stroke={PRIMARY}
+            strokeWidth={2}
+            strokeDasharray="3 3"
+            initial={false}
+            animate={{ pathLength: linked ? 1 : 0, opacity: linked ? 1 : 0 }}
+            transition={{ duration: 0.4, delay: linked ? 0.35 * i : 0 }}
+          />
+        ))}
+      </svg>
+    </AppWindow>
+  );
+}
+
 const REST: [number, number] = [430, 330];
 
 const LOOPS: Record<DecisionLoopName, Loop> = {
@@ -2413,5 +2665,49 @@ const LOOPS: Record<DecisionLoopName, Loop> = {
     ],
     still: 6,
     Scene: ManageScene,
+  },
+  sections: {
+    label: "Seven section cards, most already set up and marked ready, and the two that need the sender being prepared one after the other.",
+    steps: [
+      { ms: 900, cursor: REST },
+      { ms: 1700, cursor: REST },
+      { ms: 750, cursor: SECTION_ROW(3) },
+      { ms: 750, cursor: SECTION_ROW(3), click: true },
+      { ms: 700, cursor: SECTION_ROW(4) },
+      { ms: 2000, cursor: SECTION_ROW(4), click: true },
+      { ms: 900, cursor: REST },
+    ],
+    still: 1,
+    Scene: SectionsScene,
+  },
+  alerts: {
+    label: "A warning banner and an error inside a card appear, and each is fixed with the button beside it, until the to-do list turns green.",
+    steps: [
+      { ms: 700, cursor: REST },
+      { ms: 1200, cursor: REST },
+      { ms: 750, cursor: BANNER_FIX },
+      { ms: 900, cursor: BANNER_FIX, click: true },
+      { ms: 600, cursor: BANNER_FIX },
+      { ms: 750, cursor: CARD_FIX },
+      { ms: 900, cursor: CARD_FIX, click: true },
+      { ms: 1900, cursor: REST },
+      { ms: 700, cursor: REST },
+    ],
+    still: 1,
+    Scene: AlertsScene,
+  },
+  typeOnce: {
+    label: "A field is typed into on one document and linked, and the same field fills itself in on two more documents.",
+    steps: [
+      { ms: 800, cursor: REST },
+      { ms: 700, cursor: TYPE_AT },
+      { ms: 1300, cursor: TYPE_AT, click: true },
+      { ms: 700, cursor: LINK_BTN },
+      { ms: 700, cursor: LINK_BTN, click: true },
+      { ms: 2200, cursor: REST },
+      { ms: 900, cursor: REST },
+    ],
+    still: 5,
+    Scene: TypeOnceScene,
   },
 };

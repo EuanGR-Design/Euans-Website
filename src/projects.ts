@@ -82,7 +82,7 @@ export type BentoTile = {
 );
 
 // The animations Key decisions can show (src/components/DecisionLoop.tsx).
-export type DecisionLoopName = "recipients" | "sidebar" | "fields" | "panel" | "modals" | "send" | "again" | "details" | "drill" | "todo" | "linkField" | "manageLinks";
+export type DecisionLoopName = "recipients" | "sidebar" | "fields" | "panel" | "modals" | "send" | "again" | "details" | "drill" | "todo" | "linkField" | "manageLinks" | "sections" | "alerts" | "typeOnce";
 
 // A few short points with icons, under a section's main content.
 export type Notes = { icon: IconName; title: string; body: string }[];
@@ -405,9 +405,11 @@ export type Block =
         icon?: IconName;
         loop?: DecisionLoopName;
         video?: { src: string; poster: string; label: string };
+        // Bento only: two columns wide.
+        span?: "wide";
       }[];
       // How the items are laid out. Cards by default.
-      look?: "cards" | "statements" | "goals" | "fixes" | "split" | "grid";
+      look?: "cards" | "statements" | "goals" | "fixes" | "split" | "grid" | "bento";
       deeper?: Deeper;
     }
   // Clickable prototypes side by side, each with a screen of its version
@@ -1353,9 +1355,11 @@ export const projects: Project[] = [
         heading: "It became a new Send, too.",
         body: [
           "Console was rebuilt from Legalesign's first app and kept its big idea: a send is one journey, from upload to template to send, with a stepper across the top. When uploading and sending was most of what the product did, that worked.",
-          "Then the product grew around it. Uploads could go to the library, templates could be saved and left, and senders started going straight to Send from a template they'd made weeks before. The stepper stayed. Send opened partway through a journey they hadn't started, split into two steps of its own, with a tab for each document underneath, so you could step inside a tab or across them. Senders who'd learned it got by, but it was easy to lose your place and hard to find the way back.",
-          "I'd been pushing for standalone pages for a long time, and Quick Send made it possible. It took over the one place a connected journey still made sense, a new user's first send, so the rest of Console could become pages you go straight to.",
-          "Drafts was the chance to do that for Send. It's the drafts feature customers asked for, and a new Send we could test without breaking the old one: no stepper and no tabs, just documents as cards in a hub you drill into and back out of. Wherever you are, the screen tells you where you are and the way home.",
+          "Then the product grew around it, one customer request at a time. Uploads could go to the library, templates could be saved and left, and senders started going straight to Send from a template they'd made weeks before. The stepper stayed, so Send opened partway through a journey they hadn't started. Batch and multi-document sends then added a tab for each document underneath, and you could step inside a tab or across them. Feedback tickets, Hotjar recordings full of U-turns, and senders telling us they couldn't find the next thing to do all said the same thing.",
+          "Each change made sense for the customer who asked for it. Nobody was looking at what it did to the rest of the flow. That's the habit I try hardest to keep: asking what a change will do to everything around it.",
+          "I'd pushed for a standalone Send through several rounds of proposals. Quick Send made it possible. It took over the one place a joined-up journey still made sense, a new user's first send, and it proved the Compose component that Drafts was waiting on for its template page.",
+          "So when Drafts came up, I saw two birds and one stone. It's the drafts feature customers asked for, and a new Send we could test without breaking the old one: no stepper and no tabs, just documents as cards in a hub you drill into and back out of. Because it solved both, it was easy to justify and budget for.",
+          "The two run side by side today. Long-time senders are quick in the old Send from muscle memory, so rather than force a switch, new features only go into the new one. When they move across for something they need, they settle in fast.",
         ],
       },
       {
@@ -1669,7 +1673,7 @@ export const projects: Project[] = [
         type: "flow",
         eyebrow: "Ideation",
         heading: "The whole ideation page, mess and all.",
-        body: "I started wide. This is the real ideation page from the Figma file, around 190 frames: single documents, a hub for batch and bulk sending, editors, recipient flows and library states. Scroll to pan across it.",
+        body: "I started wide: around 190 frames of single documents, a hub for batch and bulk sending, editors, recipient flows and library states. Tabs and steppers kept coming back, and kept getting in the way. Everything pointed to one hub you drill into and back out of. Scroll to pan across the real page from the Figma file.",
         image: { src: "/work/drafts/ideation-canvas.webp", w: 7516, h: 2285, alt: "The full Drafts ideation page in Figma, with around 190 frames of explorations" },
       },
       {
@@ -1744,46 +1748,44 @@ export const projects: Project[] = [
         eyebrow: "Making it simple",
         heading: "All of that, without the sender ever having to see it.",
         body: "The same screens serve two people. A draft's owner can dig into every setting and tweak every detail. A sender sees only what's left for them to do, and how to get there. Everything else stays out of the way until someone goes looking for it.",
+        look: "bento",
         items: [
           {
-            title: "Know where to start",
-            body: "Every document in the send is a card that says if it needs preparing. Send stays disabled until nothing blocks it.",
-            image: { src: "/work/drafts/send-overview-prepare.webp", w: 1516, h: 1162, alt: "Send overview with each document marked Preparation Required and Send disabled", caption: "Each card says what it needs. Send waits until nothing blocks it." },
-          },
-          {
             title: "Look before you dig in",
-            video: { src: "/work/drafts/clips/details.mp4", poster: "/work/drafts/clips/details-poster.jpg", label: "Selecting each document in turn opens the details panel, then scrolling through its fields and recipients" },
-            body: "Selecting a document opens a side panel with everything already in it: the template, the file, its fields and who it goes to. Senders can check a document without opening it.",
+            body: "Select a document and its details open beside the list: the template, the file, its fields and who it goes to.",
+            span: "wide",
+            video: { src: "/work/drafts/clips/details-panel.mp4", poster: "/work/drafts/clips/details-panel-poster.jpg", label: "Selecting each document in turn opens the details panel beside the list" },
           },
           {
-            title: "One list of everything left",
-            video: { src: "/work/drafts/clips/todo.mp4", poster: "/work/drafts/clips/todo-poster.jpg", label: "Opening the required actions list, jumping to a document and then to the exact field, and the list turning to Done" },
-            body: "The required actions list sits in the same top-right spot on every page. It goes from documents, to sections, to the exact issue, and each line takes you straight there. When it's empty, the send is ready.",
+            title: "One thing to click",
+            body: "Yellow says what needs you. Prepare is the only bold button on each document, and Send waits until nothing blocks it.",
+            image: { src: "/work/drafts/next-step.webp", w: 1200, h: 900, alt: "Batch overview with three documents marked Preparation Required, each with a Prepare button, and Send disabled" },
           },
           {
-            title: "One section at a time",
-            body: "Each document is split into the same seven cards, in the same order. Each card shows a short summary, with Show all for the rest, and its own Prepare button. Once a section is done it needs no more attention, so senders move on to the next one.",
-            image: { src: "/work/drafts/section-cards.webp", w: 789, h: 1516, alt: "Document overview with seven section cards, two marked Preparation Required", caption: "Seven sections, each summarised, each prepared on its own." },
+            title: "The to-do list takes you there",
+            body: "One list of what's left, from documents to sections to the exact field. Every line takes you straight there, and it ends on Done.",
+            video: { src: "/work/drafts/clips/todo-list.mp4", poster: "/work/drafts/clips/todo-list-poster.jpg", label: "The required actions list opened from the top right, narrowing from documents to a section to single fields, then showing Done" },
           },
           {
-            title: "Always a way back",
-            video: { src: "/work/drafts/clips/drill.mp4", poster: "/work/drafts/clips/drill-poster.jpg", label: "Going into two documents and one of their sections from the batch overview, and back out each time" },
-            body: "Breadcrumbs show how deep you are and where you came from. Back, Reset, Cancel and Done sit in the same place on every page, and Save and Reset only come alive once there's something to save, so drilling in never feels like getting lost.",
+            title: "Only the sections that need you",
+            body: "Every document has the same seven sections. Whatever the owner set up is already ready, so senders only open the yellow ones.",
+            loop: "sections",
           },
           {
-            title: "When something breaks, say how to fix it",
-            body: "If a template is deleted or changed underneath a draft, a banner says what happened and offers the fix: replace it, remove it, or sync the fields and recipients to match. The affected sections go back to needing preparation.",
-            image: { src: "/work/drafts/template-missing.webp", w: 1516, h: 1162, alt: "Send overview with a banner explaining a deleted template and how to resolve it", caption: "A deleted template: what happened, and the two ways to fix it." },
+            title: "Every problem says how to fix it",
+            body: "A warning sits right where the problem is, with the button that fixes it beside it.",
+            loop: "alerts",
           },
           {
             title: "Type it once",
-            video: { src: "/work/drafts/clips/link-field.mp4", poster: "/work/drafts/clips/link-field-poster.jpg", label: "Typing an address, linking it across the documents, then opening another document to find it already filled in" },
-            body: "When the same person or the same date appears in several documents, linking fills it in everywhere. Any one link can be broken when a document needs something different.",
+            body: "Link a field, and the same field fills itself in on every document in the send.",
+            loop: "typeOnce",
           },
           {
-            title: "Link it all in one place",
-            video: { src: "/work/drafts/clips/manage-links.mp4", poster: "/work/drafts/clips/manage-links-poster.jpg", label: "Opening Manage Linked Fields, picking the value a link keeps, and the fields updating" },
-            body: "Manage Linked Fields lists every label the documents share, with its value in each. When the documents disagree, the sender picks the value the link keeps.",
+            title: "Always a way back",
+            body: "Breadcrumbs and a back button on every page, so drilling in never means getting lost.",
+            span: "wide",
+            video: { src: "/work/drafts/clips/way-back.mp4", poster: "/work/drafts/clips/way-back-poster.jpg", label: "Going into two documents and one of their sections, with the breadcrumbs updating, and back out each time" },
           },
         ],
       },

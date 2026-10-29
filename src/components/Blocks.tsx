@@ -12,6 +12,7 @@ import { Prototype } from "./Prototype";
 import { Brand } from "./Brand";
 import { IterationScrubber } from "./IterationScrubber";
 import { Video } from "./Video";
+import { LoopVideo } from "./LoopVideo";
 import { Bento } from "./Bento";
 import { FlowPan } from "./FlowPan";
 import { BrowserFrame } from "./BrowserFrame";
@@ -793,6 +794,58 @@ function BlockView({
                 </Reveal>
               ))}
             </ol>
+            <More d={b.deeper} name={name} />
+          </Section>
+        );
+      }
+      // One idea per tile, shown by its picture with a line under it: a crop
+      // of the real screen, a short clip of one, or an animation. A wide tile
+      // takes two columns and keeps the row's height. Real screens sit inset
+      // on the same blue as the animations.
+      if (b.look === "bento") {
+        const blue = { background: "linear-gradient(135deg, #5285ff, #4556f6)" };
+        // Inset by the same margins as the animations' app window, so every
+        // tile's screen lines up; recordings letterbox on their own canvas.
+        const screen = "absolute inset-x-[5%] inset-y-[6.7%] overflow-hidden rounded-[10px] bg-[#f4f5f8] shadow-[0_12px_30px_-12px_rgba(20,20,80,0.45)]";
+        return (
+          <Section id={b.id}>
+            {intro}
+            <ul className="mt-12 grid gap-x-6 gap-y-10 md:mt-16 md:grid-cols-2 lg:grid-cols-3">
+              {b.items.map((it, i) => {
+                const wide = it.span === "wide";
+                const frame = `relative overflow-hidden rounded-2xl ${wide ? "aspect-[2/1] md:aspect-[11/4]" : "aspect-[4/3]"}`;
+                const inset = `${screen} ${wide ? "md:inset-x-[2.4%]" : ""}`;
+                return (
+                  <Reveal key={it.title} delay={0.05 * (i % 3)} className={wide ? "md:col-span-2" : ""}>
+                    <li>
+                      {it.loop ? (
+                        <DecisionLoop name={it.loop} />
+                      ) : it.video ? (
+                        <div className={frame} style={blue}>
+                          <div className={inset}>
+                            <LoopVideo
+                              src={it.video.src}
+                              poster={it.video.poster}
+                              label={it.video.label}
+                              className="absolute inset-0 h-full w-full object-contain"
+                              buttonClassName="right-3 bottom-3"
+                            />
+                          </div>
+                        </div>
+                      ) : it.image?.src ? (
+                        <div className={frame} style={blue}>
+                          <div className={inset}>
+                            <Image src={it.image.src} alt={it.image.alt} fill sizes={wide ? "(min-width: 1024px) 860px, 100vw" : "(min-width: 1024px) 420px, 100vw"} className="object-contain" />
+                          </div>
+                        </div>
+                      ) : null}
+                      <h3 className="mt-5 text-xl leading-snug font-semibold md:text-2xl">{it.title}</h3>
+                      <p className="mt-2 max-w-xl leading-relaxed text-fg/75">{it.body}</p>
+                    </li>
+                  </Reveal>
+                );
+              })}
+            </ul>
             <More d={b.deeper} name={name} />
           </Section>
         );
