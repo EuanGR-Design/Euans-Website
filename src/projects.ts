@@ -1297,18 +1297,18 @@ export const projects: Project[] = [
     ],
   },
   {
-    // Drafts and Signer Lobby together, as a skill piece about complex rules
-    // and flows. Signer Lobby's card leads here.
+    // Drafts, as a skill piece about complex rules and flows. Signer Lobby
+    // joins it later as a second problem to untangle.
     slug: "drafts",
     era: "legalesign",
     title: "Untangling Complex Logic",
-    summary: "Drafts and Signer Lobby: the rules, states and flows behind two of the most complex parts of Console.",
+    summary: "Drafts: the rules, states and flows behind one of the most complex parts of Console.",
     role: "Design lead, product owner",
     tags: ["Systems thinking", "Complex flows", "Requirements"],
     cover: { src: "/work/drafts-v2-cover.png", w: 800, h: 566, alt: "Drafts V2 Figma file cover" },
     intro:
-      "Two features where the hard part was the logic, not the screens: Drafts, which lets admins pre-fill and lock down sending for their teams, and Signer Lobby, which shows each recipient the right state for their documents.",
-    statement: "Making two of Console's most complex features feel simple.",
+      "A feature where the hard part was the logic, not the screens: Drafts, which lets admins pre-fill and lock down sending for their teams.",
+    statement: "Making one of Console's most complex features feel simple.",
     context: legalesignContext("Admins, senders and recipients", "Design lead, product owner"),
     blocks: [
       {
@@ -1658,43 +1658,8 @@ export const projects: Project[] = [
         type: "flow",
         eyebrow: "Ideation",
         heading: "The whole ideation page, mess and all.",
-        body: "I started wide. This is the real ideation page from the Figma file, around 190 frames: single documents, a hub for batch and bulk sending, editors, recipient flows and library states. Scroll to pan across it. The pins mark the directions pulled out below.",
+        body: "I started wide. This is the real ideation page from the Figma file, around 190 frames: single documents, a hub for batch and bulk sending, editors, recipient flows and library states. Scroll to pan across it.",
         image: { src: "/work/drafts/ideation-canvas.webp", w: 7516, h: 2285, alt: "The full Drafts ideation page in Figma, with around 190 frames of explorations" },
-        pins: [
-          { x: 27.9, y: 6.2, label: "Tabs for every document" },
-          { x: 22.0, y: 45.4, label: "One long page" },
-          { x: 59.1, y: 18.9, label: "A list, then drill in" },
-          { x: 73.2, y: 24.4, label: "Editing beside the document" },
-        ],
-      },
-      {
-        type: "callouts",
-        id: "drafts-ideation",
-        eyebrow: "Directions",
-        heading: "Four directions from that page, and the one that became Drafts.",
-        look: "grid",
-        items: [
-          {
-            title: "Tabs for every document",
-            body: "A hub with a tab per document and a live preview, which also took in batch and bulk sending. It showed how far the idea could go, and how much it would cost to build. That told me where to cut for the first release.",
-            image: { src: "/work/drafts/ideation-hub.webp", w: 1516, h: 1102, alt: "Early concept of a tabbed drafts hub covering batch sending", caption: "A tab per document, with batch and bulk in the same hub." },
-          },
-          {
-            title: "One long page",
-            body: "A draft as one long page, with every setting for one document from top to bottom. Easy to follow, but it couldn't stretch to sends with several documents and recipients.",
-            image: { src: "/work/drafts/ideation-saved-document.webp", w: 1516, h: 2840, alt: "Early concept of a saved document page with every setting on one long page", caption: "One document, every setting on one page." },
-          },
-          {
-            title: "A list, then drill in",
-            body: "A list of documents, each with its status, a details panel beside it, and a focused page for each part of a document. This is the direction that became Drafts.",
-            image: { src: "/work/drafts/ideation-batch-overview.webp", w: 1440, h: 1047, alt: "Early batch overview with a list of documents and a details panel", caption: "The list and details panel that the final design grew from." },
-          },
-          {
-            title: "Editing beside the document",
-            body: "Recipients and fields in a panel next to the document, so the document never leaves view while a sender prepares it. It carried on as one focused step in the final flow.",
-            image: { src: "/work/drafts/ideation-editor.webp", w: 1440, h: 1047, alt: "Early concept of preparing a template with recipients and fields beside the document", caption: "Placing fields with the document in view." },
-          },
-        ],
       },
       {
         type: "skeleton",
@@ -1767,11 +1732,11 @@ export const projects: Project[] = [
         id: "drafts-ui",
         eyebrow: "Making it simple",
         heading: "All of that, without the sender ever having to see it.",
-        body: "An admin can lock a send down to one field or leave everything open, and the sender still has to find their way through either. So every screen shows just enough to know where to go next, and everything else is a click away.",
+        body: "The same screens serve two people. A draft's owner can dig into every setting and tweak every detail. A sender sees only what's left for them to do, and how to get there. Everything else stays out of the way until someone goes looking for it.",
         items: [
           {
             title: "Know where to start",
-            body: "Every document in the send is a card that says if it needs preparing. Send stays disabled until nothing blocks it, and a guided tour walks first-time senders through.",
+            body: "Every document in the send is a card that says if it needs preparing. Send stays disabled until nothing blocks it.",
             image: { src: "/work/drafts/send-overview-prepare.webp", w: 1516, h: 1162, alt: "Send overview with each document marked Preparation Required and Send disabled", caption: "Each card says what it needs. Send waits until nothing blocks it." },
           },
           {
@@ -1894,33 +1859,6 @@ export const projects: Project[] = [
           },
         ],
       },
-      slot(
-        "Signer Lobby",
-        "Every state, worked out before it was drawn.",
-        "The state matrix of configurations and rules (order, approvals, identity checks, multiple documents) and the screen each one leads to.",
-        "signer-lobby-states",
-      ),
-      {
-        type: "gallery",
-        eyebrow: "The result",
-        heading: "Clear progress, secure by default.",
-        images: [
-          {
-            src: "/work/lobby-batch.png",
-            w: 1516,
-            h: 1100,
-            alt: "Signer Lobby batch view",
-            caption: "Multi-document, multi-recipient signing sessions with sequential ordering, approvals and clear progress.",
-          },
-          {
-            src: "/work/lobby-verify.png",
-            w: 1516,
-            h: 1100,
-            alt: "Identity verification step",
-            caption: "2FA and access checks before signing, designed for government-grade security without the friction.",
-          },
-        ],
-      },
     ],
   },
   {
@@ -1935,8 +1873,8 @@ export const projects: Project[] = [
       "The lobby is where recipients land to sign. It handles multi-document, multi-recipient sessions with sequential ordering, approvals and identity checks, built for government-grade security without the friction.",
     statement: "Controlling the signing flow for every recipient of a document.",
     context: legalesignContext("Recipients signing documents", "Design lead"),
-    // Told alongside Drafts, on the complex logic page.
-    href: "/work/drafts#signer-lobby-states",
+    // To be told on the complex logic page beside Drafts. Until then, a card.
+    comingSoon: true,
     blocks: caseStudy({
       result: {
         type: "gallery",

@@ -131,13 +131,7 @@ export const about = {
       ],
     },
     { skill: "Prioritisation", proof: [{ label: "Getting Unstuck", href: "/work/getting-unstuck#define" }] },
-    {
-      skill: "Complex flows & logic",
-      proof: [
-        { label: "Drafts", href: "/work/drafts#drafts" },
-        { label: "Signer Lobby", href: "/work/drafts#signer-lobby-states" },
-      ],
-    },
+    { skill: "Complex flows & logic", proof: [{ label: "Drafts", href: "/work/drafts#drafts-tangle" }] },
     { skill: "Mobile UI", proof: [{ label: "Mobile Signing", href: "/work/mobile-signing" }] },
     {
       skill: "UI & design systems",
@@ -277,11 +271,9 @@ export const brand = {
 export const showreel = [
   { src: "/work/dashboard.png", w: 1452, h: 1073, alt: "Console dashboard", href: "/work/legalesign" },
   { src: "/brand/p8.jpg", w: 1600, h: 1131, alt: "Legalesign primary logo", href: "/work/rebrand" },
-  { src: "/work/lobby-batch.png", w: 1516, h: 1100, alt: "Signer Lobby", href: "/work/signer-lobby" },
   { src: "/brand/p25.jpg", w: 1600, h: 1131, alt: "Legalesign illustration style", href: "/work/rebrand" },
   { src: "/work/drafts-v2-cover.png", w: 800, h: 566, alt: "Drafts", href: "/work/drafts" },
   { src: "/brand/p17.jpg", w: 1600, h: 1131, alt: "Legalesign brand on a banner", href: "/work/rebrand" },
-  { src: "/work/lobby-verify.png", w: 1516, h: 1100, alt: "Identity verification", href: "/work/signer-lobby" },
   { src: "/brand/p29.jpg", w: 1600, h: 1131, alt: "Legalesign pictogram set", href: "/work/rebrand" },
 ];
 
