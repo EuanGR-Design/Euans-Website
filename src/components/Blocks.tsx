@@ -320,23 +320,17 @@ function BlockView({
     case "comparison":
       if (b.band)
         return (
-          <section id={b.id} className="scroll-mt-16 border-t border-line pt-20 pb-16 md:pt-28 md:pb-24">
-            <div className="container-x">
-              <Heading eyebrow={b.eyebrow} heading={b.heading} />
-              {b.body && (
-                <Reveal>
-                  <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
-                </Reveal>
-              )}
-            </div>
-            <Reveal className="mt-10 md:mt-14">
-              <CompareBand c={b.items[0]} hint={b.band.hint} />
+          <section id={b.id} className="scroll-mt-16">
+            <Reveal>
+              <CompareBand
+                c={b.items[0]}
+                hint={b.band.hint}
+                eyebrow={b.eyebrow}
+                heading={b.heading}
+                body={b.body}
+                caption={b.items[0].caption}
+              />
             </Reveal>
-            <div className="container-x">
-              <p className="mt-5 max-w-3xl text-sm text-muted">
-                <span className="text-fg">{b.items[0].label}.</span> {b.items[0].caption}
-              </p>
-            </div>
           </section>
         );
       return (

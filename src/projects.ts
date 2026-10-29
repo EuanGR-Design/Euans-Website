@@ -1360,7 +1360,7 @@ export const projects: Project[] = [
         eyebrow: "Before and after",
         heading: "The same send, before and after.",
         body: "The same three documents and five people, sent the old way and the new way.",
-        band: { hint: "Slide the line back and forth: where sending started, and where it is now." },
+        band: { hint: "Slide the line to see where sending started, and where it is now." },
         items: [
           {
             id: "send",
