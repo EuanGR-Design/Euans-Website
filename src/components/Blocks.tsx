@@ -934,6 +934,55 @@ function BlockView({
         </Section>
       );
     }
+    case "converge":
+      return (
+        <Section id={b.id}>
+          <Heading eyebrow={b.eyebrow} heading={b.heading} />
+          {b.body && (
+            <Reveal>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-fg/75">{b.body}</p>
+            </Reveal>
+          )}
+          <ul className="mt-12 grid gap-4 sm:grid-cols-2 md:mt-14 lg:grid-cols-3">
+            {b.problems.map((p, i) => (
+              <Reveal key={p.title} delay={0.04 * i}>
+                <li className="flex h-full gap-4 rounded-2xl border border-line bg-raised p-5 md:p-6">
+                  <IconTile name={p.icon} size="sm" />
+                  <div>
+                    <h3 className="text-lg leading-snug font-semibold">{p.title}</h3>
+                    <p className="mt-1.5 leading-relaxed text-fg/75">{p.body}</p>
+                  </div>
+                </li>
+              </Reveal>
+            ))}
+          </ul>
+          <Reveal>
+            <p className="mx-auto mt-10 flex max-w-xl flex-col items-center gap-3 text-center text-lg font-medium text-balance md:mt-12">
+              <Icon name="ArrowLongRight" className="size-7 rotate-90 text-accent-ink" />
+              {b.bridge}
+            </p>
+          </Reveal>
+          <Reveal className="mt-10 md:mt-12">
+            <div className="grid gap-10 rounded-3xl bg-accent-soft p-7 md:grid-cols-12 md:gap-12 md:p-12">
+              <div className="md:col-span-5">
+                <p className="text-[clamp(2rem,4vw,3.25rem)] leading-[1.02] font-bold tracking-[-0.035em]">{b.solution.statement}</p>
+                <p className="mt-5 text-lg leading-relaxed text-fg/75">{b.solution.body}</p>
+              </div>
+              <ol className="grid gap-6 md:col-span-7">
+                {b.solution.steps.map((st, i) => (
+                  <li key={st.title} className="flex gap-4">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-on-accent">{i + 1}</span>
+                    <div>
+                      <p className="text-lg font-semibold">{st.title}</p>
+                      <p className="mt-1 leading-relaxed text-fg/75">{st.body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </Reveal>
+        </Section>
+      );
     case "brief":
       // One line on the page, and the brief itself a click away.
       return (

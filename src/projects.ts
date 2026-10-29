@@ -127,6 +127,18 @@ export type Deeper = { label: string; heading: string; body?: string; blocks: Bl
 
 export type Block =
   | { type: "text"; eyebrow?: string; heading: string; body: string[]; draft?: boolean }
+  // Several problems that built up, then the one move that answered them,
+  // told in steps.
+  | {
+      type: "converge";
+      id?: string;
+      eyebrow?: string;
+      heading: string;
+      body?: string;
+      problems: { title: string; body: string; icon: IconName }[];
+      bridge: string;
+      solution: { statement: string; body: string; steps: { title: string; body: string }[] };
+    }
   // `loop` swaps an item's icon for a short animation of the idea (Key decisions).
   | {
       type: "points";
@@ -1350,17 +1362,54 @@ export const projects: Project[] = [
         ],
       },
       {
-        type: "text",
+        type: "converge",
+        id: "drafts-send",
         eyebrow: "The bigger problem",
         heading: "It became a new Send, too.",
-        body: [
-          "Console was rebuilt from Legalesign's first app and kept its big idea: a send is one journey, from upload to template to send, with a stepper across the top. When uploading and sending was most of what the product did, that worked.",
-          "Then the product grew around it, one customer request at a time. Uploads could go to the library, templates could be saved and left, and senders started going straight to Send from a template they'd made weeks before. The stepper stayed, so Send opened partway through a journey they hadn't started. Batch and multi-document sends then added a tab for each document underneath, and you could step inside a tab or across them. Feedback tickets, Hotjar recordings full of U-turns, and senders telling us they couldn't find the next thing to do all said the same thing.",
-          "Each change made sense for the customer who asked for it. Nobody was looking at what it did to the rest of the flow. That's the habit I try hardest to keep: asking what a change will do to everything around it.",
-          "I'd pushed for a standalone Send through several rounds of proposals. Quick Send made it possible. It took over the one place a joined-up journey still made sense, a new user's first send, and it proved the Compose component that Drafts was waiting on for its template page.",
-          "So when Drafts came up, I saw two birds and one stone. It's the drafts feature customers asked for, and a new Send we could test without breaking the old one: no stepper and no tabs, just documents as cards in a hub you drill into and back out of. Because it solved both, it was easy to justify and budget for.",
-          "The two run side by side today. Long-time senders are quick in the old Send from muscle memory, so rather than force a switch, new features only go into the new one. When they move across for something they need, they settle in fast.",
+        body: "None of it was one big mistake. Each change made sense for the customer who asked for it, and together they made Send hard to use and harder to change.",
+        problems: [
+          {
+            title: "No clear direction",
+            body: "Features went in one customer request at a time, and nobody looked at what each one did to the flow.",
+            icon: "ArrowsSplit",
+          },
+          {
+            title: "A journey that came apart",
+            body: "Send was built as the last step of one flow, from upload to send. Most senders now start in the middle.",
+            icon: "QueueList",
+          },
+          {
+            title: "Steps on top of tabs",
+            body: "A stepper across the top and a tab per document below, so you could step inside a tab or across them.",
+            icon: "ViewColumns",
+          },
+          {
+            title: "Senders getting lost",
+            body: "Feedback tickets, Hotjar recordings full of U-turns, and senders saying they couldn't find the next thing to do.",
+            icon: "ArrowUturnLeft",
+          },
+          {
+            title: "Users who'd learned it",
+            body: "Long-time senders were fast from muscle memory, so any change felt like a step back.",
+            icon: "UserGroup",
+          },
+          {
+            title: "A blocked roadmap",
+            body: "Customers needed Drafts, but its template page was waiting on the Compose component.",
+            icon: "PuzzlePiece",
+          },
         ],
+        bridge: "I'd pushed for a standalone Send for years. Drafts was the chance to fix it all at once.",
+        solution: {
+          statement: "Two birds, one stone.",
+          body: "Drafts is the feature customers asked for, and a new Send we could test without breaking the old one. Because it solved both, it was easy to justify and budget for.",
+          steps: [
+            { title: "Quick Send took the first send", body: "New users get the joined-up journey there, so the rest of Console can be standalone pages." },
+            { title: "Quick Send proved Compose", body: "Testing it there unblocked the template page Drafts needed." },
+            { title: "Drafts became the new Send", body: "No stepper and no tabs. Documents in a hub you drill into and back out of, always showing where you are." },
+            { title: "Side by side, not forced", body: "New features only go into the new Send, so senders move when they need something, and settle in fast." },
+          ],
+        },
       },
       {
         type: "brief",
