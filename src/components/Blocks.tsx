@@ -1178,6 +1178,7 @@ function BlockView({
               <p className="mx-auto mt-14 max-w-2xl text-center text-[clamp(1.5rem,3vw,2.25rem)] leading-tight font-semibold tracking-tight text-balance">
                 {b.turn}
               </p>
+              {b.turnBody && <p className="mx-auto mt-4 max-w-xl text-center text-lg leading-relaxed text-balance text-fg/75">{b.turnBody}</p>}
             </Reveal>
           )}
           <More d={b.deeper} name={name} />

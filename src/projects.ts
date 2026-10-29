@@ -217,8 +217,10 @@ export type Block =
       heading: string;
       body?: string;
       frames: { title?: string; image: Img; pins: { x: number; y: number; title: string; body: string; fix?: string }[] }[];
-      // A closing line under the screens: where the story turns next.
+      // A closing line under the screens, where the story turns next, and a
+      // smaller line under it.
       turn?: string;
+      turnBody?: string;
       deeper?: Deeper;
     }
   // The handoff file, a screen at a time: each step is one screen with the
@@ -1342,7 +1344,7 @@ export const projects: Project[] = [
     tags: ["Systems thinking", "Complex flows", "Requirements"],
     cover: { src: "/work/drafts-v2-cover.png", w: 800, h: 566, alt: "Drafts V2 Figma file cover" },
     intro:
-      "Drafts lets a team set up a send once and reuse it. The screens weren't the hard part. The rules were: dozens of them, all touching each other, on top of a Send screen people already got lost in.",
+      "Drafts lets a team set up a send once and reuse it. The screens weren't the hard part. The rules were: dozens of them, all touching each other. And it had to replace a way of sending that people already got lost in.",
     statement: "Making one of Legalesign's most complex features feel simple.",
     context: legalesignContext("Admins, senders and recipients", "Design lead, product owner"),
     blocks: [
@@ -1351,15 +1353,15 @@ export const projects: Project[] = [
         id: "drafts-before-after",
         eyebrow: "Before and after",
         heading: "The same send, before and after.",
-        body: "Three documents and five people, sent with the old Send and then with Drafts. Drag to compare.",
+        body: "The same three documents and five people, sent the old way and the new way. Drag to compare.",
         items: [
           {
             id: "send",
             label: "Sending a move-in pack",
             before: "/work/drafts/old-send.webp",
             after: "/work/drafts/new-send.webp",
-            caption: "The old Send puts steps, tabs and every setting on one screen. Drafts opens on one overview of the documents, and what each still needs.",
-            names: ["Old Send", "Drafts"],
+            caption: "The old way puts steps, tabs and every setting on one screen. The new way opens on one overview of the documents, and what each still needs.",
+            names: ["Before", "After"],
             ratio: [2400, 1280],
           },
         ],
@@ -1469,10 +1471,10 @@ export const projects: Project[] = [
         id: "drafts-old-send",
         eyebrow: "Why it was hard",
         heading: "It had to replace a screen people already got lost in.",
-        body: "Send grew one customer request at a time, and nobody looked at the whole screen. This is it today, sending the same move-in pack.",
+        body: "Sending grew one customer request at a time, and nobody looked at the whole screen. This is the old way today, sending the same move-in pack.",
         frames: [
           {
-            image: { src: "/work/drafts/old-send.webp", w: 2400, h: 1280, alt: "The old Send screen: a step counter and Next button above a row of document tabs, document options, a small preview and sender fields with a red warning count" },
+            image: { src: "/work/drafts/old-send.webp", w: 2400, h: 1280, alt: "The old way of sending: a step counter and Next button above a row of document tabs, document options, a small preview and sender fields with a red warning count" },
             pins: [
               {
                 x: 31,
@@ -1484,9 +1486,9 @@ export const projects: Project[] = [
               {
                 x: 87.5,
                 y: 5.8,
-                title: "Next, but no Send",
-                body: "Send only appears after the last step, so it's never clear how close you are.",
-                fix: "Send is always in the same place, and stays off until nothing blocks it.",
+                title: "Next, but no Send button",
+                body: "The Send button only appears after the last step, so it's never clear how close you are.",
+                fix: "the Send button is always in the same place, and stays off until nothing blocks it.",
               },
               {
                 x: 60,
@@ -1506,7 +1508,7 @@ export const projects: Project[] = [
           },
           {
             title: "Then people got stuck.",
-            image: { src: "/work/drafts/old-send-stuck.webp", w: 2400, h: 1280, alt: "The old Send's recipients step with the to-do list open, listing Doc 2: Email first, and the witness hidden behind a To Be Decided banner. Email addresses are blurred." },
+            image: { src: "/work/drafts/old-send-stuck.webp", w: 2400, h: 1280, alt: "The old way of sending, at its recipients step with the to-do list open, listing Doc 2: Email first, and the witness hidden behind a To Be Decided banner. Email addresses are blurred." },
             pins: [
               {
                 x: 87,
@@ -1532,17 +1534,18 @@ export const projects: Project[] = [
             ],
           },
         ],
-        turn: "So Drafts had two jobs: the feature customers asked for, and a new Send without these problems.",
+        turn: "So I built a new way of sending.",
+        turnBody: "It does everything the old one did, and more: if you're allowed, you can edit the template or swap the underlying file. And it's much easier to use, with one clear way to move through it.",
         deeper: {
-          label: "How Drafts became the new Send",
+          label: "How it became a new way of sending",
           heading: "Two birds, one stone.",
           blocks: [
             {
               type: "converge",
               id: "drafts-send",
               eyebrow: "The bigger problem",
-              heading: "It became a new Send, too.",
-              body: "None of it was one big mistake. Each change made sense for the customer who asked for it, and together they made Send hard to use and harder to change.",
+              heading: "It became a new way of sending, too.",
+              body: "None of it was one big mistake. Each change made sense for the customer who asked for it, and together they made sending hard to use and harder to change.",
               problems: [
                 {
                   title: "No clear direction",
@@ -1551,7 +1554,7 @@ export const projects: Project[] = [
                 },
                 {
                   title: "A journey that came apart",
-                  body: "Send was built as the last step of one flow, from upload to send. Most senders now start in the middle.",
+                  body: "Sending was built as the last step of one flow, from upload to send. Most senders now start in the middle.",
                   icon: "QueueList",
                 },
                 {
@@ -1575,15 +1578,15 @@ export const projects: Project[] = [
                   icon: "PuzzlePiece",
                 },
               ],
-              bridge: "I'd pushed for a standalone Send for years. Drafts was the chance to fix it all at once.",
+              bridge: "I'd pushed to rebuild sending for years. Drafts was the chance to fix it all at once.",
               solution: {
                 statement: "Two birds, one stone.",
-                body: "Drafts is the feature customers asked for, and a new Send we could test without breaking the old one. Because it solved both, it was easy to justify and budget for.",
+                body: "Drafts is the feature customers asked for, and a new way of sending we could test without breaking the old one. Because it solved both, it was easy to justify and budget for.",
                 steps: [
                   { title: "Quick Send took the first send", body: "New users get the joined-up journey there, so the rest of Console can be standalone pages." },
                   { title: "Quick Send proved Compose", body: "Testing it there unblocked the template page Drafts needed." },
-                  { title: "Drafts became the new Send", body: "No stepper and no tabs. Documents in a hub you drill into and back out of, always showing where you are." },
-                  { title: "Side by side, not forced", body: "New features only go into the new Send, so senders move when they need something, and settle in fast." },
+                  { title: "Drafts became the new way of sending", body: "No stepper and no tabs. Documents in a hub you drill into and back out of, always showing where you are." },
+                  { title: "Side by side, not forced", body: "New features only go into the new way, so senders move when they need something, and settle in fast." },
                 ],
               },
             },
@@ -1904,9 +1907,9 @@ export const projects: Project[] = [
       {
         type: "callouts",
         id: "drafts-ui",
-        eyebrow: "Making it simple",
-        heading: "All of that, without the sender ever having to see it.",
-        body: "Owners can dig into every setting. Senders only see what's left for them, and how to get there.",
+        eyebrow: "Using it",
+        heading: "More you can do, and easier to do it.",
+        body: "If you're allowed, you can dig into everything, right down to editing the template or swapping the file. If you only need to send, you just see what's left, and how to get there.",
         look: "bento",
         items: [
           {
@@ -1917,7 +1920,7 @@ export const projects: Project[] = [
           },
           {
             title: "One thing to click",
-            body: "Yellow says what needs you. Prepare is the only bold button on each document, and Send waits until nothing blocks it.",
+            body: "Yellow says what needs you. Prepare is the only bold button on each document, and the Send button waits until nothing blocks it.",
             image: { src: "/work/drafts/next-step.webp", w: 1200, h: 900, alt: "Batch overview with three documents marked Preparation Required, each with a Prepare button, and Send disabled" },
           },
           {

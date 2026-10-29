@@ -69,7 +69,7 @@ function AnnotatedFrame({ f }: { f: Frame }) {
                 <p className="mt-1 leading-relaxed text-fg/75">{p.body}</p>
                 {p.fix && (
                   <p className="mt-2 text-sm leading-relaxed">
-                    <span className="font-semibold text-accent-ink">Drafts: </span>
+                    <span className="font-semibold text-accent-ink">Now: </span>
                     {p.fix}
                   </p>
                 )}
