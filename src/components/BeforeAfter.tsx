@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Block } from "@/projects";
+import { LoopVideo } from "./LoopVideo";
 
 type Item = Extract<Block, { type: "comparison" }>["items"][number];
 
@@ -106,7 +107,7 @@ function Slider({ c }: { c: Item }) {
   return (
     <figure className="select-none">
       <div className="relative overflow-hidden rounded-3xl border border-line bg-raised" style={{ aspectRatio: `${w} / ${h}` }}>
-        <Side src={c.after} alt={`${c.label}: ${afterName}`} label={afterName} />
+        <Side src={c.after} alt={`${c.label}: ${afterName}`} label={afterName} video={c.videos?.after} />
         <div
           className="absolute inset-0"
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
@@ -116,6 +117,7 @@ function Slider({ c }: { c: Item }) {
               src={c.before}
               alt={`${c.label}: ${beforeName}`}
               label={beforeName}
+              video={c.videos?.before}
             />
           ) : c.missing ? (
             <Missing {...c.missing} />
@@ -162,11 +164,24 @@ function Side({
   src,
   alt,
   label,
+  video,
 }: {
   src: string | null;
   alt: string;
   label: string;
+  video?: { src: string; poster: string; label: string };
 }) {
+  if (video)
+    return (
+      <LoopVideo
+        src={video.src}
+        poster={video.poster}
+        label={video.label}
+        button={false}
+        wrapperClassName="absolute inset-0"
+        className="h-full w-full object-cover object-top"
+      />
+    );
   if (!src) return <Pending label={label} />;
   return (
     <Image

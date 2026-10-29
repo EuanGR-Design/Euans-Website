@@ -296,6 +296,9 @@ export type Block =
         // legacy app against Console at 2400×1337.
         names?: [string, string];
         ratio?: [number, number];
+        // Looping recordings to play on each side in place of the stills,
+        // which stay as their fallback. `src` is an .mp4 with a .webm beside it.
+        videos?: { before: { src: string; poster: string; label: string }; after: { src: string; poster: string; label: string } };
       }[];
     }
   | {
@@ -1363,6 +1366,10 @@ export const projects: Project[] = [
             caption: "The old way puts steps, tabs and every setting on one screen. The new way opens on one overview of the documents, and what each still needs.",
             names: ["Before", "After"],
             ratio: [2400, 1280],
+            videos: {
+              before: { src: "/work/drafts/clips/cmp-old.mp4", poster: "/work/drafts/clips/cmp-old-poster.jpg", label: "The old way of sending: hopping between document tabs and back and forth between steps" },
+              after: { src: "/work/drafts/clips/cmp-new.mp4", poster: "/work/drafts/clips/cmp-new-poster.jpg", label: "The new way of sending: opening a document from the overview and coming back out, twice" },
+            },
           },
         ],
       },
